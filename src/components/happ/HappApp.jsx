@@ -1026,7 +1026,7 @@ function PDFPreview({cfg,crane,cap,lp,totalW,hookH,radius,onClose}){
 // ═══════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════
-export default function App({ onSave, onLoad, initialData, projectName: extProjectName }){
+export default function App({ onSave, initialData, projectName: extProjectName }){
   const [tab,setTab]=useState("chart");
   const [cfg,setCfg]=useState(initialData?.config || {craneType:"mobile",boomLength:30,boomAngle:45,jibEnabled:false,jibLength:10,jibAngle:15,pivotHeight:2.5,pivotDist:1.2,craneEnd:4,loadWeight:5,counterweight:20,windSpeed:0,skinId:"default",
     loadW:3,loadH:2,loadShape:"box",slingType:"2leg",slingLength:4,slingLegs:2,hookBlockH:1.2,
