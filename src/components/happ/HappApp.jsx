@@ -37,591 +37,715 @@ function drawCraneVisual(ctx,type,SC,VS,pivotX,pivotY,boomTipX,boomTipY,colors,c
   if(!cr) return;
   const cat=cr.cat;
   const groundY=pivotY+cfg.pivotHeight*VS;
-  const bodyW=cfg.craneEnd*SC;
-  const bodyH=Math.min(2.5*VS,40);
-  const cabW=2*SC;
-  const cabH=2*VS;
-  const s=Math.max(0.5,Math.min(VS/8,1.8)); // detail scale factor
+  // BIGGER body dimensions for clear visibility
+  const bodyW=Math.max(cfg.craneEnd*SC, 60);
+  const bodyH=Math.max(4*VS, 55);
+  const cabW=Math.max(2.5*SC, 28);
+  const cabH=Math.max(2.5*VS, 30);
+  const s=Math.max(0.7, Math.min(VS/6, 2.2));
   
   ctx.save();
   
-  // Helper: draw a detailed wheel
+  // ── Helper: detailed wheel ──
   const drawWheel=(wx,wy,r)=>{
-    // Tire
     ctx.fillStyle="#1a1a1a";
     ctx.beginPath();ctx.arc(wx,wy,r,0,Math.PI*2);ctx.fill();
-    // Tire tread pattern
-    ctx.strokeStyle="#333";ctx.lineWidth=Math.max(1,r*0.15);
-    ctx.beginPath();ctx.arc(wx,wy,r*0.88,0,Math.PI*2);ctx.stroke();
-    // Rim
-    ctx.fillStyle="#888";
-    ctx.beginPath();ctx.arc(wx,wy,r*0.55,0,Math.PI*2);ctx.fill();
-    // Hub
-    ctx.fillStyle="#aaa";
-    ctx.beginPath();ctx.arc(wx,wy,r*0.3,0,Math.PI*2);ctx.fill();
-    // Axle dot
+    // Tread
+    ctx.strokeStyle="#2a2a2a";ctx.lineWidth=Math.max(1.5,r*0.12);
+    ctx.beginPath();ctx.arc(wx,wy,r*0.85,0,Math.PI*2);ctx.stroke();
+    // Rim outer
+    ctx.fillStyle="#777";
+    ctx.beginPath();ctx.arc(wx,wy,r*0.58,0,Math.PI*2);ctx.fill();
+    // Rim inner
+    ctx.fillStyle="#999";
+    ctx.beginPath();ctx.arc(wx,wy,r*0.4,0,Math.PI*2);ctx.fill();
+    // Hub bolts
     ctx.fillStyle="#666";
-    ctx.beginPath();ctx.arc(wx,wy,r*0.12,0,Math.PI*2);ctx.fill();
+    const bolts=5;
+    for(let b=0;b<bolts;b++){
+      const ba=b*(Math.PI*2/bolts);
+      ctx.beginPath();ctx.arc(wx+Math.cos(ba)*r*0.28,wy+Math.sin(ba)*r*0.28,r*0.06,0,Math.PI*2);ctx.fill();
+    }
+    // Center cap
+    ctx.fillStyle="#888";
+    ctx.beginPath();ctx.arc(wx,wy,r*0.15,0,Math.PI*2);ctx.fill();
   };
   
-  // Helper: draw cab with window detail
-  const drawCab=(cx,cy,cw,ch,facingLeft)=>{
-    const r=Math.min(4,ch*0.15);
-    // Cab body
+  // ── Helper: cab with windows ──
+  const drawCab=(cx,cy,cw,ch,opts={})=>{
+    const r=Math.min(5,ch*0.12);
+    const {slant=0,windowRatio=0.45}=opts;
     ctx.fillStyle=colors.cab;
     ctx.beginPath();
-    if(facingLeft){
-      ctx.moveTo(cx+r,cy);ctx.lineTo(cx+cw,cy);ctx.lineTo(cx+cw,cy+ch);
-      ctx.lineTo(cx,cy+ch);ctx.lineTo(cx,cy+r);ctx.quadraticCurveTo(cx,cy,cx+r,cy);
-    } else {
-      ctx.moveTo(cx,cy);ctx.lineTo(cx+cw-r,cy);
-      ctx.quadraticCurveTo(cx+cw,cy,cx+cw,cy+r);
-      ctx.lineTo(cx+cw,cy+ch);ctx.lineTo(cx,cy+ch);
-    }
+    ctx.moveTo(cx+r,cy);
+    ctx.lineTo(cx+cw-slant,cy);
+    ctx.lineTo(cx+cw,cy+ch);
+    ctx.lineTo(cx,cy+ch);
+    ctx.lineTo(cx,cy+r);
+    ctx.quadraticCurveTo(cx,cy,cx+r,cy);
     ctx.closePath();ctx.fill();
-    // Cab outline
-    ctx.strokeStyle="rgba(0,0,0,0.3)";ctx.lineWidth=1;ctx.stroke();
-    // Window
-    const wp=0.12;
-    ctx.fillStyle="rgba(120,200,240,0.45)";
-    ctx.beginPath();
-    const wx=cx+cw*wp, wy=cy+ch*0.12, ww=cw*(1-2*wp), wh=ch*0.42;
-    ctx.roundRect(wx,wy,ww,wh,Math.min(2,r*0.5));
-    ctx.fill();
-    // Window frame
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=0.8;
-    ctx.strokeRect(wx,wy,ww,wh);
+    // Outline
+    ctx.strokeStyle="rgba(0,0,0,0.25)";ctx.lineWidth=1;ctx.stroke();
+    // Main window
+    const wp=cw*0.1;
+    const wt=ch*0.1;
+    const ww=cw-wp*2-slant*0.5;
+    const wh=ch*windowRatio;
+    ctx.fillStyle="rgba(140,210,245,0.5)";
+    ctx.beginPath();ctx.roundRect(cx+wp,cy+wt,ww,wh,Math.min(3,r*0.6));ctx.fill();
+    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=0.8;ctx.stroke();
     // Window divider
-    ctx.beginPath();ctx.moveTo(wx+ww*0.55,wy);ctx.lineTo(wx+ww*0.55,wy+wh);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+wp+ww*0.6,cy+wt);ctx.lineTo(cx+wp+ww*0.6,cy+wt+wh);ctx.stroke();
+    // Door line
+    ctx.strokeStyle="rgba(0,0,0,0.12)";ctx.lineWidth=0.6;
+    ctx.beginPath();ctx.moveTo(cx+cw*0.45,cy+wt+wh+2);ctx.lineTo(cx+cw*0.45,cy+ch-2);ctx.stroke();
   };
   
-  // Helper: draw outrigger
+  // ── Helper: outrigger with pad ──
   const drawOutrigger=(ox,oy,ex,ey,padW)=>{
-    // Leg
-    ctx.strokeStyle=colors.outriggers;ctx.lineWidth=Math.max(2,3*s);
+    // Cylinder
+    ctx.strokeStyle="#666";ctx.lineWidth=Math.max(3,4*s);ctx.lineCap="round";
+    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);ctx.stroke();
+    // Inner rod
+    ctx.strokeStyle=colors.outriggers;ctx.lineWidth=Math.max(1.5,2.5*s);
     ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);ctx.stroke();
     // Pad
-    ctx.fillStyle=colors.outriggers;
-    const ph=Math.max(3,4*s);
-    ctx.fillRect(ex-padW/2,ey-ph/2,padW,ph);
-    // Pad ground contact
-    ctx.fillStyle="rgba(0,0,0,0.2)";
-    ctx.fillRect(ex-padW/2,ey+ph/2-1,padW,2);
+    const ph=Math.max(4,5*s);
+    ctx.fillStyle="#555";
+    ctx.fillRect(ex-padW/2,ey-1,padW,ph);
+    ctx.fillStyle="#666";
+    ctx.fillRect(ex-padW*0.4,ey,padW*0.8,ph-2);
+    ctx.lineCap="butt";
   };
 
-  // Helper: draw counterweight
+  // ── Helper: counterweight block ──
   const drawCW=(cx,cy,cw,ch)=>{
     ctx.fillStyle=colors.counterweight;
-    ctx.beginPath();ctx.roundRect(cx,cy,cw,ch,Math.min(3,ch*0.2));ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.25)";ctx.lineWidth=1;ctx.stroke();
-    // Weight lines
-    ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=0.8;
-    const lines=Math.max(2,Math.floor(cw/8));
-    for(let i=1;i<lines;i++){
-      const lx=cx+i*(cw/lines);
-      ctx.beginPath();ctx.moveTo(lx,cy+2);ctx.lineTo(lx,cy+ch-2);ctx.stroke();
+    ctx.beginPath();ctx.roundRect(cx,cy,cw,ch,Math.min(4,ch*0.15));ctx.fill();
+    // Horizontal grooves
+    ctx.strokeStyle="rgba(0,0,0,0.18)";ctx.lineWidth=0.8;
+    const n=Math.max(2,Math.floor(ch/6));
+    for(let i=1;i<n;i++){
+      const ly=cy+i*(ch/n);
+      ctx.beginPath();ctx.moveTo(cx+2,ly);ctx.lineTo(cx+cw-2,ly);ctx.stroke();
     }
-  };
-
-  // Helper: draw body panel with subtle shading
-  const drawBody=(bx,by,bw,bh,r)=>{
-    ctx.fillStyle=colors.body;
-    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,r||3);ctx.fill();
-    // Top highlight
-    const hlGrad=ctx.createLinearGradient(bx,by,bx,by+bh);
-    hlGrad.addColorStop(0,"rgba(255,255,255,0.12)");
-    hlGrad.addColorStop(0.5,"rgba(255,255,255,0)");
-    hlGrad.addColorStop(1,"rgba(0,0,0,0.08)");
-    ctx.fillStyle=hlGrad;
-    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,r||3);ctx.fill();
     // Outline
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=0.8;
-    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,r||3);ctx.stroke();
+    ctx.strokeStyle="rgba(0,0,0,0.22)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(cx,cy,cw,ch,Math.min(4,ch*0.15));ctx.stroke();
   };
 
-  // ═══ CRANE BODIES BY CATEGORY ═══
+  // ── Helper: body panel with gradient ──
+  const drawBody=(bx,by,bw,bh,r)=>{
+    r=r||4;
+    ctx.fillStyle=colors.body;
+    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,r);ctx.fill();
+    const g=ctx.createLinearGradient(bx,by,bx,by+bh);
+    g.addColorStop(0,"rgba(255,255,255,0.1)");
+    g.addColorStop(0.4,"rgba(255,255,255,0)");
+    g.addColorStop(1,"rgba(0,0,0,0.1)");
+    ctx.fillStyle=g;
+    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,r);ctx.fill();
+    ctx.strokeStyle="rgba(0,0,0,0.18)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,r);ctx.stroke();
+  };
+
+  // ═══════════════════════════════════════
+  // CRANE BODIES - Crangle-quality details
+  // ═══════════════════════════════════════
   
   if(cat==="mobile"||cat==="franna"){
-    const wheelR=Math.max(6,Math.min(1*VS,14));
-    const chassisH=bodyH*0.28;
-    const chassisY=groundY-wheelR*2-chassisH;
+    const wheelR=Math.max(8, Math.min(1.2*VS, 16));
+    const chassisH=Math.max(8, bodyH*0.16);
+    const chassisBottom=groundY-wheelR*0.4;
+    const chassisTop=chassisBottom-chassisH;
+    const totalW=bodyW+cabW*0.5;
     
-    // Determine wheel config per type
-    let wheelPositions=[];
-    const totalW=bodyW+cabW*0.3;
+    // ── Wheels by type ──
+    let wPos=[];
     if(type==="allterrain"){
-      // 5 axles
-      for(let i=0;i<5;i++) wheelPositions.push(pivotX-bodyW+totalW*0.08+i*(totalW*0.84/4));
+      for(let i=0;i<5;i++) wPos.push(pivotX-bodyW*0.95+i*(totalW*0.95/4));
     } else if(type==="truck"){
-      // Front 1 + rear tandem 2
-      wheelPositions=[pivotX-bodyW+totalW*0.1, pivotX-bodyW+totalW*0.7, pivotX-bodyW+totalW*0.85];
+      wPos=[pivotX-bodyW*0.85, pivotX-bodyW*0.15, pivotX+cabW*0.1];
     } else if(type==="rough"){
-      // 2 axles, big wheels
-      wheelPositions=[pivotX-bodyW+totalW*0.15, pivotX-bodyW+totalW*0.8];
+      wPos=[pivotX-bodyW*0.7, pivotX+cabW*0.05];
     } else if(type==="franna"){
-      // 2 axles compact
-      wheelPositions=[pivotX-bodyW+totalW*0.15, pivotX-bodyW+totalW*0.75];
+      wPos=[pivotX-bodyW*0.65, pivotX+cabW*0.0];
     } else {
-      // mobile default: 4 axles
-      for(let i=0;i<4;i++) wheelPositions.push(pivotX-bodyW+totalW*0.08+i*(totalW*0.88/3));
+      for(let i=0;i<4;i++) wPos.push(pivotX-bodyW*0.9+i*(totalW*0.9/3));
     }
     
-    // Draw wheels
-    wheelPositions.forEach(wx=>drawWheel(wx,groundY-wheelR*0.05,wheelR));
+    // Fender / mudguard arches
+    wPos.forEach(wx=>{
+      ctx.fillStyle=colors.body;
+      ctx.beginPath();ctx.arc(wx,chassisBottom,wheelR*1.25,Math.PI,0);ctx.fill();
+      ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(wx,chassisBottom,wheelR*1.25,Math.PI,0);ctx.stroke();
+    });
     
-    // Axle beam
-    ctx.fillStyle="#444";
-    const axleY=groundY-wheelR*1.3;
-    ctx.fillRect(pivotX-bodyW-wheelR*0.3,axleY,totalW+wheelR*0.6,wheelR*0.35);
+    // Wheels
+    wPos.forEach(wx=>drawWheel(wx,chassisBottom,wheelR));
     
-    // Chassis
-    drawBody(pivotX-bodyW,chassisY,totalW,chassisH,4);
+    // Carrier chassis (long beam)
+    drawBody(pivotX-bodyW*1.0, chassisTop, totalW*1.05, chassisH, 3);
     
-    // Turntable ring
-    const ringX=pivotX-cabW*0.2;
-    const ringR=Math.max(4,cabW*0.25);
-    ctx.fillStyle="#555";
-    ctx.beginPath();ctx.arc(ringX,chassisY,ringR,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle="#666";ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.arc(ringX,chassisY,ringR*0.7,0,Math.PI*2);ctx.stroke();
+    // ── Upper structure (slewing unit) ──
+    const upperW=bodyW*0.75;
+    const upperH=Math.max(18, bodyH*0.32);
+    const upperTop=chassisTop-upperH;
     
-    // Upper body / superstructure
-    const upperH=bodyH*0.4;
-    const upperY=chassisY-upperH;
-    drawBody(pivotX-bodyW*0.75,upperY,bodyW*0.7,upperH,3);
+    // Turntable circle
+    ctx.fillStyle="#4a4a4a";
+    ctx.beginPath();ctx.arc(pivotX-cabW*0.1, chassisTop, Math.max(6,cabW*0.22),0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#5a5a5a";ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(pivotX-cabW*0.1, chassisTop, Math.max(4,cabW*0.15),0,Math.PI*2);ctx.stroke();
     
-    // Counterweight
-    const cwW=bodyW*0.35;
-    const cwH=upperH*0.85;
-    drawCW(pivotX-bodyW*0.72,upperY+upperH*0.08,cwW,cwH);
+    // Upper body
+    drawBody(pivotX-upperW*0.85, upperTop, upperW, upperH, 4);
     
-    // Cab
-    const cabX=pivotX-cabW*0.6;
-    drawCab(cabX,upperY-cabH*0.9,cabW*1.1,cabH*0.95,true);
+    // Engine compartment louvers
+    ctx.strokeStyle="rgba(0,0,0,0.12)";ctx.lineWidth=0.7;
+    const louverX=pivotX-upperW*0.8;
+    for(let i=0;i<4;i++){
+      const ly=upperTop+upperH*0.25+i*upperH*0.15;
+      ctx.beginPath();ctx.moveTo(louverX,ly);ctx.lineTo(louverX+upperW*0.2,ly);ctx.stroke();
+    }
     
-    // Outriggers (not for franna/rough)
+    // Counterweight (rear overhang, prominent)
+    const cwW=Math.max(16, upperW*0.38);
+    const cwH=Math.max(14, upperH*0.85);
+    drawCW(pivotX-upperW*0.82, upperTop+upperH*0.08, cwW, cwH);
+    
+    // ── Cab ──
+    const cabX2=pivotX-cabW*0.45;
+    const cabY2=upperTop-cabH*0.75;
+    drawCab(cabX2, cabY2, cabW*1.0, cabH*0.8, {slant:cabW*0.08});
+    
+    // ── Outriggers (not franna/rough) ──
     if(type!=="franna"&&type!=="rough"){
-      const outY=chassisY+chassisH*0.5;
-      const padW=Math.max(8,12*s);
-      // Front
-      drawOutrigger(pivotX+cabW*0.15,outY,pivotX+cabW*1.0,groundY,padW);
-      // Rear
-      drawOutrigger(pivotX-bodyW*0.85,outY,pivotX-bodyW*1.3,groundY,padW);
+      const outY=chassisTop+chassisH*0.3;
+      const padW=Math.max(10,14*s);
+      drawOutrigger(pivotX+cabW*0.2, outY, pivotX+cabW*1.2, groundY, padW);
+      drawOutrigger(pivotX-bodyW*0.9, outY, pivotX-bodyW*1.35, groundY, padW);
     }
     
-    // Engine grille detail (rear)
-    ctx.fillStyle="rgba(0,0,0,0.15)";
-    const grX=pivotX-bodyW*0.72+bodyW*0.03;
-    for(let i=0;i<3;i++){
-      ctx.fillRect(grX,chassisY-chassisH*0.1+i*chassisH*0.22,bodyW*0.08,chassisH*0.12);
-    }
+    // Boom foot pin area
+    ctx.fillStyle="#666";
+    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,6*s), 0, Math.PI*2);ctx.fill();
 
   } else if(cat==="crawler"){
-    const trackH=Math.max(10,1.8*VS);
-    const trackW=bodyW*1.15;
-    const trackX=pivotX-trackW*0.65;
-    const trackY=groundY-trackH;
+    // ── CRAWLER CRANE ──
+    const trackH=Math.max(14, 2.2*VS);
+    const trackW=Math.max(70, bodyW*1.3);
+    const trackX=pivotX-trackW*0.6;
+    const trackTop=groundY-trackH;
+    const trackR=trackH*0.38;
     
     // Track body
     ctx.fillStyle=colors.tracks;
-    ctx.beginPath();
-    const tR=trackH*0.35;
-    ctx.roundRect(trackX,trackY,trackW,trackH,tR);
-    ctx.fill();
-    // Track outline
+    ctx.beginPath();ctx.roundRect(trackX, trackTop, trackW, trackH, trackR);ctx.fill();
     ctx.strokeStyle="rgba(0,0,0,0.3)";ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.roundRect(trackX,trackY,trackW,trackH,tR);ctx.stroke();
+    ctx.beginPath();ctx.roundRect(trackX, trackTop, trackW, trackH, trackR);ctx.stroke();
     
-    // Track pad segments
+    // Track shoe segments
+    const shoeCount=Math.max(12, Math.floor(trackW/6));
+    ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=1;
+    for(let i=1;i<shoeCount;i++){
+      const sx=trackX+trackR*0.5+i*((trackW-trackR)/shoeCount);
+      ctx.beginPath();ctx.moveTo(sx,trackTop+trackH*0.05);ctx.lineTo(sx,trackTop+trackH*0.95);ctx.stroke();
+    }
+    
+    // Track grouser teeth (bottom)
     ctx.fillStyle="rgba(0,0,0,0.2)";
-    const padCount=Math.max(8,Math.floor(trackW/8));
-    const padW=trackW/padCount;
-    for(let i=0;i<padCount;i++){
-      if(i%2===0){
-        ctx.fillRect(trackX+i*padW+1,trackY+trackH*0.08,padW-2,trackH*0.84);
-      }
+    for(let i=0;i<Math.floor(trackW/8);i++){
+      const gx=trackX+trackR+i*8;
+      ctx.fillRect(gx, trackTop+trackH*0.88, 4, trackH*0.12);
     }
     
-    // Track rollers
-    const rollerR=trackH*0.15;
+    // Drive sprocket (rear, bigger)
+    ctx.fillStyle="#444";
+    ctx.beginPath();ctx.arc(trackX+trackR*0.75, trackTop+trackH*0.5, trackH*0.28, 0, Math.PI*2);ctx.fill();
     ctx.fillStyle="#555";
-    // Drive sprocket (front)
-    ctx.beginPath();ctx.arc(trackX+tR*0.8,trackY+trackH*0.5,rollerR*1.4,0,Math.PI*2);ctx.fill();
-    // Idler (rear)
-    ctx.beginPath();ctx.arc(trackX+trackW-tR*0.8,trackY+trackH*0.5,rollerR*1.4,0,Math.PI*2);ctx.fill();
-    // Bottom rollers
-    for(let i=0;i<5;i++){
-      const rx=trackX+trackW*0.2+i*(trackW*0.6/4);
-      ctx.beginPath();ctx.arc(rx,trackY+trackH*0.75,rollerR*0.7,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(trackX+trackR*0.75, trackTop+trackH*0.5, trackH*0.18, 0, Math.PI*2);ctx.fill();
+    // Idler (front)
+    ctx.fillStyle="#444";
+    ctx.beginPath();ctx.arc(trackX+trackW-trackR*0.75, trackTop+trackH*0.5, trackH*0.25, 0, Math.PI*2);ctx.fill();
+    ctx.fillStyle="#555";
+    ctx.beginPath();ctx.arc(trackX+trackW-trackR*0.75, trackTop+trackH*0.5, trackH*0.16, 0, Math.PI*2);ctx.fill();
+    
+    // Bottom carrier rollers
+    ctx.fillStyle="#555";
+    for(let i=0;i<6;i++){
+      const rx=trackX+trackW*0.18+i*(trackW*0.64/5);
+      ctx.beginPath();ctx.arc(rx, trackTop+trackH*0.78, trackH*0.08, 0, Math.PI*2);ctx.fill();
+    }
+    // Top carrier rollers
+    for(let i=0;i<2;i++){
+      const rx=trackX+trackW*0.3+i*trackW*0.35;
+      ctx.beginPath();ctx.arc(rx, trackTop+trackH*0.22, trackH*0.06, 0, Math.PI*2);ctx.fill();
     }
     
-    // Upper body
-    const upperH=bodyH*0.55;
-    const upperY=trackY-upperH;
-    drawBody(pivotX-bodyW*0.55,upperY,bodyW*0.85,upperH,4);
+    // ── Upper body / carbody ──
+    const upperH=Math.max(20, bodyH*0.4);
+    const upperW=Math.max(50, bodyW*0.85);
+    const upperTop=trackTop-upperH;
+    drawBody(pivotX-upperW*0.55, upperTop, upperW, upperH, 5);
     
-    // Counterweight
-    const cwW=bodyW*0.32;
-    drawCW(pivotX-bodyW*0.5,upperY+upperH*0.1,cwW,upperH*0.8);
+    // Counterweight (big, rounded back)
+    const cwW=Math.max(18, upperW*0.35);
+    const cwH=upperH*0.9;
+    drawCW(pivotX-upperW*0.52, upperTop+upperH*0.05, cwW, cwH);
     
     // Cab
-    const cabX=pivotX-cabW*0.5;
-    drawCab(cabX,upperY-cabH*0.85,cabW*1.3,cabH*0.85,true);
+    const cabX2=pivotX-cabW*0.35;
+    drawCab(cabX2, upperTop-cabH*0.7, cabW*1.2, cabH*0.72, {slant:0});
     
-    // A-frame / gantry at pivot
-    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(2,2.5*s);
-    ctx.beginPath();ctx.moveTo(pivotX-cabW*0.3,upperY);ctx.lineTo(pivotX,pivotY);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(pivotX+cabW*0.3,upperY);ctx.lineTo(pivotX,pivotY);ctx.stroke();
+    // A-frame mast
+    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(2.5, 3*s);
+    ctx.beginPath();ctx.moveTo(pivotX-cabW*0.25, upperTop);ctx.lineTo(pivotX+cabW*0.05, pivotY);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pivotX+cabW*0.35, upperTop);ctx.lineTo(pivotX+cabW*0.05, pivotY);ctx.stroke();
     
+    // Boom foot pin
+    ctx.fillStyle="#666";
+    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,6*s), 0, Math.PI*2);ctx.fill();
+
   } else if(cat==="tower"){
-    const mastW=Math.max(8,2*SC);
-    const mastL=pivotX-mastW/4;
-    const mastR=pivotX+mastW/4;
+    // ── TOWER CRANE ──
+    const mastW=Math.max(12, 2.5*SC);
+    const baseW=mastW*1.6;
     
-    // Tower base plate
-    ctx.fillStyle=colors.base;
-    ctx.fillRect(pivotX-mastW*0.8,groundY-3,mastW*1.6,5);
+    // Concrete base
+    ctx.fillStyle="#777";
+    ctx.fillRect(pivotX-baseW*0.7, groundY-5, baseW*1.4, 7);
+    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
+    ctx.strokeRect(pivotX-baseW*0.7, groundY-5, baseW*1.4, 7);
     
-    // Tower legs
-    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(3,3*s);
-    ctx.beginPath();ctx.moveTo(pivotX-mastW*0.6,groundY-3);ctx.lineTo(mastL,pivotY);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(pivotX+mastW*0.6,groundY-3);ctx.lineTo(mastR,pivotY);ctx.stroke();
+    // Mast legs (tapered)
+    const mL=pivotX-mastW*0.35;
+    const mR=pivotX+mastW*0.35;
+    const bL=pivotX-baseW*0.5;
+    const bR=pivotX+baseW*0.5;
+    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(2.5, 3*s);
+    ctx.beginPath();ctx.moveTo(bL, groundY-5);ctx.lineTo(mL, pivotY);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bR, groundY-5);ctx.lineTo(mR, pivotY);ctx.stroke();
     
-    // Cross braces (lattice pattern)
-    const nBraces=Math.max(4,Math.floor((groundY-pivotY)/22));
-    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(0.8,1.2*s);
-    for(let i=0;i<nBraces;i++){
-      const t1=i/nBraces;const t2=(i+1)/nBraces;
-      const y1=pivotY+t1*(groundY-3-pivotY);
-      const y2=pivotY+t2*(groundY-3-pivotY);
-      const xL1=mastL+(pivotX-mastW*0.6-mastL)*t1;
-      const xR1=mastR+(pivotX+mastW*0.6-mastR)*t1;
-      const xL2=mastL+(pivotX-mastW*0.6-mastL)*t2;
-      const xR2=mastR+(pivotX+mastW*0.6-mastR)*t2;
+    // Lattice cross-braces
+    const nB=Math.max(5, Math.floor((groundY-pivotY)/18));
+    ctx.lineWidth=Math.max(1, 1.5*s);
+    for(let i=0;i<nB;i++){
+      const t1=i/nB; const t2=(i+1)/nB;
+      const y1=pivotY+t1*(groundY-5-pivotY);
+      const y2=pivotY+t2*(groundY-5-pivotY);
+      const xL1=mL+(bL-mL)*t1; const xR1=mR+(bR-mR)*t1;
+      const xL2=mL+(bL-mL)*t2; const xR2=mR+(bR-mR)*t2;
       // Horizontal
+      ctx.strokeStyle=colors.body;
       ctx.beginPath();ctx.moveTo(xL1,y1);ctx.lineTo(xR1,y1);ctx.stroke();
-      // X-brace
+      // X braces
+      ctx.strokeStyle="rgba(100,100,100,0.6)";
       ctx.beginPath();ctx.moveTo(xL1,y1);ctx.lineTo(xR2,y2);ctx.stroke();
       ctx.beginPath();ctx.moveTo(xR1,y1);ctx.lineTo(xL2,y2);ctx.stroke();
     }
     
-    // Slew ring at top
+    // Slewing unit at top
     ctx.fillStyle="#555";
-    ctx.beginPath();ctx.arc(pivotX,pivotY,mastW*0.4,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(pivotX, pivotY, mastW*0.35, 0, Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#666";ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(pivotX, pivotY, mastW*0.25, 0, Math.PI*2);ctx.stroke();
+    
+    // Machine house (top)
+    const mhW=mastW*1.8;
+    const mhH=Math.max(10, cabH*0.35);
+    drawBody(pivotX-mhW*0.4, pivotY-mhH*1.2, mhW, mhH, 3);
     
     // Cab
-    const tcabW=mastW*1.3;
-    const tcabH=cabH*0.6;
-    drawCab(pivotX-tcabW/2,pivotY-tcabH*0.8,tcabW,tcabH,false);
+    const tcW=mastW*1.4;
+    const tcH=Math.max(10, cabH*0.4);
+    drawCab(pivotX-tcW*0.3, pivotY-mhH*1.2-tcH, tcW, tcH, {windowRatio:0.5});
     
-    // Counter-jib with counterweight
-    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(2,2*s);
-    ctx.beginPath();ctx.moveTo(pivotX,pivotY);ctx.lineTo(pivotX-mastW*3,pivotY-mastW*0.3);ctx.stroke();
-    drawCW(pivotX-mastW*3.5,pivotY-mastW*0.8,mastW*1.5,mastW*0.8);
+    // Counter-jib (rear horizontal)
+    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(2, 2.5*s);
+    const cjLen=mastW*4;
+    ctx.beginPath();ctx.moveTo(pivotX, pivotY-mhH*0.5);ctx.lineTo(pivotX-cjLen, pivotY-mhH*0.5-cjLen*0.04);ctx.stroke();
+    // Counter-jib lattice
+    ctx.lineWidth=Math.max(0.8, 1*s);
+    ctx.beginPath();ctx.moveTo(pivotX, pivotY-mhH*1.2);ctx.lineTo(pivotX-cjLen, pivotY-mhH*0.5-cjLen*0.04);ctx.stroke();
     
+    // Counterweight on counter-jib
+    drawCW(pivotX-cjLen-mastW*0.3, pivotY-mhH*0.5-cjLen*0.04-mastW*0.8, mastW*1.5, mastW*1.0);
+    
+    // Pendant lines (support cables to boom)
+    ctx.strokeStyle="rgba(150,150,150,0.4)";ctx.lineWidth=0.8;
+    const topMast=pivotY-mhH*1.2-tcH;
+    ctx.beginPath();ctx.moveTo(pivotX, topMast);ctx.lineTo(boomTipX, boomTipY);ctx.stroke();
+
   } else if(cat==="spider"){
-    // Spider crane - compact body with deployed legs
-    const legSpread=bodyW*0.9;
-    const bodyCenter=pivotX;
-    const smallBodyH=bodyH*0.35;
-    const smallBodyW=cabW*1.2;
-    const baseY=groundY-smallBodyH*2;
+    // ── SPIDER / MINI CRANE ──
+    const bW=Math.max(20, cabW*1.0);
+    const bH=Math.max(14, bodyH*0.22);
+    const baseY=groundY-bH*2.5;
     
-    // Deployed spider legs with pads
-    ctx.strokeStyle=colors.outriggers;ctx.lineWidth=Math.max(1.5,2*s);
-    const legAngles=[0.2,0.45,0.55,0.8];
-    legAngles.forEach((a,i)=>{
-      const dir=i<2?-1:1;
-      const endX=bodyCenter+dir*legSpread*(0.6+a*0.4);
-      // Upper leg
-      ctx.beginPath();ctx.moveTo(bodyCenter+dir*smallBodyW*0.3,baseY+smallBodyH);
-      ctx.lineTo(bodyCenter+dir*legSpread*0.3,groundY-8*s);ctx.stroke();
-      // Lower leg
-      ctx.beginPath();ctx.moveTo(bodyCenter+dir*legSpread*0.3,groundY-8*s);
-      ctx.lineTo(endX,groundY);ctx.stroke();
-      // Pad
-      ctx.fillStyle=colors.outriggers;
-      ctx.fillRect(endX-4*s,groundY-2,8*s,3);
+    // Track base (mini crawler tracks)
+    const trkW=bW*0.6;
+    const trkH=Math.max(8, bH*0.5);
+    // Left track
+    ctx.fillStyle=colors.tracks;
+    ctx.beginPath();ctx.roundRect(pivotX-bW*0.55, groundY-trkH, trkW, trkH, trkH*0.3);ctx.fill();
+    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(pivotX-bW*0.55, groundY-trkH, trkW, trkH, trkH*0.3);ctx.stroke();
+    // Right track  
+    ctx.fillStyle=colors.tracks;
+    ctx.beginPath();ctx.roundRect(pivotX+bW*0.55-trkW, groundY-trkH, trkW, trkH, trkH*0.3);ctx.fill();
+    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(pivotX+bW*0.55-trkW, groundY-trkH, trkW, trkH, trkH*0.3);ctx.stroke();
+    
+    // Spider legs (deployed outriggers)
+    ctx.strokeStyle=colors.outriggers;ctx.lineWidth=Math.max(2, 2.5*s);
+    const legData=[
+      {sx:-0.15, knee:-0.55, foot:-0.9},
+      {sx:-0.05, knee:-0.35, foot:-0.7},
+      {sx:0.05, knee:0.35, foot:0.7},
+      {sx:0.15, knee:0.55, foot:0.9},
+    ];
+    legData.forEach(leg=>{
+      const startX=pivotX+leg.sx*bW;
+      const kneeX=pivotX+leg.knee*bodyW;
+      const footX=pivotX+leg.foot*bodyW;
+      const kneeY=baseY+bH*1.5;
+      // Upper segment
+      ctx.beginPath();ctx.moveTo(startX, baseY+bH);ctx.lineTo(kneeX, kneeY);ctx.stroke();
+      // Lower segment
+      ctx.beginPath();ctx.moveTo(kneeX, kneeY);ctx.lineTo(footX, groundY);ctx.stroke();
+      // Foot pad
+      ctx.fillStyle="#555";
+      ctx.fillRect(footX-5*s, groundY-2, 10*s, 4);
     });
     
-    // Small compact body
-    drawBody(bodyCenter-smallBodyW/2,baseY,smallBodyW,smallBodyH,3);
+    // Compact body
+    drawBody(pivotX-bW*0.4, baseY, bW*0.8, bH, 3);
     
     // Mini cab
-    const mcW=smallBodyW*0.6;
-    drawCab(bodyCenter-mcW/2,baseY-cabH*0.5,mcW,cabH*0.5,true);
+    const mcW=bW*0.5;
+    const mcH=bH*0.8;
+    drawCab(pivotX-mcW*0.3, baseY-mcH, mcW, mcH, {windowRatio:0.5});
     
+    // Boom foot
+    ctx.fillStyle="#666";
+    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(3,4*s), 0, Math.PI*2);ctx.fill();
+
   } else if(cat==="knuckle"){
-    // Boom truck / knuckle boom - long truck with crane mounted behind cab
-    const truckW=bodyW*1.6;
-    const wheelR=Math.max(5,Math.min(0.8*VS,11));
-    const chassisH=bodyH*0.22;
-    const chassisY=groundY-wheelR*2-chassisH;
-    const truckX=pivotX-truckW*0.25;
+    // ── BOOM TRUCK / KNUCKLE BOOM ──
+    const wheelR=Math.max(7, Math.min(1*VS, 13));
+    const truckW=Math.max(80, bodyW*1.8);
+    const chassisH=Math.max(6, bodyH*0.12);
+    const chassisBottom=groundY-wheelR*0.4;
+    const chassisTop=chassisBottom-chassisH;
+    const truckX=pivotX-truckW*0.2;
     
-    // Truck wheels: front 2, rear tandem 4
-    const wPositions=[
-      truckX+truckW*0.1, // front
-      truckX+truckW*0.72, truckX+truckW*0.82, // rear tandem 1
-      truckX+truckW*0.88, truckX+truckW*0.95, // rear tandem 2
-    ];
-    wPositions.forEach(wx=>drawWheel(wx,groundY-wheelR*0.05,wheelR));
+    // Wheels: front axle + rear tandem
+    const frontW=truckX+truckW*0.85;
+    const rearW1=truckX+truckW*0.15;
+    const rearW2=truckX+truckW*0.25;
     
-    // Truck frame
+    // Fender arches
+    [frontW,rearW1,rearW2].forEach(wx=>{
+      ctx.fillStyle=colors.body;
+      ctx.beginPath();ctx.arc(wx,chassisBottom,wheelR*1.2,Math.PI,0);ctx.fill();
+    });
+    
+    drawWheel(frontW, chassisBottom, wheelR);
+    drawWheel(rearW1, chassisBottom, wheelR);
+    drawWheel(rearW2, chassisBottom, wheelR);
+    
+    // Truck frame beam
     ctx.fillStyle="#444";
-    ctx.fillRect(truckX-wheelR*0.3,chassisY+chassisH*0.3,truckW+wheelR*0.6,chassisH*0.4);
+    ctx.fillRect(truckX, chassisTop+chassisH*0.4, truckW, chassisH*0.4);
     
-    // Truck bed/body
-    drawBody(truckX+truckW*0.25,chassisY-bodyH*0.15,truckW*0.72,bodyH*0.15+chassisH,3);
+    // Truck bed / flatbed
+    const bedH=Math.max(6, bodyH*0.1);
+    drawBody(truckX, chassisTop-bedH, truckW*0.65, bedH+chassisH, 3);
     
-    // Truck cab at front
-    const tcW=truckW*0.2;
-    const tcH=cabH*1.1;
-    drawCab(truckX-tcW*0.15,chassisY-tcH+chassisH*0.2,tcW,tcH,true);
+    // Truck cab at front (big, boxy)
+    const tcW=Math.max(22, truckW*0.22);
+    const tcH=Math.max(22, cabH*0.9);
+    drawCab(truckX+truckW*0.72, chassisTop-tcH+chassisH*0.3, tcW, tcH, {slant:tcW*0.1,windowRatio:0.42});
     
-    // Crane pedestal
+    // Crane pedestal (mounted behind cab)
+    const pedW=Math.max(10, cabW*0.4);
+    const pedH=Math.max(18, bodyH*0.3);
     ctx.fillStyle=colors.body;
-    const pedX=pivotX-cabW*0.3;
-    const pedY=chassisY-bodyH*0.4;
-    ctx.fillRect(pedX,pedY,cabW*0.6,chassisY-pedY+chassisH*0.2);
+    ctx.fillRect(pivotX-pedW/2, chassisTop-pedH, pedW, pedH);
     ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
-    ctx.strokeRect(pedX,pedY,cabW*0.6,chassisY-pedY+chassisH*0.2);
+    ctx.strokeRect(pivotX-pedW/2, chassisTop-pedH, pedW, pedH);
     
+    // Hydraulic lines on pedestal
+    ctx.strokeStyle="rgba(0,0,0,0.1)";ctx.lineWidth=0.7;
+    for(let i=0;i<3;i++){
+      ctx.beginPath();ctx.moveTo(pivotX-pedW*0.3, chassisTop-pedH+5+i*5);
+      ctx.lineTo(pivotX+pedW*0.3, chassisTop-pedH+5+i*5);ctx.stroke();
+    }
+    
+    // Boom foot
+    ctx.fillStyle="#666";
+    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,5*s), 0, Math.PI*2);ctx.fill();
+
   } else if(cat==="telescopic"){
-    // Telehandler - compact with large wheels
-    const wheelR=Math.max(7,Math.min(1.1*VS,15));
-    const chassisH=bodyH*0.35;
-    const chassisY=groundY-wheelR*1.8;
+    // ── TELEHANDLER ──
+    const wheelR=Math.max(10, Math.min(1.5*VS, 18));
+    const chassisBottom=groundY-wheelR*0.3;
+    const bW=Math.max(45, bodyW*0.85);
+    const bH=Math.max(18, bodyH*0.3);
+    const topY=chassisBottom-bH;
     
     // 2 large wheels
-    drawWheel(pivotX-bodyW*0.35,groundY-wheelR*0.05,wheelR);
-    drawWheel(pivotX+bodyW*0.25,groundY-wheelR*0.05,wheelR);
+    drawWheel(pivotX-bW*0.35, chassisBottom, wheelR);
+    drawWheel(pivotX+bW*0.3, chassisBottom, wheelR);
     
-    // Compact body
-    drawBody(pivotX-bodyW*0.45,chassisY-chassisH,bodyW*0.8,chassisH+wheelR*0.3,4);
+    // Body
+    drawBody(pivotX-bW*0.45, topY, bW*0.85, bH, 5);
     
-    // Cab (enclosed)
-    const tcW=cabW*1.3;
-    const tcH=cabH*1.0;
-    drawCab(pivotX-bodyW*0.42,chassisY-chassisH-tcH*0.85,tcW,tcH,true);
+    // Cab (full enclosed)
+    const tcW=cabW*1.1;
+    const tcH=Math.max(18, cabH*0.7);
+    drawCab(pivotX-bW*0.42, topY-tcH*0.85, tcW, tcH, {windowRatio:0.48});
     
-    // Counterweight rear
-    drawCW(pivotX+bodyW*0.05,chassisY-chassisH+2,bodyW*0.25,chassisH*0.7);
+    // Rear counterweight
+    drawCW(pivotX+bW*0.1, topY+2, bW*0.25, bH-4);
     
+    // Engine cover
+    ctx.fillStyle="rgba(0,0,0,0.08)";
+    ctx.fillRect(pivotX+bW*0.1, topY+1, bW*0.28, bH*0.4);
+    
+    // Boom foot
+    ctx.fillStyle="#666";
+    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,5*s), 0, Math.PI*2);ctx.fill();
+
   } else if(cat==="floating"){
-    // Floating crane - barge with crane on deck
-    const bargeW=bodyW*2.2;
-    const bargeH=bodyH*0.5;
-    const bargeX=pivotX-bargeW*0.55;
+    // ── FLOATING CRANE ──
+    const bargeW=Math.max(120, bodyW*2.5);
+    const bargeH=Math.max(16, bodyH*0.35);
+    const bargeX=pivotX-bargeW*0.5;
     const deckY=groundY-bargeH;
     
-    // Water / waves
-    ctx.strokeStyle="rgba(30,120,200,0.3)";ctx.lineWidth=1.5;
-    for(let w=0;w<4;w++){
+    // Water waves
+    ctx.strokeStyle="rgba(40,130,210,0.3)";ctx.lineWidth=1.2;
+    for(let w=0;w<5;w++){
       ctx.beginPath();
-      const wy=groundY+4+w*6;
-      for(let i=0;i<8;i++){
-        const wx=bargeX-10+i*(bargeW+20)/7;
-        const wamp=3+Math.sin(i+w)*2;
+      const wy=groundY+3+w*5;
+      for(let i=0;i<10;i++){
+        const wx=bargeX-15+i*(bargeW+30)/9;
         if(i===0) ctx.moveTo(wx,wy);
-        else ctx.quadraticCurveTo(wx-bargeW/14,wy-wamp,wx,wy);
+        else ctx.quadraticCurveTo(wx-(bargeW+30)/18, wy-3-Math.sin(i+w)*2, wx, wy);
       }
       ctx.stroke();
     }
     
-    // Barge hull
-    ctx.fillStyle="#6b7b8d";
+    // Hull
+    ctx.fillStyle="#6d7f8e";
     ctx.beginPath();
-    ctx.moveTo(bargeX+bargeW*0.02,deckY);
-    ctx.lineTo(bargeX-bargeW*0.03,groundY+2);
-    ctx.lineTo(bargeX+bargeW*1.03,groundY+2);
-    ctx.lineTo(bargeX+bargeW*0.98,deckY);
+    ctx.moveTo(bargeX+bargeW*0.02, deckY);
+    ctx.lineTo(bargeX-bargeW*0.02, groundY+2);
+    ctx.lineTo(bargeX+bargeW*1.02, groundY+2);
+    ctx.lineTo(bargeX+bargeW*0.98, deckY);
     ctx.closePath();ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.3)";ctx.lineWidth=1;ctx.stroke();
+    ctx.strokeStyle="rgba(0,0,0,0.25)";ctx.lineWidth=1.5;ctx.stroke();
+    
+    // Waterline
+    ctx.strokeStyle="rgba(200,50,50,0.35)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(bargeX+2, groundY-bargeH*0.35);
+    ctx.lineTo(bargeX+bargeW-2, groundY-bargeH*0.35);ctx.stroke();
     
     // Deck
-    ctx.fillStyle="#8b9bad";
-    ctx.fillRect(bargeX,deckY-3,bargeW,5);
+    ctx.fillStyle="#8a9aab";
+    ctx.fillRect(bargeX-1, deckY-3, bargeW+2, 5);
     
-    // Deck structure / house
-    drawBody(bargeX+bargeW*0.55,deckY-bargeH*0.8-3,bargeW*0.35,bargeH*0.8,3);
+    // Deck house
+    drawBody(bargeX+bargeW*0.55, deckY-bargeH*0.9-3, bargeW*0.35, bargeH*0.9, 3);
     
-    // Crane house on deck
-    drawBody(pivotX-cabW*0.8,deckY-bodyH*0.5-3,cabW*1.6,bodyH*0.5,3);
-    drawCab(pivotX-cabW*0.5,deckY-bodyH*0.5-cabH*0.7-3,cabW,cabH*0.7,true);
-    drawCW(pivotX+cabW*0.3,deckY-bodyH*0.45-3,cabW*0.5,bodyH*0.4);
+    // Crane superstructure on deck
+    const csW=cabW*1.8;
+    const csH=bodyH*0.35;
+    drawBody(pivotX-csW*0.5, deckY-csH-3, csW, csH, 4);
+    drawCab(pivotX-cabW*0.4, deckY-csH-cabH*0.55-3, cabW*0.9, cabH*0.55, {});
+    drawCW(pivotX+cabW*0.25, deckY-csH+2-3, cabW*0.5, csH-4);
     
-    // Waterline mark
-    ctx.strokeStyle="rgba(200,50,50,0.4)";ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(bargeX+1,groundY-bargeH*0.3);
-    ctx.lineTo(bargeX+bargeW-1,groundY-bargeH*0.3);ctx.stroke();
-    
-  } else if(cat==="gantry"){
-    // Gantry / portal crane - two legs + crossbeam + trolley
-    const gantryW=bodyW*1.6;
-    const legW=Math.max(4,SC*0.6);
-    
-    // Rail / ground beam
+    // Boom foot
     ctx.fillStyle="#666";
-    ctx.fillRect(pivotX-gantryW*0.6,groundY-2,gantryW*1.2,4);
+    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,5*s), 0, Math.PI*2);ctx.fill();
+
+  } else if(cat==="gantry"){
+    // ── GANTRY / PORTAL CRANE ──
+    const gW=Math.max(80, bodyW*1.7);
+    const legW=Math.max(5, SC*0.5);
     
-    // Left leg (A-frame)
+    // Ground rails
+    ctx.fillStyle="#666";
+    ctx.fillRect(pivotX-gW*0.6, groundY-3, gW*1.2, 5);
+    ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=0.8;
+    // Rail detail
+    for(let i=0;i<Math.floor(gW*1.2/10);i++){
+      const rx=pivotX-gW*0.6+i*10;
+      ctx.beginPath();ctx.moveTo(rx, groundY+2);ctx.lineTo(rx+5, groundY+2);ctx.stroke();
+    }
+    
+    // Left A-frame leg
     ctx.fillStyle=colors.body;
     ctx.beginPath();
-    ctx.moveTo(pivotX-gantryW/2-legW,groundY-2);
-    ctx.lineTo(pivotX-gantryW/2+legW,groundY-2);
-    ctx.lineTo(pivotX-gantryW*0.35+legW/2,pivotY+2);
-    ctx.lineTo(pivotX-gantryW*0.35-legW/2,pivotY+2);
+    ctx.moveTo(pivotX-gW/2-legW*1.2, groundY-3);
+    ctx.lineTo(pivotX-gW/2+legW*1.2, groundY-3);
+    ctx.lineTo(pivotX-gW*0.33+legW*0.5, pivotY+3);
+    ctx.lineTo(pivotX-gW*0.33-legW*0.5, pivotY+3);
     ctx.closePath();ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;ctx.stroke();
+    ctx.strokeStyle="rgba(0,0,0,0.18)";ctx.lineWidth=1;ctx.stroke();
     
-    // Right leg
+    // Right A-frame leg
     ctx.fillStyle=colors.body;
     ctx.beginPath();
-    ctx.moveTo(pivotX+gantryW/2-legW,groundY-2);
-    ctx.lineTo(pivotX+gantryW/2+legW,groundY-2);
-    ctx.lineTo(pivotX+gantryW*0.35+legW/2,pivotY+2);
-    ctx.lineTo(pivotX+gantryW*0.35-legW/2,pivotY+2);
+    ctx.moveTo(pivotX+gW/2-legW*1.2, groundY-3);
+    ctx.lineTo(pivotX+gW/2+legW*1.2, groundY-3);
+    ctx.lineTo(pivotX+gW*0.33+legW*0.5, pivotY+3);
+    ctx.lineTo(pivotX+gW*0.33-legW*0.5, pivotY+3);
     ctx.closePath();ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;ctx.stroke();
+    ctx.strokeStyle="rgba(0,0,0,0.18)";ctx.lineWidth=1;ctx.stroke();
     
-    // Cross braces on legs
-    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(1,1.5*s);
+    // Leg cross braces
     for(let side=-1;side<=1;side+=2){
-      const nB=Math.max(3,Math.floor((groundY-pivotY)/30));
+      const nB=Math.max(3, Math.floor((groundY-pivotY)/25));
+      ctx.strokeStyle="rgba(100,100,100,0.35)";ctx.lineWidth=Math.max(0.8,1.2*s);
       for(let i=1;i<nB;i++){
         const t=i/nB;
         const y=pivotY+t*(groundY-pivotY);
-        const xC=pivotX+side*gantryW*0.35;
-        const xO=pivotX+side*gantryW/2;
-        const xl=xC+(xO-xC)*t-legW*(1-t);
-        const xr=xC+(xO-xC)*t+legW*(1-t);
-        ctx.beginPath();ctx.moveTo(xl,y);ctx.lineTo(xr,y);ctx.stroke();
+        const xI=pivotX+side*gW*0.33;
+        const xO=pivotX+side*gW/2;
+        const xl=xI+(xO-xI)*t;
+        ctx.beginPath();ctx.moveTo(xl-legW*(1-t*0.5), y);ctx.lineTo(xl+legW*(1-t*0.5), y);ctx.stroke();
       }
     }
     
-    // Top girder / crossbeam
-    const girderH=Math.max(6,bodyH*0.25);
-    drawBody(pivotX-gantryW*0.38,pivotY-girderH,gantryW*0.76,girderH,2);
+    // Top girder
+    const girderH=Math.max(8, bodyH*0.18);
+    drawBody(pivotX-gW*0.36, pivotY-girderH, gW*0.72, girderH, 3);
     
-    // Trolley on girder
-    const trolleyW=cabW*0.8;
-    const trolleyH=girderH*0.6;
+    // Trolley
+    const trW=Math.max(16, cabW*0.7);
+    const trH=Math.max(6, girderH*0.5);
     ctx.fillStyle=colors.cab;
-    ctx.fillRect(pivotX-trolleyW/2,pivotY-girderH-trolleyH,trolleyW,trolleyH);
-    // Trolley wheels
-    ctx.fillStyle="#666";
-    ctx.beginPath();ctx.arc(pivotX-trolleyW*0.3,pivotY-girderH,3,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(pivotX+trolleyW*0.3,pivotY-girderH,3,0,Math.PI*2);ctx.fill();
+    ctx.fillRect(pivotX-trW/2, pivotY-girderH-trH, trW, trH);
+    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
+    ctx.strokeRect(pivotX-trW/2, pivotY-girderH-trH, trW, trH);
     
-    // Rail wheels on ground
+    // Trolley wheels
+    ctx.fillStyle="#555";
+    ctx.beginPath();ctx.arc(pivotX-trW*0.35, pivotY-girderH+1, Math.max(3,4*s), 0, Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(pivotX+trW*0.35, pivotY-girderH+1, Math.max(3,4*s), 0, Math.PI*2);ctx.fill();
+    
+    // Gantry rail wheels
     for(let side=-1;side<=1;side+=2){
-      for(let i=0;i<3;i++){
-        ctx.fillStyle="#555";
-        const rwx=pivotX+side*(gantryW/2-legW+i*legW);
-        ctx.beginPath();ctx.arc(rwx,groundY-1,Math.max(3,4*s),0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="#444";
+      for(let i=0;i<2;i++){
+        ctx.beginPath();ctx.arc(pivotX+side*(gW/2-legW+i*legW*2), groundY-2, Math.max(4,5*s), 0, Math.PI*2);ctx.fill();
       }
     }
   }
   
   // ═══ BOOM ═══
-  const boomW=Math.max(3,1.5*SC*0.15);
+  const boomW=Math.max(4, 2*SC*0.15);
+  const bdx=boomTipX-pivotX; const bdy=boomTipY-pivotY;
+  const bLen=Math.sqrt(bdx*bdx+bdy*bdy);
+  if(bLen<1){ctx.restore();return;}
+  
   if(cat==="crawler"||cat==="tower"||cat==="gantry"){
-    // Lattice boom - detailed
+    // ── Lattice boom ──
+    const nx=-bdy/bLen*boomW; const ny=bdx/bLen*boomW;
     ctx.strokeStyle=colors.boom;
-    const dx=boomTipX-pivotX;const dy=boomTipY-pivotY;
-    const len=Math.sqrt(dx*dx+dy*dy);
-    if(len<1){ctx.restore();return;}
-    const nx=-dy/len*boomW;const ny=dx/len*boomW;
-    // Top & bottom chords
-    ctx.lineWidth=Math.max(1.5,2*s);
+    // Chords
+    ctx.lineWidth=Math.max(1.8, 2.2*s);
     ctx.beginPath();ctx.moveTo(pivotX+nx,pivotY+ny);ctx.lineTo(boomTipX+nx,boomTipY+ny);ctx.stroke();
     ctx.beginPath();ctx.moveTo(pivotX-nx,pivotY-ny);ctx.lineTo(boomTipX-nx,boomTipY-ny);ctx.stroke();
-    // Lattice diagonals
-    ctx.lineWidth=Math.max(0.8,1*s);
-    const segments=Math.max(6,Math.floor(len/18));
-    for(let i=0;i<segments;i++){
-      const t1=i/segments;const t2=(i+1)/segments;
-      const x1=pivotX+dx*t1;const y1=pivotY+dy*t1;
-      const x2=pivotX+dx*t2;const y2=pivotY+dy*t2;
-      // Horizontals
+    // Lattice web
+    ctx.lineWidth=Math.max(0.8, 1.2*s);
+    const segs=Math.max(8, Math.floor(bLen/14));
+    for(let i=0;i<segs;i++){
+      const t1=i/segs; const t2=(i+1)/segs;
+      const x1=pivotX+bdx*t1, y1=pivotY+bdy*t1;
+      const x2=pivotX+bdx*t2, y2=pivotY+bdy*t2;
+      // Verticals
       ctx.beginPath();ctx.moveTo(x1+nx,y1+ny);ctx.lineTo(x1-nx,y1-ny);ctx.stroke();
-      // X diagonals
+      // Diagonals
       ctx.beginPath();ctx.moveTo(x1+nx,y1+ny);ctx.lineTo(x2-nx,y2-ny);ctx.stroke();
       ctx.beginPath();ctx.moveTo(x1-nx,y1-ny);ctx.lineTo(x2+nx,y2+ny);ctx.stroke();
     }
-    // End cap
     ctx.beginPath();ctx.moveTo(boomTipX+nx,boomTipY+ny);ctx.lineTo(boomTipX-nx,boomTipY-ny);ctx.stroke();
   } else {
-    // Telescopic boom - multi-section
-    const dx=boomTipX-pivotX;const dy=boomTipY-pivotY;
-    const len=Math.sqrt(dx*dx+dy*dy);
-    if(len<1){ctx.restore();return;}
-    // Base section (widest)
-    ctx.strokeStyle=colors.boom;
-    ctx.lineWidth=boomW*2.5;ctx.lineCap="round";
-    ctx.beginPath();ctx.moveTo(pivotX,pivotY);ctx.lineTo(pivotX+dx*0.4,pivotY+dy*0.4);ctx.stroke();
-    // Mid section
-    ctx.lineWidth=boomW*1.8;
-    ctx.beginPath();ctx.moveTo(pivotX+dx*0.15,pivotY+dy*0.15);ctx.lineTo(pivotX+dx*0.7,pivotY+dy*0.7);ctx.stroke();
-    // Tip section (narrowest)
-    ctx.strokeStyle=C.yellowDark;
-    ctx.lineWidth=boomW*1.2;
-    ctx.beginPath();ctx.moveTo(pivotX+dx*0.35,pivotY+dy*0.35);ctx.lineTo(boomTipX,boomTipY);ctx.stroke();
-    // Section lines
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=boomW*2.5;
-    [0.35,0.55].forEach(t=>{
+    // ── Telescopic boom (3-section) ──
+    // Base section
+    ctx.strokeStyle=colors.boom;ctx.lineCap="round";
+    ctx.lineWidth=boomW*3;
+    ctx.beginPath();ctx.moveTo(pivotX,pivotY);ctx.lineTo(pivotX+bdx*0.42,pivotY+bdy*0.42);ctx.stroke();
+    // Section 2
+    ctx.lineWidth=boomW*2.2;
+    ctx.beginPath();ctx.moveTo(pivotX+bdx*0.18,pivotY+bdy*0.18);ctx.lineTo(pivotX+bdx*0.72,pivotY+bdy*0.72);ctx.stroke();
+    // Section 3 (tip)
+    ctx.strokeStyle=C.yellowDark;ctx.lineWidth=boomW*1.5;
+    ctx.beginPath();ctx.moveTo(pivotX+bdx*0.4,pivotY+bdy*0.4);ctx.lineTo(boomTipX,boomTipY);ctx.stroke();
+    // Section joint lines
+    ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=1;
+    [0.38,0.6].forEach(t=>{
+      const jnx=-bdy/bLen; const jny=bdx/bLen;
+      const jx=pivotX+bdx*t; const jy=pivotY+bdy*t;
       ctx.beginPath();
-      ctx.moveTo(pivotX+dx*t-(-dy/len)*boomW*0.3,pivotY+dy*t-(dx/len)*boomW*0.3);
-      ctx.lineTo(pivotX+dx*t+(-dy/len)*boomW*0.3,pivotY+dy*t+(dx/len)*boomW*0.3);
+      ctx.moveTo(jx+jnx*boomW*1.2,jy+jny*boomW*1.2);
+      ctx.lineTo(jx-jnx*boomW*1.2,jy-jny*boomW*1.2);
       ctx.stroke();
     });
-    ctx.lineWidth=1; // reset
+    ctx.lineCap="butt";
   }
   
   // ═══ JIB ═══
   if(cfg.jibEnabled&&jibTipX!==undefined){
-    const jDx=jibTipX-boomTipX;const jDy=jibTipY-boomTipY;
+    const jDx=jibTipX-boomTipX; const jDy=jibTipY-boomTipY;
     const jLen=Math.sqrt(jDx*jDx+jDy*jDy);
     if(jLen>1){
-      const jW=boomW*0.6;
-      const jnx=-jDy/jLen*jW;const jny=jDx/jLen*jW;
-      ctx.strokeStyle=colors.jib;ctx.lineWidth=Math.max(1,1.5*s);
-      // Lattice jib
+      const jW=boomW*0.55;
+      const jnx=-jDy/jLen*jW; const jny=jDx/jLen*jW;
+      ctx.strokeStyle=colors.jib;ctx.lineWidth=Math.max(1.2, 1.8*s);
+      // Chords
       ctx.beginPath();ctx.moveTo(boomTipX+jnx,boomTipY+jny);ctx.lineTo(jibTipX+jnx,jibTipY+jny);ctx.stroke();
       ctx.beginPath();ctx.moveTo(boomTipX-jnx,boomTipY-jny);ctx.lineTo(jibTipX-jnx,jibTipY-jny);ctx.stroke();
-      const jSegs=Math.max(3,Math.floor(jLen/20));
-      ctx.lineWidth=Math.max(0.6,0.8*s);
-      for(let i=0;i<jSegs;i++){
+      // Lattice
+      ctx.lineWidth=Math.max(0.6, 0.9*s);
+      const jSegs=Math.max(4, Math.floor(jLen/16));
+      for(let i=0;i<=jSegs;i++){
         const t=i/jSegs;
-        const x=boomTipX+jDx*t;const y=boomTipY+jDy*t;
+        const x=boomTipX+jDx*t; const y=boomTipY+jDy*t;
         ctx.beginPath();ctx.moveTo(x+jnx,y+jny);ctx.lineTo(x-jnx,y-jny);ctx.stroke();
-        const t2=(i+1)/jSegs;
-        const x2=boomTipX+jDx*t2;const y2=boomTipY+jDy*t2;
-        ctx.beginPath();ctx.moveTo(x+jnx,y+jny);ctx.lineTo(x2-jnx,y2-jny);ctx.stroke();
+        if(i<jSegs){
+          const t2=(i+1)/jSegs;
+          const x2=boomTipX+jDx*t2; const y2=boomTipY+jDy*t2;
+          ctx.beginPath();ctx.moveTo(x+jnx,y+jny);ctx.lineTo(x2-jnx,y2-jny);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-jnx,y-jny);ctx.lineTo(x2+jnx,y2+jny);ctx.stroke();
+        }
       }
     }
-    // Jib tip marker
+    // Jib tip
     ctx.fillStyle=colors.jib;
     ctx.beginPath();ctx.arc(jibTipX,jibTipY,4,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle="rgba(255,255,255,0.6)";ctx.lineWidth=1;
+    ctx.strokeStyle="rgba(255,255,255,0.5)";ctx.lineWidth=1;
     ctx.beginPath();ctx.arc(jibTipX,jibTipY,4,0,Math.PI*2);ctx.stroke();
   }
   
-  // ═══ BOOM TIP MARKER (drag handle) ═══
+  // ═══ BOOM TIP (drag handle) ═══
   ctx.fillStyle=colors.boom;
-  ctx.beginPath();ctx.arc(boomTipX,boomTipY,5,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle="white";ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.arc(boomTipX,boomTipY,5,0,Math.PI*2);ctx.stroke();
-  // Inner dot
+  ctx.beginPath();ctx.arc(boomTipX,boomTipY,6,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle="white";ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(boomTipX,boomTipY,6,0,Math.PI*2);ctx.stroke();
   ctx.fillStyle="white";
-  ctx.beginPath();ctx.arc(boomTipX,boomTipY,2,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(boomTipX,boomTipY,2.5,0,Math.PI*2);ctx.fill();
   
   // ═══ PIVOT POINT ═══
   ctx.fillStyle=C.red;
-  ctx.beginPath();ctx.arc(pivotX,pivotY,4,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle="rgba(255,255,255,0.5)";ctx.lineWidth=1;
-  ctx.beginPath();ctx.arc(pivotX,pivotY,4,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.arc(pivotX,pivotY,5,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle="rgba(255,255,255,0.5)";ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(pivotX,pivotY,5,0,Math.PI*2);ctx.stroke();
   
   ctx.restore();
 }
