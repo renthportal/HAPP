@@ -197,11 +197,7 @@ const TABS=[
   {id:"chart",label:"Menzil Şeması",icon:"📐"},
   {id:"liftplan",label:"Kaldırma Planı",icon:"📋"},
   {id:"calc",label:"Hesaplamalar",icon:"🧮"},
-  {id:"projects",label:"Projeler",icon:"📁"},
-  {id:"directory",label:"Rehber",icon:"📒"},
-  {id:"cranes",label:"Vinçlerim",icon:"⚙️"},
   {id:"export",label:"Dışa Aktar",icon:"📤"},
-  {id:"team",label:"Takım",icon:"👥"},
 ];
 
 // ── HELPERS ──
@@ -1030,32 +1026,22 @@ function PDFPreview({cfg,crane,cap,lp,totalW,hookH,radius,onClose}){
 // ═══════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════
-export default function App(){
+export default function App({ onSave, onLoad, initialData, projectName: extProjectName }){
   const [tab,setTab]=useState("chart");
-  const [cfg,setCfg]=useState({craneType:"mobile",boomLength:30,boomAngle:45,jibEnabled:false,jibLength:10,jibAngle:15,pivotHeight:2.5,pivotDist:1.2,craneEnd:4,loadWeight:5,counterweight:20,windSpeed:0,skinId:"default",
-    // Rigging & Load geometry
+  const [cfg,setCfg]=useState(initialData?.config || {craneType:"mobile",boomLength:30,boomAngle:45,jibEnabled:false,jibLength:10,jibAngle:15,pivotHeight:2.5,pivotDist:1.2,craneEnd:4,loadWeight:5,counterweight:20,windSpeed:0,skinId:"default",
     loadW:3,loadH:2,loadShape:"box",slingType:"2leg",slingLength:4,slingLegs:2,hookBlockH:1.2,
-    // Load chart
-    chartId:"" // empty = use formula, "ltm500" etc = use real chart
+    chartId:""
   });
-  const [objects,setObjects]=useState([]);
+  const [objects,setObjects]=useState(initialData?.objects || []);
   const [selObj,setSelObj]=useState(null);
-  const [rulers,setRulers]=useState([]);
+  const [rulers,setRulers]=useState(initialData?.rulers || []);
   const [tool,setTool]=useState("select");
-  const [savedCranes,setSavedCranes]=useState([]);
-  const [craneName,setCraneName]=useState("");
-  const [projects,setProjects]=useState([]);
-  const [projName,setProjName]=useState("");
-  const [directory,setDirectory]=useState({suppliers:[],clients:[],cranes:[]});
-  const [dirTab,setDirTab]=useState("suppliers");
-  const [lp,setLp]=useState({supplier:"",supplierContact:"",supplierPhone:"",client:"",clientContact:"",clientPhone:"",jobNumber:"",jobName:"",jobAddress:"",jobDate:new Date().toISOString().split("T")[0],craneMake:"",craneModel:"",craneRego:"",linePull:"",partsOfLine:4,cwConfig:"",loadDesc:"",loadWeight:0,riggingWeight:0,hookBlockWeight:0,addWeight:0,wll:0,notes:"",outForce:0,padW:1,padL:1});
+  const [lp,setLp]=useState(initialData?.lift_plan || {supplier:"",supplierContact:"",supplierPhone:"",client:"",clientContact:"",clientPhone:"",jobNumber:"",jobName:"",jobAddress:"",jobDate:new Date().toISOString().split("T")[0],craneMake:"",craneModel:"",craneRego:"",linePull:"",partsOfLine:4,cwConfig:"",loadDesc:"",loadWeight:0,riggingWeight:0,hookBlockWeight:0,addWeight:0,wll:0,notes:"",outForce:0,padW:1,padL:1});
   const [calcTab,setCalcTab]=useState("pct");
   const [ci,setCi]=useState({load:0,rigging:0,wll:0,pct:75,outF:0,padW:1,padL:1});
   const [showPDF,setShowPDF]=useState(false);
-  const [team,setTeam]=useState({members:[{id:"owner",name:"Yönetici",role:"admin",email:"admin@hareket.com"}],invites:[]});
-  const [syncStatus,setSyncStatus]=useState("local");
-  const [inviteCode,setInviteCode]=useState("");
-  const [mobilePanel,setMobilePanel]=useState("controls"); // controls | objects | capacity
+  const [saveStatus,setSaveStatus]=useState("idle"); // idle | saving | saved
+  const [mobilePanel,setMobilePanel]=useState("controls");
   const [isMobile,setIsMobile]=useState(typeof window!=="undefined"&&window.innerWidth<768);
   
   useEffect(()=>{
@@ -1092,9 +1078,18 @@ export default function App(){
   const cpObj=(id)=>{const o=objects.find(x2=>x2.id===id);if(o)setObjects(p=>[...p,{...o,id:uid(),x:o.x+3}]);};
   const moveLayer=(id,dir)=>{setObjects(p=>{const i=p.findIndex(o=>o.id===id);if(i<0)return p;const n=[...p];const ni=dir==="up"?Math.min(i+1,n.length-1):Math.max(i-1,0);[n[i],n[ni]]=[n[ni],n[i]];return n;});};
 
-  const saveProject=()=>{if(!projName.trim())return;setProjects(p=>[...p,{id:uid(),name:projName,date:new Date().toISOString().split("T")[0],config:{...cfg},objects:[...objects],rulers:[...rulers],lp:{...lp}}]);setProjName("");};
-  const loadProject=(proj)=>{setCfg(proj.config);setObjects(proj.objects||[]);setRulers(proj.rulers||[]);if(proj.lp)setLp(proj.lp);setTab("chart");};
-  const doSync=()=>{setSyncStatus("syncing");setTimeout(()=>setSyncStatus("synced"),1500);};
+  const handleSave = async () => {
+    if(!onSave) return;
+    setSaveStatus("saving");
+    try {
+      await onSave({ config: cfg, objects, rulers, lift_plan: lp });
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch(e) {
+      setSaveStatus("idle");
+      alert("Kayıt hatası: " + e.message);
+    }
+  };
 
   const pctCalc=ci.wll>0?(ci.load+ci.rigging)/ci.wll*100:0;
   const maxLoadCalc=ci.wll*ci.pct/100;
@@ -1117,12 +1112,13 @@ export default function App(){
           </div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:6,flex:isMobile?1:undefined,justifyContent:isMobile?"flex-end":undefined}}>
-          {!isMobile&&<div onClick={doSync} style={{display:"flex",alignItems:"center",gap:4,cursor:"pointer",padding:"4px 10px",borderRadius:6,background:syncStatus==="synced"?C.greenLight+"25":syncStatus==="syncing"?C.yellow+"25":C.g500+"25"}}>
-            <span style={{fontSize:10}}>{syncStatus==="synced"?"☁️":syncStatus==="syncing"?"🔄":"💾"}</span>
-            <span style={{fontSize:9,fontWeight:600,color:syncStatus==="synced"?C.greenLight:syncStatus==="syncing"?C.yellow:C.g300,fontFamily:F}}>
-              {syncStatus==="synced"?"Senkron":syncStatus==="syncing"?"Senkronize...":"Yerel"}
+          {onSave&&<div onClick={handleSave} style={{display:"flex",alignItems:"center",gap:4,cursor:"pointer",padding:"4px 10px",borderRadius:6,background:saveStatus==="saved"?C.greenLight+"25":saveStatus==="saving"?C.yellow+"25":C.g500+"25"}}>
+            <span style={{fontSize:10}}>{saveStatus==="saved"?"✅":saveStatus==="saving"?"🔄":"💾"}</span>
+            <span style={{fontSize:9,fontWeight:600,color:saveStatus==="saved"?C.greenLight:saveStatus==="saving"?C.yellow:C.g300,fontFamily:F}}>
+              {saveStatus==="saved"?"Kaydedildi":saveStatus==="saving"?"Kaydediliyor...":"Kaydet"}
             </span>
           </div>}
+          {extProjectName&&<span style={{fontSize:9,color:C.greenLight,fontFamily:F,padding:"3px 8px",background:C.greenDark+"60",borderRadius:4}}>{extProjectName}</span>}
         </div>
         <nav style={{display:"flex",gap:2,background:C.greenDark,borderRadius:8,padding:3,overflowX:"auto",width:"100%",WebkitOverflowScrolling:"touch"}}>
           {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:isMobile?"5px 8px":"6px 12px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:"transparent",color:tab===t.id?C.greenDark:C.g300,fontWeight:tab===t.id?700:500,fontSize:isMobile?9:10,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap",flexShrink:0}}>{t.icon}{isMobile?"":" "+t.label}</button>))}
@@ -1506,12 +1502,10 @@ export default function App(){
             <div style={{padding:10,background:C.orange+"15",borderRadius:6,marginBottom:14,fontSize:10,color:C.orange}}>⚠ Kapasite değerleri yaklaşık hesaplanmıştır. Kaldırma öncesi vinç üreticisi yük tabloları ile doğrulayın.</div>
             <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:14}}>
               <Card style={{background:C.dark}}><Title color={C.greenLight}>Tedarikçi</Title>
-                {directory.suppliers.length>0&&<div style={{marginBottom:8}}><Sel value="" onChange={v=>{const s=directory.suppliers.find(x2=>x2.id===v);if(s){upLP("supplier",s.name);upLP("supplierContact",s.contact);upLP("supplierPhone",s.phone);}}}><option value="">Rehberden Seç...</option>{directory.suppliers.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</Sel></div>}
                 <Inp label="Firma" value={lp.supplier} onChange={v=>upLP("supplier",v)}/>
                 <Inp label="Kişi" value={lp.supplierContact} onChange={v=>upLP("supplierContact",v)}/>
                 <Inp label="Tel" value={lp.supplierPhone} onChange={v=>upLP("supplierPhone",v)}/></Card>
               <Card style={{background:C.dark}}><Title color={C.yellow}>Müşteri</Title>
-                {directory.clients.length>0&&<div style={{marginBottom:8}}><Sel value="" onChange={v=>{const s=directory.clients.find(x2=>x2.id===v);if(s){upLP("client",s.name);upLP("clientContact",s.contact);upLP("clientPhone",s.phone);}}}><option value="">Rehberden Seç...</option>{directory.clients.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</Sel></div>}
                 <Inp label="Firma" value={lp.client} onChange={v=>upLP("client",v)}/>
                 <Inp label="Kişi" value={lp.clientContact} onChange={v=>upLP("clientContact",v)}/>
                 <Inp label="Tel" value={lp.clientPhone} onChange={v=>upLP("clientPhone",v)}/></Card>
@@ -1554,120 +1548,6 @@ export default function App(){
         </div>
       )}
 
-      {/* ═══ PROJECTS ═══ */}
-      {tab==="projects"&&(
-        <div style={{maxWidth:900,margin:"0 auto",padding:16}}>
-          <Card>
-            <Title>Proje Yönetimi</Title>
-            <div style={{display:"flex",gap:8,marginBottom:16}}>
-              <input style={{flex:1,padding:"7px 10px",background:C.dark,border:`1px solid ${C.green}40`,borderRadius:6,color:C.white,fontSize:12,outline:"none"}} value={projName} placeholder="Proje adı..." onChange={e=>setProjName(e.target.value)}/>
-              <Btn onClick={saveProject}>Kaydet</Btn>
-            </div>
-            {projects.length===0?<div style={{padding:30,textAlign:"center",color:C.g400,fontSize:12}}>Kayıtlı proje yok.</div>:projects.map(p=>(
-              <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:12,background:C.greenDark+"40",borderRadius:8,border:`1px solid ${C.green}20`,marginBottom:8}}>
-                <div><div style={{fontWeight:700,fontSize:13,marginBottom:4}}>{p.name}</div><div style={{display:"flex",gap:6}}><Badge>{p.date}</Badge><Badge color={C.yellow}>Boom: {p.config.boomLength}m</Badge></div></div>
-                <div style={{display:"flex",gap:6}}><Btn color={C.greenLight} small onClick={()=>loadProject(p)}>Yükle</Btn><Btn color={C.red} small onClick={()=>setProjects(prev=>prev.filter(x2=>x2.id!==p.id))}>Sil</Btn></div>
-              </div>
-            ))}
-          </Card>
-        </div>
-      )}
-
-      {/* ═══ DIRECTORY ═══ */}
-      {tab==="directory"&&(
-        <div style={{maxWidth:900,margin:"0 auto",padding:16}}>
-          <Card>
-            <Title>Rehber</Title>
-            <div style={{display:"flex",gap:4,marginBottom:16}}>
-              {[{id:"suppliers",l:"Tedarikçiler"},{id:"clients",l:"Müşteriler"},{id:"cranes",l:"Vinçler"}].map(t=>(<Btn key={t.id} color={dirTab===t.id?C.yellow:C.greenDark} small onClick={()=>setDirTab(t.id)}>{t.l} ({directory[t.id].length})</Btn>))}
-            </div>
-            <Btn color={C.greenLight} small onClick={()=>setDirectory(p=>({...p,[dirTab]:[...p[dirTab],{id:uid(),name:"",contact:"",phone:"",email:"",address:""}]}))}>+ Yeni Ekle</Btn>
-            <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
-              {directory[dirTab].map(e=>(
-                <Card key={e.id} style={{background:C.dark}}>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
-                    <Inp label="Ad" value={e.name} onChange={v=>setDirectory(p=>({...p,[dirTab]:p[dirTab].map(x2=>x2.id===e.id?{...x2,name:v}:x2)}))}/>
-                    <Inp label="Kişi" value={e.contact} onChange={v=>setDirectory(p=>({...p,[dirTab]:p[dirTab].map(x2=>x2.id===e.id?{...x2,contact:v}:x2)}))}/>
-                    <Inp label="Tel" value={e.phone} onChange={v=>setDirectory(p=>({...p,[dirTab]:p[dirTab].map(x2=>x2.id===e.id?{...x2,phone:v}:x2)}))}/>
-                  </div>
-                  <Btn color={C.red} small onClick={()=>setDirectory(p=>({...p,[dirTab]:p[dirTab].filter(x2=>x2.id!==e.id)}))}>Sil</Btn>
-                </Card>
-              ))}
-              {directory[dirTab].length===0&&<div style={{padding:20,textAlign:"center",color:C.g400,fontSize:12}}>Kayıt yok.</div>}
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {/* ═══ MY CRANES ═══ */}
-      {tab==="cranes"&&(
-        <div style={{maxWidth:900,margin:"0 auto",padding:16}}>
-          <Card>
-            <Title>Vinçlerim</Title>
-            <div style={{display:"flex",gap:8,marginBottom:16}}>
-              <input style={{flex:1,padding:"7px 10px",background:C.dark,border:`1px solid ${C.green}40`,borderRadius:6,color:C.white,fontSize:12,outline:"none"}} value={craneName} placeholder="Konfigürasyon adı..." onChange={e=>setCraneName(e.target.value)}/>
-              <Btn onClick={()=>{if(craneName.trim()){setSavedCranes(p=>[...p,{...cfg,id:uid(),name:craneName,cName:crane.name}]);setCraneName("");}}}> Kaydet</Btn>
-            </div>
-            <Card style={{background:C.dark,marginBottom:14}}><div style={{fontSize:10,color:C.g400,marginBottom:6}}>MEVCUT KONFİGÜRASYON</div>
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}><Badge color={C.greenLight}>{crane.name}</Badge><Badge color={C.yellow}>Boom: {cfg.boomLength}m @ {cfg.boomAngle}°</Badge>{cfg.jibEnabled&&<Badge color={C.yellowDark}>Jib: {cfg.jibLength}m @ {effectiveJibAngle}°</Badge>}<Badge color={C.greenLight}>R: {realRadius.toFixed(1)}m</Badge><Badge color={C.greenLight}>H: {realHookH.toFixed(1)}m</Badge></div></Card>
-            {/* LOAD CHART VIEWER */}
-            <Card style={{background:C.dark,marginBottom:14}}>
-              <Title color={C.orange}>Yük Tablosu (Load Chart)</Title>
-              <div style={{marginBottom:8}}>
-                <Sel value={cfg.chartId} onChange={v=>up({chartId:v})}>
-                  <option value="">Yaklaşık Formül (Tüm vinçler)</option>
-                  {Object.entries(LOAD_CHARTS).map(([k,ch])=><option key={k} value={k}>{ch.name} — {ch.maxCap}t, {ch.maxBoom}m</option>)}
-                </Sel>
-              </div>
-              {cfg.chartId && LOAD_CHARTS[cfg.chartId] ? (()=>{
-                const ch = LOAD_CHARTS[cfg.chartId];
-                const curCap = lookupChart(ch, cfg.boomLength, realRadius);
-                return <div>
-                  <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
-                    <Badge color={C.greenLight}>Maks: {ch.maxCap}t</Badge>
-                    <Badge color={C.yellow}>Boom: {ch.boomLengths[0]}—{ch.boomLengths[ch.boomLengths.length-1]}m</Badge>
-                    <Badge color={C.orange}>{ch.rows.length} veri noktası</Badge>
-                    {curCap && <Badge color={C.greenLight}>Şu an: {curCap.toFixed(1)}t @ {realRadius.toFixed(1)}m</Badge>}
-                  </div>
-                  <div style={{maxHeight:250,overflow:"auto",borderRadius:6,border:`1px solid ${C.green}20`}}>
-                    <table style={{width:"100%",fontSize:9,borderCollapse:"collapse"}}>
-                      <thead><tr style={{position:"sticky",top:0,background:C.darkSurf}}>
-                        <th style={{padding:"4px",textAlign:"left",color:C.g400,borderBottom:`1px solid ${C.green}30`}}>Menzil</th>
-                        {ch.boomLengths.map(bl=><th key={bl} style={{padding:"4px",textAlign:"right",color:bl===cfg.boomLength?C.yellow:C.g400,borderBottom:`1px solid ${C.green}30`,fontWeight:bl===cfg.boomLength?700:400}}>{bl}m</th>)}
-                      </tr></thead>
-                      <tbody>{ch.rows.map(row=>{
-                        const isNearR = Math.abs(row.r - realRadius) < 2;
-                        return <tr key={row.r} style={{background:isNearR?C.yellow+"10":"transparent"}}>
-                          <td style={{padding:"3px 4px",color:isNearR?C.yellow:C.g300,fontWeight:isNearR?700:400}}>{row.r}m</td>
-                          {row.caps.map((c2,i)=>{
-                            const isActive = isNearR && ch.boomLengths[i]===cfg.boomLength;
-                            return <td key={i} style={{padding:"3px 4px",textAlign:"right",color:c2===null?C.g500:isActive?C.yellow:c2<cfg.loadWeight?C.red:C.greenLight,fontWeight:isActive?800:400,background:isActive?C.yellow+"20":"transparent"}}>{c2===null?"—":c2+"t"}</td>;
-                          })}
-                        </tr>;
-                      })}</tbody>
-                    </table>
-                  </div>
-                </div>;
-              })() : <div style={{padding:12,background:C.greenDark+"30",borderRadius:6,fontSize:10,color:C.g400}}>
-                <p style={{marginBottom:6}}>Yaklaşık formül aktif. Gerçek kapasite için bir yük tablosu seçin.</p>
-                <p style={{color:C.orange}}>⚠ Formül sadece genel tahmindir. Kritik kaldırma işlemlerinde vinç üreticisinin yük tablosunu kullanın.</p>
-              </div>}
-            </Card>
-
-            <Title>12 Vinç Tipi</Title>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:6,marginBottom:16}}>
-              {CRANES.map(c2=>(<div key={c2.id} onClick={()=>up({craneType:c2.id})} style={{padding:8,background:cfg.craneType===c2.id?C.yellow+"20":C.greenDark,border:`2px solid ${cfg.craneType===c2.id?C.yellow:C.green+"30"}`,borderRadius:8,cursor:"pointer",textAlign:"center"}}><div style={{fontSize:10,fontWeight:700,color:cfg.craneType===c2.id?C.yellow:C.white}}>{c2.name}</div><div style={{fontSize:8,color:C.g400}}>{c2.maxCap}t | {c2.maxBoom}m</div></div>))}
-            </div>
-            {savedCranes.length===0?<div style={{padding:20,textAlign:"center",color:C.g400,fontSize:12}}>Kayıtlı konfigürasyon yok.</div>:savedCranes.map(sc=>(
-              <div key={sc.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:12,background:C.greenDark+"40",borderRadius:8,border:`1px solid ${C.green}20`,marginBottom:8}}>
-                <div><div style={{fontWeight:700,fontSize:13,marginBottom:4}}>{sc.name}</div><div style={{display:"flex",gap:6}}><Badge color={C.greenLight}>{sc.cName}</Badge><Badge color={C.yellow}>Boom: {sc.boomLength}m</Badge></div></div>
-                <div style={{display:"flex",gap:6}}><Btn color={C.greenLight} small onClick={()=>setCfg({...sc})}>Yükle</Btn><Btn color={C.red} small onClick={()=>setSavedCranes(p=>p.filter(x2=>x2.id!==sc.id))}>Sil</Btn></div>
-              </div>
-            ))}
-          </Card>
-        </div>
-      )}
-
       {/* ═══ EXPORT ═══ */}
       {tab==="export"&&(
         <div style={{maxWidth:900,margin:"0 auto",padding:16}}>
@@ -1683,45 +1563,6 @@ export default function App(){
                   <div style={{fontSize:11,color:C.g300,marginBottom:14}}>{item.desc}</div><Btn color={item.color} onClick={item.action}>Oluştur</Btn>
                 </div>
               ))}
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {/* ═══ TEAM ═══ */}
-      {tab==="team"&&(
-        <div style={{maxWidth:900,margin:"0 auto",padding:16}}>
-          <Card>
-            <Title>Takım Yönetimi</Title>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-              <Card style={{background:C.dark}}>
-                <Title color={C.greenLight}>Üyeler ({team.members.length})</Title>
-                {team.members.map(m=>(
-                  <div key={m.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:10,background:C.greenDark+"30",borderRadius:6,marginBottom:6}}>
-                    <div><div style={{fontWeight:700,fontSize:12}}>{m.name}</div><div style={{fontSize:10,color:C.g400}}>{m.email}</div></div>
-                    <Badge color={m.role==="admin"?C.yellow:C.greenLight}>{m.role==="admin"?"Yönetici":"Üye"}</Badge>
-                  </div>
-                ))}
-                <div style={{marginTop:12}}>
-                  <div style={{display:"flex",gap:6}}>
-                    <input style={{flex:1,padding:"6px 10px",background:C.dark,border:`1px solid ${C.green}40`,borderRadius:6,color:C.white,fontSize:11,outline:"none"}} value={inviteCode} placeholder="E-posta..." onChange={e=>setInviteCode(e.target.value)}/>
-                    <Btn small onClick={()=>{if(inviteCode.trim()){setTeam(p=>({...p,members:[...p.members,{id:uid(),name:inviteCode.split("@")[0],role:"member",email:inviteCode}]}));setInviteCode("");}}}> Davet Et</Btn>
-                  </div>
-                </div>
-              </Card>
-              <Card style={{background:C.dark}}>
-                <Title color={C.yellow}>Paylaşım</Title>
-                <Check label="Projeleri paylaş" checked={true} onChange={()=>{}}/>
-                <Check label="Vinç konfigürasyonlarını paylaş" checked={true} onChange={()=>{}}/>
-                <Check label="Rehber dizinini paylaş" checked={true} onChange={()=>{}}/>
-                <div style={{marginTop:16,padding:12,background:C.greenDark+"50",borderRadius:8}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <div style={{width:10,height:10,borderRadius:5,background:syncStatus==="synced"?C.greenLight:C.g400}}/>
-                    <span style={{fontSize:11}}>{syncStatus==="synced"?"Senkronize":"Yerel"}</span>
-                  </div>
-                  <div style={{marginTop:8}}><Btn small color={C.greenLight} onClick={doSync}>☁️ Senkronize Et</Btn></div>
-                </div>
-              </Card>
             </div>
           </Card>
         </div>
