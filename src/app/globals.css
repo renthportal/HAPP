@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --happ-dark: #0A1F12;
+  --happ-surface: #132E1C;
+  --happ-green: #006838;
+  --happ-green-light: #00A86B;
+  --happ-yellow: #FFC72C;
+  --happ-orange: #FF6B35;
+}
+
+body {
+  background: var(--happ-dark);
+  color: #E8F0EB;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--happ-dark); }
+::-webkit-scrollbar-thumb { background: var(--happ-green); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--happ-green-light); }
+
+/* Selection */
+::selection { background: #FFC72C40; color: white; }
