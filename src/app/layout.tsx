@@ -5,9 +5,9 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'HAPP — Crane Lift Planning',
+  title: 'VecH — Crane Lift Planning',
   description: 'Profesyonel vinç kaldırma planı oluşturma ve menzil diyagramı çizim aracı',
-  icons: { icon: '/favicon.svg' },
+  icons: { icon: '/logo-hareket.png' },
 }
 
 export default function RootLayout({

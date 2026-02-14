@@ -6,7 +6,8 @@ export default function HomePage() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-happ-green/20">
         <div className="flex items-center gap-3">
-          <span className="text-happ-yellow font-black text-2xl tracking-[6px]">HAPP</span>
+          <img src="/logo-hareket.png" alt="VecH" className="w-8 h-8 rounded" />
+          <span className="text-happ-yellow font-black text-2xl tracking-[6px]">VecH</span>
           <span className="text-xs text-gray-500 hidden sm:block">Crane Lift Planning</span>
         </div>
         <div className="flex items-center gap-3">
@@ -22,6 +23,9 @@ export default function HomePage() {
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 text-center">
         <div className="max-w-3xl">
+          <div className="flex justify-center mb-6">
+            <img src="/logo-hareket.png" alt="Hareket" className="w-20 h-20 rounded-xl" />
+          </div>
           <h1 className="text-5xl sm:text-7xl font-black text-white mb-6 leading-tight">
             Vinç Planlaması
             <br />
@@ -29,7 +33,7 @@ export default function HomePage() {
           </h1>
           <p className="text-lg text-gray-400 mb-10 max-w-xl mx-auto">
             Menzil diyagramı çiz, yük tablosu kontrolü yap, kaldırma planı oluştur.
-            Sahada ve ofiste — web tarayıcından, her cihazda.
+            Sahada ve ofiste — web tarayıcınından, her cihazda.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth/register" className="bg-happ-yellow text-happ-dark font-bold text-lg px-8 py-4 rounded-xl hover:bg-yellow-400 transition-colors">
@@ -44,7 +48,7 @@ export default function HomePage() {
         {/* Features */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-20 max-w-4xl w-full">
           {[
-            { icon: '📐', title: 'Menzil Diyagramı', desc: 'Boom, jib, menzil ve yükseklik — interaktif 2D çizim' },
+            { icon: '📐', title: 'Menzil Diyagramı', desc: '12 vinç tipi, boom/jib drag, gerçekçi vinç görselleri' },
             { icon: '📊', title: 'Gerçek Yük Tablosu', desc: 'Bilineer interpolasyonla hassas kapasite hesabı' },
             { icon: '📋', title: 'Kaldırma Planı PDF', desc: 'Saha onayına hazır profesyonel dokümantasyon' },
           ].map(f => (
@@ -59,7 +63,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="px-6 py-6 border-t border-happ-green/10 text-center text-xs text-gray-600">
-        HAPP © {new Date().getFullYear()} — Vinç planlaması için geliştirilmiştir
+        VecH © {new Date().getFullYear()} — Hareket Group — Vinç planlaması için geliştirilmiştir
       </footer>
     </div>
   )

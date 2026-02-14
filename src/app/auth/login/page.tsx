@@ -16,16 +16,9 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-    } else {
-      router.push('/dashboard')
-      router.refresh()
-    }
+    if (error) { setError(error.message); setLoading(false) }
+    else { router.push('/dashboard'); router.refresh() }
   }
 
   const handleGoogle = async () => {
@@ -39,7 +32,10 @@ export default function LoginPage() {
     <div className="min-h-screen bg-happ-dark flex items-center justify-center px-4">
       <div className="bg-happ-surface border border-happ-green/20 rounded-2xl p-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-happ-yellow font-black text-3xl tracking-[6px] mb-2">HAPP</h1>
+          <div className="flex justify-center mb-3">
+            <img src="/logo-hareket.png" alt="VecH" className="w-14 h-14 rounded-lg" />
+          </div>
+          <h1 className="text-happ-yellow font-black text-3xl tracking-[6px] mb-2">VecH</h1>
           <p className="text-gray-500 text-sm">Vinç Planlama Sistemine Giriş</p>
         </div>
 
@@ -50,27 +46,14 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
-          <input
-            type="email"
-            placeholder="E-posta"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50 transition-colors"
-          />
-          <input
-            type="password"
-            placeholder="Şifre"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50 transition-colors"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-happ-yellow text-happ-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors disabled:opacity-50"
-          >
+          <input type="email" placeholder="E-posta" value={email}
+            onChange={e => setEmail(e.target.value)} required
+            className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50 transition-colors" />
+          <input type="password" placeholder="Şifre" value={password}
+            onChange={e => setPassword(e.target.value)} required
+            className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50 transition-colors" />
+          <button type="submit" disabled={loading}
+            className="w-full py-3 bg-happ-yellow text-happ-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors disabled:opacity-50">
             {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
           </button>
         </form>
@@ -81,18 +64,14 @@ export default function LoginPage() {
           <div className="flex-1 h-px bg-happ-green/20" />
         </div>
 
-        <button
-          onClick={handleGoogle}
-          className="w-full py-3 border border-happ-green/30 text-gray-400 rounded-lg hover:border-happ-green/60 hover:text-white transition-colors text-sm font-medium"
-        >
+        <button onClick={handleGoogle}
+          className="w-full py-3 border border-happ-green/30 text-gray-400 rounded-lg hover:border-happ-green/60 hover:text-white transition-colors text-sm font-medium">
           Google ile Giriş
         </button>
 
         <p className="text-center text-gray-600 text-sm mt-8">
           Hesabın yok mu?{' '}
-          <Link href="/auth/register" className="text-happ-yellow hover:underline">
-            Kayıt Ol
-          </Link>
+          <Link href="/auth/register" className="text-happ-yellow hover:underline">Kayıt Ol</Link>
         </p>
       </div>
     </div>

@@ -13,7 +13,7 @@ interface Props {
 }
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'HAPP', icon: '📐', desc: 'Menzil Diyagramı' },
+  { href: '/dashboard', label: 'VecH', icon: '📐', desc: 'Menzil Diyagramı' },
   { href: '/dashboard/projects', label: 'Projeler', icon: '📁', desc: 'Kayıtlı planlar' },
   { href: '/dashboard/cranes', label: 'Vinçler', icon: '🏗️', desc: 'Vinç & yük tablosu' },
   { href: '/dashboard/team', label: 'Takım', icon: '👥', desc: 'Takım yönetimi' },
@@ -39,8 +39,9 @@ export default function DashboardShell({ user, profile, teams, children }: Props
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex flex-col w-56 bg-happ-surface border-r border-happ-green/15 fixed h-full">
         {/* Logo */}
-        <div className="px-5 py-5 border-b border-happ-green/15">
-          <span className="text-happ-yellow font-black text-xl tracking-[5px]">HAPP</span>
+        <div className="px-5 py-5 border-b border-happ-green/15 flex items-center gap-3">
+          <img src="/logo-hareket.png" alt="VecH" className="w-8 h-8 rounded" />
+          <span className="text-happ-yellow font-black text-xl tracking-[5px]">VecH</span>
         </div>
 
         {/* Nav */}
@@ -92,7 +93,10 @@ export default function DashboardShell({ user, profile, teams, children }: Props
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-happ-surface border-b border-happ-green/15 z-50 flex items-center justify-between px-4 h-14">
         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white text-xl">☰</button>
-        <span className="text-happ-yellow font-black text-lg tracking-[4px]">HAPP</span>
+        <div className="flex items-center gap-2">
+          <img src="/logo-hareket.png" alt="VecH" className="w-6 h-6 rounded" />
+          <span className="text-happ-yellow font-black text-lg tracking-[4px]">VecH</span>
+        </div>
         <button onClick={handleLogout} className="text-xs text-gray-500">Çıkış</button>
       </div>
 
@@ -101,7 +105,10 @@ export default function DashboardShell({ user, profile, teams, children }: Props
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="w-64 bg-happ-surface border-r border-happ-green/15 flex flex-col">
             <div className="px-5 py-5 border-b border-happ-green/15 flex items-center justify-between">
-              <span className="text-happ-yellow font-black text-xl tracking-[5px]">HAPP</span>
+              <div className="flex items-center gap-2">
+                <img src="/logo-hareket.png" alt="VecH" className="w-7 h-7 rounded" />
+                <span className="text-happ-yellow font-black text-xl tracking-[5px]">VecH</span>
+              </div>
               <button onClick={() => setSidebarOpen(false)} className="text-gray-400 text-xl">✕</button>
             </div>
             <nav className="flex-1 py-3">
