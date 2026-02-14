@@ -1,101 +1,55 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
-import dynamic from 'next/dynamic'
+
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import dynamic from 'next/dynamic'
 
-const HappApp = dynamic(() => import('@/components/happ/HappApp'), { 
-  ssr: false,
-  loading: () => (
-    <div style={{height:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#0A1F12'}}>
-      <div style={{textAlign:'center'}}>
-        <div style={{color:'#FFC72C',fontWeight:900,fontSize:32,letterSpacing:6}}>HAPP</div>
-        <div style={{color:'#6B7E70',fontSize:12,marginTop:8}}>Yükleniyor...</div>
-      </div>
-    </div>
-  )
-})
+const HappApp = dynamic(() => import('@/components/happ/HappApp'), { ssr: false })
 
-export default function DashboardPage() {
-  const [projectId, setProjectId] = useState<string|null>(null)
-  const [projectName, setProjectName] = useState('')
-  const [initialData, setInitialData] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
+function DashboardContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const supabase = createClient()
+  const projectId = searchParams.get('project')
+  const [projectData, setProjectData] = useState<any>(null)
+  const [projectName, setProjectName] = useState('')
+  const [loading, setLoading] = useState(!!projectId)
 
   useEffect(() => {
-    const pid = searchParams.get('project')
-    if (pid) loadProject(pid)
-  }, [searchParams])
+    if (projectId) loadProject(projectId)
+  }, [projectId])
 
-  const loadProject = async (pid: string) => {
-    setLoading(true)
-    const { data } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', pid)
-      .single()
-
-    if (data) {
-      setProjectId(data.id)
-      setProjectName(data.name)
-      setInitialData({
-        config: data.config,
-        objects: data.objects || [],
-        rulers: data.rulers || [],
-        lift_plan: data.lift_plan || {}
-      })
-    }
+  const loadProject = async (id: string) => {
+    const { data } = await supabase.from('projects').select('*').eq('id', id).single()
+    if (data) { setProjectData(data); setProjectName(data.name); }
     setLoading(false)
   }
 
-  const handleSave = useCallback(async (data: any) => {
+  const handleSave = async (state: any) => {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Giriş yapılmamış')
-
-    if (projectId) {
-      const { error } = await supabase
-        .from('projects')
-        .update({
-          config: data.config,
-          objects: data.objects,
-          rulers: data.rulers,
-          lift_plan: data.lift_plan,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', projectId)
-      if (error) throw error
+    if (!user) return
+    if (projectId && projectData) {
+      await supabase.from('projects').update({
+        config: state.config, objects: state.objects, rulers: state.rulers,
+        lift_plan: state.lift_plan, updated_at: new Date().toISOString()
+      }).eq('id', projectId)
     } else {
-      const name = prompt('Proje adı:') || 'Yeni Proje'
-      const { data: newProject, error } = await supabase
-        .from('projects')
-        .insert({
-          user_id: user.id,
-          name,
-          config: data.config,
-          objects: data.objects,
-          rulers: data.rulers,
-          lift_plan: data.lift_plan,
-          status: 'active'
-        })
-        .select()
-        .single()
-
-      if (error) throw error
-      if (newProject) {
-        setProjectId(newProject.id)
-        setProjectName(name)
-        window.history.replaceState(null, '', `/dashboard?project=${newProject.id}`)
-      }
+      const name = prompt('Proje adı:', 'Yeni Proje')
+      if (!name) return
+      const { data } = await supabase.from('projects').insert({
+        user_id: user.id, name, config: state.config, objects: state.objects,
+        rulers: state.rulers, lift_plan: state.lift_plan, status: 'active'
+      }).select().single()
+      if (data) router.push(`/dashboard?project=${data.id}`)
     }
-  }, [projectId, supabase])
+  }
 
-  if (loading) return (
-    <div style={{height:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#0A1F12'}}>
-      <div style={{color:'#FFC72C',fontWeight:900,fontSize:32,letterSpacing:6}}>HAPP</div>
-    </div>
-  )
+  if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh'}}><div style={{color:'#94A89A'}}>Yükleniyor...</div></div>
 
-  return <HappApp onSave={handleSave} initialData={initialData} projectName={projectName} />
+  return <HappApp onSave={handleSave} initialData={projectData ? {config:projectData.config,objects:projectData.objects,rulers:projectData.rulers,lift_plan:projectData.lift_plan} : undefined} projectName={projectName} />
+}
+
+export default function DashboardPage() {
+  return <Suspense fallback={<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh'}}><div style={{color:'#94A89A'}}>Yükleniyor...</div></div>}><DashboardContent /></Suspense>
 }
