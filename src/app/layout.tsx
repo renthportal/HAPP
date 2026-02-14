@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'VecH — Crane Lift Planning',
+  title: 'Hangel — Crane Lift Planning',
   description: 'Profesyonel vinç kaldırma planı oluşturma ve menzil diyagramı çizim aracı',
   icons: { icon: '/logo-hareket.png' },
 }

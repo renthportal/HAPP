@@ -40,7 +40,7 @@ export default function DashboardShell({ user, profile, teams, children }: Props
       <aside className="hidden lg:flex flex-col w-56 bg-happ-surface border-r border-happ-green/15 fixed h-full">
         {/* Logo only - no text, branding is in the app header */}
         <div className="px-5 py-4 border-b border-happ-green/15 flex items-center justify-center">
-          <img src="/logo-hareket.png" alt="VecH" className="w-10 h-10 rounded-lg" />
+          <img src="/logo-hareket.png" alt="Hangel" className="w-10 h-10 rounded-lg" />
         </div>
 
         {/* Nav */}
@@ -92,7 +92,7 @@ export default function DashboardShell({ user, profile, teams, children }: Props
       {/* Mobile Header - just logo, no text */}
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-happ-surface border-b border-happ-green/15 z-50 flex items-center justify-between px-4 h-14">
         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white text-xl">☰</button>
-        <img src="/logo-hareket.png" alt="VecH" className="w-8 h-8 rounded" />
+        <img src="/logo-hareket.png" alt="Hangel" className="w-8 h-8 rounded" />
         <button onClick={handleLogout} className="text-xs text-gray-500">Çıkış</button>
       </div>
 
@@ -101,7 +101,7 @@ export default function DashboardShell({ user, profile, teams, children }: Props
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="w-64 bg-happ-surface border-r border-happ-green/15 flex flex-col">
             <div className="px-5 py-4 border-b border-happ-green/15 flex items-center justify-between">
-              <img src="/logo-hareket.png" alt="VecH" className="w-9 h-9 rounded-lg" />
+              <img src="/logo-hareket.png" alt="Hangel" className="w-9 h-9 rounded-lg" />
               <button onClick={() => setSidebarOpen(false)} className="text-gray-400 text-xl">✕</button>
             </div>
             <nav className="flex-1 py-3">

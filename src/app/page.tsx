@@ -6,8 +6,8 @@ export default function HomePage() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-happ-green/20">
         <div className="flex items-center gap-3">
-          <img src="/logo-hareket.png" alt="VecH" className="w-8 h-8 rounded" />
-          <span className="text-happ-yellow font-black text-2xl tracking-[6px]">VecH</span>
+          <img src="/logo-hareket.png" alt="Hangel" className="w-8 h-8 rounded" />
+          <span className="text-happ-yellow font-black text-2xl tracking-[6px]">Hangel</span>
           <span className="text-xs text-gray-500 hidden sm:block">Crane Lift Planning</span>
         </div>
         <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="px-6 py-6 border-t border-happ-green/10 text-center text-xs text-gray-600">
-        VecH © {new Date().getFullYear()} — Hareket Group — Vinç planlaması için geliştirilmiştir
+        Hangel © {new Date().getFullYear()} — Hareket Group — Vinç planlaması için geliştirilmiştir
       </footer>
     </div>
   )

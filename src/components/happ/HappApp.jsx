@@ -483,7 +483,7 @@ function PDFPreview({cfg,crane,cap,lp,totalW,hookH,radius,onClose}){
   return(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
     <div style={{background:C.white,borderRadius:12,padding:30,maxWidth:700,width:"100%",maxHeight:"90vh",overflow:"auto",color:"#222"}} onClick={e=>e.stopPropagation()}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-        <div><div style={{fontSize:28,fontWeight:900,color:C.greenDark,letterSpacing:4,fontFamily:F}}>VecH</div><div style={{fontSize:10,color:"#666"}}>Kaldırma Planı</div></div>
+        <div><div style={{fontSize:28,fontWeight:900,color:C.greenDark,letterSpacing:4,fontFamily:F}}>Hangel</div><div style={{fontSize:10,color:"#666"}}>Kaldırma Planı</div></div>
         <div style={{textAlign:"right",fontSize:10,color:"#888"}}><div>{new Date().toLocaleDateString("tr-TR")}</div></div>
       </div>
       <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
@@ -797,7 +797,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
     ctx.fillStyle=C.dark+"D0";ctx.fillRect(10,10,220,90);
     ctx.strokeStyle=C.green+"40";ctx.lineWidth=1;ctx.strokeRect(10,10,220,90);
     ctx.fillStyle=C.yellow;ctx.font=`bold 11px ${F}`;ctx.textAlign="left";
-    ctx.fillText("VecH",18,28);
+    ctx.fillText("Hangel",18,28);
     ctx.fillStyle=C.g200;ctx.font=`9px ${F}`;
     ctx.fillText(`${crane?.name||""}`,70,28);
     ctx.fillText(`Boom: ${cfg.boomLength}m @ ${cfg.boomAngle}°`,18,44);
@@ -1048,7 +1048,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const exportScreenshot=()=>{
     const canvas=document.querySelector("canvas");if(!canvas)return;
     const link=document.createElement("a");
-    link.download=`VecH-${new Date().toISOString().split("T")[0]}.png`;
+    link.download=`Hangel-${new Date().toISOString().split("T")[0]}.png`;
     link.href=canvas.toDataURL("image/png");
     link.click();
   };
@@ -1060,9 +1060,9 @@ export default function App({onSave,initialData,projectName:extProjectName}){
       {/* HEADER */}
       <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`3px solid ${C.yellow}`,padding:isMobile?"8px 12px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:6}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <img src={LOGO_DATA} alt="VecH" style={{width:isMobile?32:42,height:isMobile?32:42,borderRadius:6,objectFit:"contain",flexShrink:0}}/>
+          <img src={LOGO_DATA} alt="Hangel" style={{width:isMobile?32:42,height:isMobile?32:42,borderRadius:6,objectFit:"contain",flexShrink:0}}/>
           <div>
-            <div style={{fontSize:isMobile?16:24,fontWeight:900,letterSpacing:isMobile?3:5,color:C.yellow,fontFamily:F}}>VecH</div>
+            <div style={{fontSize:isMobile?16:24,fontWeight:900,letterSpacing:isMobile?3:5,color:C.yellow,fontFamily:F}}>Hangel</div>
             {!isMobile&&<div style={{fontSize:8,color:C.greenLight,letterSpacing:2,fontFamily:F}}>AĞIR YÜK & VİNÇ PLANLAMA SİSTEMİ v4.0</div>}
           </div>
         </div>
@@ -1426,7 +1426,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               const data=JSON.stringify({config:cfg,objects,rulers,lift_plan:lp},null,2);
               const blob=new Blob([data],{type:"application/json"});
               const url=URL.createObjectURL(blob);
-              const a=document.createElement("a");a.href=url;a.download=`VecH-${new Date().toISOString().split("T")[0]}.json`;a.click();
+              const a=document.createElement("a");a.href=url;a.download=`Hangel-${new Date().toISOString().split("T")[0]}.json`;a.click();
               URL.revokeObjectURL(url);
             }} color={C.cyan} style={{width:"100%",padding:12,color:"white"}}>💾 Proje JSON İndir</Btn>
           </Card>

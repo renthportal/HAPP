@@ -51,9 +51,9 @@ export default function RegisterPage() {
       <div className="bg-happ-surface border border-happ-green/20 rounded-2xl p-10 w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
-            <img src="/logo-hareket.png" alt="VecH" className="w-14 h-14 rounded-lg" />
+            <img src="/logo-hareket.png" alt="Hangel" className="w-14 h-14 rounded-lg" />
           </div>
-          <h1 className="text-happ-yellow font-black text-3xl tracking-[6px] mb-2">VecH</h1>
+          <h1 className="text-happ-yellow font-black text-3xl tracking-[6px] mb-2">Hangel</h1>
           <p className="text-gray-500 text-sm">Yeni Hesap Oluştur</p>
         </div>
 
