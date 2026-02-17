@@ -1132,7 +1132,8 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       setMagnifier(pos);
     } else if(drag.type==="moveObj"){
       const newX=(pos.x-drag.offX-drag.pivotX)/drag.SC;
-      updObj(drag.objId,{x:Math.max(-10,newX)});
+      const newElevate=(drag.groundY-(pos.y-drag.offY))/drag.VS;
+      updObj(drag.objId,{x:Math.max(-10,newX),elevate:Math.max(0,Math.round(newElevate*10)/10)});
     } else if(drag.type==="rotate"){
       const angle=toDeg(Math.atan2(pos.y-drag.cy,pos.x-drag.cx))+90;
       updObj(drag.objId,{rotation:Math.round(angle/5)*5});
