@@ -1244,10 +1244,10 @@ export default function App({onSave,initialData,projectName:extProjectName}){
       try{
         const sb=createClient();
         supabaseRef.current=sb;
-        const{data:{user}}=await sb.auth.getUser();
-        if(user)userIdRef.current=user.id;
-        // Load user's own charts + presets + public
-        const{data}=await sb.from("load_charts").select("*");
+        try{const{data:{user}}=await sb.auth.getUser();if(user)userIdRef.current=user.id;}catch{}
+        // Load all accessible charts (preset + public + own)
+        const{data,error}=await sb.from("load_charts").select("*");
+        if(error){console.warn("Chart load error:",error);}
         if(data&&data.length>0){
           const charts={};
           data.forEach(row=>{
@@ -1400,9 +1400,9 @@ export default function App({onSave,initialData,projectName:extProjectName}){
         setCustomCharts(p=>({...p,...newCharts}));
         up({chartId:firstId});
         // Save to Supabase
-        if(supabaseRef.current&&userIdRef.current){
+        if(supabaseRef.current){
           const inserts=Object.entries(newCharts).map(([id,ch])=>({
-            id,user_id:userIdRef.current,name:ch.name,
+            id,user_id:userIdRef.current||null,name:ch.name,
             max_capacity:ch.maxCap,max_boom:ch.maxBoom,pivot_height:ch.pivotH,
             boom_lengths:ch.boomLengths,chart_data:ch.rows,
             outrigger_config:ch.config?.outrigger||"full",
