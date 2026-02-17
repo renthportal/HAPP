@@ -1172,11 +1172,23 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
     }
   };
 
+  // Register non-passive touch listeners to prevent page scroll during canvas interaction
+  useEffect(()=>{
+    const c=canvasRef.current;if(!c)return;
+    const opts={passive:false};
+    const tStart=(e)=>{e.preventDefault();handleDown(e);};
+    const tMove=(e)=>{e.preventDefault();handleMove(e);};
+    const tEnd=(e)=>{handleUp(e);};
+    c.addEventListener("touchstart",tStart,opts);
+    c.addEventListener("touchmove",tMove,opts);
+    c.addEventListener("touchend",tEnd);
+    return()=>{c.removeEventListener("touchstart",tStart);c.removeEventListener("touchmove",tMove);c.removeEventListener("touchend",tEnd);};
+  });
+
   return(
     <canvas ref={canvasRef} style={{width:"100%",height:"100%",cursor:tool==="ruler"?"crosshair":drag?"grabbing":"default",touchAction:"none",borderRadius:8}}
       onMouseDown={handleDown} onMouseMove={handleMove} onMouseUp={handleUp} onMouseLeave={handleUp}
       onDoubleClick={handleDblClick}
-      onTouchStart={handleDown} onTouchMove={handleMove} onTouchEnd={handleUp}
     />
   );
 }
@@ -1218,17 +1230,21 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   // Lock body scroll on mobile chart tab to prevent page bounce
   useEffect(()=>{
     if(isMobile&&tab==="chart"){
-      document.body.style.overflow="hidden";
-      document.body.style.position="fixed";
-      document.body.style.width="100%";
-      document.body.style.height="100%";
+      const s=document.documentElement.style;
+      const b=document.body.style;
+      s.overflow="hidden";s.height="100%";s.overscrollBehavior="none";
+      b.overflow="hidden";b.position="fixed";b.width="100%";b.height="100%";b.top="0";b.left="0";b.overscrollBehavior="none";b.touchAction="none";
     }else{
-      document.body.style.overflow="";
-      document.body.style.position="";
-      document.body.style.width="";
-      document.body.style.height="";
+      const s=document.documentElement.style;
+      const b=document.body.style;
+      s.overflow="";s.height="";s.overscrollBehavior="";
+      b.overflow="";b.position="";b.width="";b.height="";b.top="";b.left="";b.overscrollBehavior="";b.touchAction="";
     }
-    return()=>{document.body.style.overflow="";document.body.style.position="";document.body.style.width="";document.body.style.height="";};
+    return()=>{
+      const s=document.documentElement.style;const b=document.body.style;
+      s.overflow="";s.height="";s.overscrollBehavior="";
+      b.overflow="";b.position="";b.width="";b.height="";b.top="";b.left="";b.overscrollBehavior="";b.touchAction="";
+    };
   },[isMobile,tab]);
 
   // Bridge for canvas to update config
