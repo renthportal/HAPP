@@ -60,17 +60,17 @@ function drawCraneVisual(ctx,type,SC,VS,pivotX,pivotY,boomTipX,boomTipY,colors,c
   // ═══ DRAW SVG BODY IMAGE ═══
   const img=CRANE_IMGS[type];
   if(img&&img.complete&&img.naturalWidth>0){
-    // Scale SVG to fit crane area
-    const bodyW=Math.max(cfg.craneEnd*SC, 50);
-    const bodyH=Math.max(cfg.pivotHeight*VS*0.85, 40);
-    // Image aspect ratio
     const iAR=img.naturalWidth/img.naturalHeight;
-    let drawW=bodyW*1.4;
+    // Scale based on craneEnd (rear length) — wider silhouettes need more space
+    const bodyW=Math.max(cfg.craneEnd*SC*2.5, 120);
+    let drawW=bodyW;
     let drawH=drawW/iAR;
-    // For tower crane, make it taller (reserved for future)
+    // Ensure minimum height relative to pivot
+    const minH=Math.max(cfg.pivotHeight*VS*0.7, 30);
+    if(drawH<minH){drawH=minH;drawW=drawH*iAR;}
     
-    // Position: anchor to pivot point and ground
-    const imgX=pivotX-drawW*0.55;
+    // Position: center body under pivot, bottom at ground
+    const imgX=pivotX-drawW*0.35;
     const imgY=groundY-drawH;
     
     ctx.drawImage(img, imgX, imgY, drawW, drawH);
