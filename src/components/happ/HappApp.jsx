@@ -1360,7 +1360,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const importChartCSV=(e)=>{
     const file=e.target.files?.[0];if(!file)return;
     const reader=new FileReader();
-    reader.onload=(ev)=>{
+    reader.onload=async(ev)=>{
       try{
         const text=ev.target.result;
         // Split by --- for multi-table support
@@ -1391,7 +1391,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           if(boomLengths.length===0||rows.length===0)continue;
           const maxCap=Math.max(...rows.flatMap(r=>r.caps.filter(v=>v!==null)));
           const maxBoom=Math.max(...boomLengths);
-          const id=crypto.randomUUID();
+          const id="tmp_"+Date.now()+"_"+Math.random().toString(36).slice(2,6);
           newCharts[id]={name,maxCap,maxBoom,pivotH:parseFloat(configLine.pivotH)||3,boomLengths,rows,config:configLine,isPreset:false};
           if(!firstName){firstName=name;firstId=id;}
         }
@@ -1401,15 +1401,36 @@ export default function App({onSave,initialData,projectName:extProjectName}){
         up({chartId:firstId});
         // Save to Supabase
         if(supabaseRef.current){
-          const inserts=Object.entries(newCharts).map(([id,ch])=>({
-            id,user_id:userIdRef.current||null,name:ch.name,
-            max_capacity:ch.maxCap,max_boom:ch.maxBoom,pivot_height:ch.pivotH,
-            boom_lengths:ch.boomLengths,chart_data:ch.rows,
-            outrigger_config:ch.config?.outrigger||"full",
-            counterweight_config:ch.config?.cw||null,
-            source:"csv_import"
-          }));
-          supabaseRef.current.from("load_charts").insert(inserts).then(({error})=>{if(error)console.warn("Chart save error:",error);});
+          for(const[_,ch] of Object.entries(newCharts)){
+            const row={
+              user_id:userIdRef.current||null,
+              name:ch.name,
+              max_capacity:Number(ch.maxCap),
+              max_boom:Number(ch.maxBoom),
+              pivot_height:Number(ch.pivotH)||3,
+              boom_lengths:ch.boomLengths,
+              chart_data:ch.rows,
+              outrigger_config:String(ch.config?.outrigger||"full"),
+              counterweight_config:ch.config?.cw?String(ch.config.cw):null,
+              source:"csv_import"
+            };
+            console.log("Inserting chart:",row.name,row);
+            const{data:saved,error}=await supabaseRef.current.from("load_charts").insert(row).select();
+            if(error){console.error("Chart save FAILED:",error.message,error.details,error.hint,error.code,JSON.stringify(error));alert("Tablo kaydedilemedi: "+error.message);return;}
+            if(saved&&saved[0]){
+              const r=saved[0];
+              const dbChart={
+                name:r.name,maxCap:r.max_capacity,maxBoom:r.max_boom,
+                pivotH:r.pivot_height||3,boomLengths:r.boom_lengths||[],
+                rows:Array.isArray(r.chart_data)?r.chart_data:r.chart_data,
+                config:{outrigger:r.outrigger_config,cw:r.counterweight_config},
+                isPreset:false,
+              };
+              setCustomCharts(p=>{const n={...p};delete n[_];n[r.id]=dbChart;return n;});
+              up({chartId:r.id});
+              console.log("Chart saved OK:",r.id,r.name);
+            }
+          }
         }
         alert(count===1
           ?`Yük tablosu yüklendi: ${firstName}`
