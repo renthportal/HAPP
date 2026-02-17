@@ -217,6 +217,7 @@ const SKINS=[
 ];
 
 const TABS=[
+  {id:"find",label:"Vinç Bul",icon:"🔍"},
   {id:"chart",label:"Menzil Şeması",icon:"📐"},
   {id:"liftplan",label:"Kaldırma Planı",icon:"📋"},
   {id:"calc",label:"Hesaplamalar",icon:"🧮"},
@@ -407,6 +408,62 @@ function calcHookHeight(cfg){
   // Net hook height = boom tip - hook block - sling length
   const tipH=calcBoomTipHeight(cfg);
   return Math.max(0, tipH - (cfg.hookBlockH||1.2) - (cfg.slingLength||4)*0.3);
+}
+
+// ═══ CRANE SEARCH ENGINE ═══
+function searchCranes(allCharts,searchLoad,searchHeight,searchRadius,pivotH=2.5){
+  if(!searchLoad||!searchHeight||!searchRadius)return[];
+  const results=[];
+  const hNet=Math.max(0,searchHeight-pivotH);
+  const minBoom=Math.sqrt(searchRadius*searchRadius+hNet*hNet);
+
+  for(const[chartId,chart] of Object.entries(allCharts)){
+    if(!chart.rows||chart.rows.length===0||!chart.boomLengths)continue;
+    let bestMatch=null;
+    // Try each boom length, shortest first (shortest = highest capacity)
+    for(const bl of chart.boomLengths){
+      if(bl<minBoom*0.95)continue; // too short
+      // At this boom, angle for working radius = R
+      const cosA=searchRadius/bl;
+      if(cosA>1||cosA<0)continue;
+      const angle=toDeg(Math.acos(cosA));
+      // Verify height: pivotH + sqrt(L²-R²) >= searchHeight
+      const tipH=pivotH+Math.sqrt(Math.max(0,bl*bl-searchRadius*searchRadius));
+      if(tipH<searchHeight*0.95)continue;
+      // Look up capacity at this boom length and radius
+      const cap=lookupChart(chart,bl,searchRadius);
+      if(cap===null)continue;
+      const util=searchLoad/cap*100;
+      if(cap>=searchLoad){
+        if(!bestMatch||bl<bestMatch.boomLength){
+          bestMatch={chartId,chartName:chart.name,boomLength:bl,angle:Math.round(angle),capacity:Math.round(cap*10)/10,utilization:Math.round(util),maxCap:chart.maxCap,isPreset:chart.isPreset||false,tipHeight:Math.round(tipH*10)/10};
+        }
+      }
+    }
+    if(bestMatch)results.push(bestMatch);
+    else{
+      // No match — find closest
+      let bestCap=0,bestBl=0,bestAng=0,bestTipH=0;
+      for(const bl of chart.boomLengths){
+        if(bl<minBoom*0.95)continue;
+        const cosA=searchRadius/bl;if(cosA>1||cosA<0)continue;
+        const ang=toDeg(Math.acos(cosA));
+        const tipH=pivotH+Math.sqrt(Math.max(0,bl*bl-searchRadius*searchRadius));
+        if(tipH<searchHeight*0.95)continue;
+        const cap=lookupChart(chart,bl,searchRadius);
+        if(cap!==null&&cap>bestCap){bestCap=cap;bestBl=bl;bestAng=Math.round(ang);bestTipH=Math.round(tipH*10)/10;}
+      }
+      if(bestCap>0){
+        results.push({chartId,chartName:chart.name,boomLength:bestBl,angle:bestAng,capacity:Math.round(bestCap*10)/10,utilization:Math.round(searchLoad/bestCap*100),maxCap:chart.maxCap,isPreset:chart.isPreset||false,insufficient:true,tipHeight:bestTipH});
+      }
+    }
+  }
+  results.sort((a,b)=>{
+    if(a.insufficient&&!b.insufficient)return 1;
+    if(!a.insufficient&&b.insufficient)return -1;
+    return a.utilization-b.utilization;
+  });
+  return results;
 }
 
 // calcCap REMOVED — Crangle philosophy: no fake capacity formula.
@@ -1220,7 +1277,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
 
 // ═══ MAIN APP COMPONENT ═══
 export default function App({onSave,initialData,projectName:extProjectName}){
-  const [tab,setTab]=useState("chart");
+  const [tab,setTab]=useState(initialData?.config?"chart":"find");
   const [cfg,setCfg]=useState(initialData?.config||{craneType:"mobile",boomLength:30,boomAngle:45,jibEnabled:false,jibLength:10,jibAngle:15,pivotHeight:2.5,pivotDist:0,craneEnd:4,loadWeight:5,counterweight:20,windSpeed:0,skinId:"default",
     loadW:3,loadH:2,loadShape:"box",slingType:"2leg",slingLength:4,slingLegs:2,hookBlockH:1.2,
     chartId:"",outriggerSpread:"full",cwConfig:"full",manualCap:0,maxBoom:60
@@ -1229,6 +1286,11 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const [selObj,setSelObj]=useState(null);
   const [rulers,setRulers]=useState(initialData?.rulers||[]);
   const [tool,setTool]=useState("select");
+  // Vinç Bul state
+  const [searchLoad,setSearchLoad]=useState(10);
+  const [searchHeight,setSearchHeight]=useState(20);
+  const [searchRadius,setSearchRadius]=useState(15);
+  const [searchResults,setSearchResults]=useState([]);
   const [lp,setLp]=useState(initialData?.lift_plan||{supplier:"",supplierContact:"",supplierPhone:"",supplierEmail:"",supplierAddr:"",client:"",clientContact:"",clientPhone:"",clientEmail:"",clientAddr:"",jobNumber:"",jobName:"",jobAddress:"",jobDate:new Date().toISOString().split("T")[0],craneMake:"",craneModel:"",craneRego:"",linePull:0,partsOfLine:4,cwConfig:"",loadDesc:"",loadWeight:0,riggingWeight:0,hookBlockWeight:0,addWeight:0,wll:0,notes:"",outForce:0,padShape:"square",padW:1,padL:1});
 
   const [ci,setCi]=useState({load:0,wll:0,pct:75,outF:0,padW:1,padL:1,padShape:"square"});
@@ -1465,7 +1527,8 @@ export default function App({onSave,initialData,projectName:extProjectName}){
         </div>
         {/* Quick actions — always visible */}
         <div style={{display:"flex",alignItems:"center",gap:isMobile?4:6}}>
-          {isMobile&&tab!=="chart"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>← Şema</button>}
+          {isMobile&&tab!=="chart"&&tab!=="find"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>← Şema</button>}
+          {isMobile&&tab==="find"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>📐 Şema</button>}
           <button onClick={()=>setShowPDF(true)} style={{padding:isMobile?"6px 10px":"6px 14px",background:C.yellow,border:"none",borderRadius:8,color:C.greenDark,fontWeight:700,fontSize:isMobile?10:12,cursor:"pointer",fontFamily:F}}>📋 {isMobile?"PDF":"Kaldırma Planı"}</button>
           {!isMobile&&<button onClick={exportScreenshot} style={{padding:"6px 14px",background:C.g500+"80",border:`1px solid ${C.g400}40`,borderRadius:8,color:C.g200,fontWeight:600,fontSize:11,cursor:"pointer",fontFamily:F}}>📷 Ekran Görüntüsü</button>}
           {onSave&&<button onClick={handleSave} style={{padding:isMobile?"6px 10px":"6px 14px",background:saveStatus==="saved"?C.greenLight+"30":C.g500+"80",border:`1px solid ${saveStatus==="saved"?C.greenLight:C.g400}40`,borderRadius:8,color:saveStatus==="saved"?C.greenLight:C.g200,fontWeight:600,fontSize:isMobile?10:11,cursor:"pointer",fontFamily:F}}>
@@ -1476,6 +1539,99 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:"transparent",color:tab===t.id?C.greenDark:C.g300,fontWeight:tab===t.id?700:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>{t.icon} {t.label}</button>))}
         </nav>}
       </header>
+
+      {/* ═══ FIND TAB ═══ */}
+      {tab==="find"&&(
+        <div style={{maxWidth:800,margin:"0 auto",padding:isMobile?"12px 8px":"24px 16px"}}>
+          {/* Search inputs */}
+          <div style={{background:C.darkSurf,borderRadius:12,padding:isMobile?12:20,border:`1px solid ${C.green}20`,marginBottom:12}}>
+            <div style={{fontSize:isMobile?16:20,fontWeight:900,color:C.yellow,fontFamily:F,marginBottom:12,display:"flex",alignItems:"center",gap:8}}>🔍 Vinç Bul</div>
+            <div style={{fontSize:11,color:C.g400,marginBottom:16}}>Yük, yükseklik ve menzil girin — uygun vinç konfigürasyonları otomatik hesaplansın.</div>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:isMobile?8:12}}>
+              <div>
+                <div style={{fontSize:11,color:C.g300,marginBottom:4,fontWeight:600}}>Yük Ağırlığı</div>
+                <div style={{display:"flex",alignItems:"center",gap:4}}>
+                  <input type="number" value={searchLoad} onChange={e=>setSearchLoad(Math.max(0,parseFloat(e.target.value)||0))}
+                    style={{width:"100%",padding:isMobile?"12px 8px":"10px 8px",background:C.dark,border:`2px solid ${C.yellow}60`,borderRadius:8,color:C.yellow,fontSize:isMobile?18:16,fontWeight:700,fontFamily:F,textAlign:"center"}}/>
+                  <span style={{fontSize:13,color:C.g400,fontWeight:700}}>t</span>
+                </div>
+              </div>
+              <div>
+                <div style={{fontSize:11,color:C.g300,marginBottom:4,fontWeight:600}}>Kaldırma Yüksekliği</div>
+                <div style={{display:"flex",alignItems:"center",gap:4}}>
+                  <input type="number" value={searchHeight} onChange={e=>setSearchHeight(Math.max(0,parseFloat(e.target.value)||0))}
+                    style={{width:"100%",padding:isMobile?"12px 8px":"10px 8px",background:C.dark,border:`2px solid ${C.cyan}60`,borderRadius:8,color:C.cyan,fontSize:isMobile?18:16,fontWeight:700,fontFamily:F,textAlign:"center"}}/>
+                  <span style={{fontSize:13,color:C.g400,fontWeight:700}}>m</span>
+                </div>
+              </div>
+              <div>
+                <div style={{fontSize:11,color:C.g300,marginBottom:4,fontWeight:600}}>Menzil (mesafe)</div>
+                <div style={{display:"flex",alignItems:"center",gap:4}}>
+                  <input type="number" value={searchRadius} onChange={e=>setSearchRadius(Math.max(0,parseFloat(e.target.value)||0))}
+                    style={{width:"100%",padding:isMobile?"12px 8px":"10px 8px",background:C.dark,border:`2px solid ${C.greenLight}60`,borderRadius:8,color:C.greenLight,fontSize:isMobile?18:16,fontWeight:700,fontFamily:F,textAlign:"center"}}/>
+                  <span style={{fontSize:13,color:C.g400,fontWeight:700}}>m</span>
+                </div>
+              </div>
+            </div>
+            <button onClick={()=>{const r=searchCranes(allCharts,searchLoad,searchHeight,searchRadius,crane?.pivotH||2.5);setSearchResults(r);}}
+              style={{width:"100%",marginTop:16,padding:isMobile?"14px":"12px",background:`linear-gradient(135deg,${C.green},${C.greenLight})`,border:"none",borderRadius:10,color:"white",fontSize:isMobile?16:14,fontWeight:800,cursor:"pointer",fontFamily:F,letterSpacing:1}}>
+              🔍 ARA — {Object.keys(allCharts).length} tablo taranacak
+            </button>
+          </div>
+
+          {/* Results */}
+          {searchResults.length>0&&(
+            <div style={{background:C.darkSurf,borderRadius:12,padding:isMobile?8:16,border:`1px solid ${C.green}20`}}>
+              <div style={{fontSize:12,color:C.g400,marginBottom:8,fontWeight:600}}>
+                {searchResults.filter(r=>!r.insufficient).length} uygun konfigürasyon bulundu
+                {searchResults.filter(r=>r.insufficient).length>0&&` — ${searchResults.filter(r=>r.insufficient).length} yetersiz`}
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {searchResults.map((r,i)=>(
+                  <div key={i} style={{padding:isMobile?"10px":"12px 16px",background:r.insufficient?C.dark+"80":C.greenDark+"60",borderRadius:10,border:`1px solid ${r.insufficient?"#c4444440":C.green+"30"}`,opacity:r.insufficient?0.7:1}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontSize:isMobile?13:14,fontWeight:700,color:r.insufficient?C.g400:C.white,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                          {r.insufficient?"❌":"✅"} {r.chartName}
+                        </div>
+                        <div style={{fontSize:11,color:C.g400,marginTop:2}}>
+                          Boom: <span style={{color:C.yellow,fontWeight:600}}>{r.boomLength}m</span> @ <span style={{color:C.yellow,fontWeight:600}}>{r.angle}°</span>
+                          {" · "}Kapasite: <span style={{color:r.insufficient?C.red:C.greenLight,fontWeight:700}}>{r.capacity}t</span>
+                          {r.tipHeight?<>{" · "}Uç: <span style={{color:C.cyan}}>{r.tipHeight}m</span></>:null}
+                        </div>
+                        <div style={{marginTop:4,height:4,borderRadius:2,background:C.dark,overflow:"hidden"}}>
+                          <div style={{height:"100%",width:`${Math.min(100,r.utilization)}%`,borderRadius:2,background:r.utilization>100?C.red:r.utilization>85?C.orange:C.greenLight}}/>
+                        </div>
+                        <div style={{fontSize:10,color:r.utilization>100?C.red:r.utilization>85?C.orange:C.g400,marginTop:2}}>
+                          Kullanım: %{r.utilization}{r.utilization>100?" — KAPASİTE YETERSİZ":""}
+                        </div>
+                      </div>
+                      {!r.insufficient&&(
+                        <button onClick={()=>{
+                          up({chartId:r.chartId,boomLength:r.boomLength,boomAngle:r.angle,loadWeight:searchLoad});
+                          setTab("chart");
+                        }} style={{padding:isMobile?"10px 14px":"8px 16px",background:C.yellow,border:"none",borderRadius:8,color:C.greenDark,fontWeight:800,fontSize:isMobile?13:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap",flexShrink:0}}>
+                          Seç →
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {searchResults.length===0&&(
+            <div style={{textAlign:"center",padding:isMobile?"30px 16px":"40px 20px",color:C.g500}}>
+              <div style={{fontSize:40,marginBottom:8}}>🏗️</div>
+              <div style={{fontSize:13}}>Yük, yükseklik ve menzil girip ARA butonuna basın</div>
+              <div style={{fontSize:11,marginTop:4,color:C.g600}}>Tüm yük tablolarında (preset + yüklenen) arama yapılır</div>
+              {chartsLoading&&<div style={{fontSize:11,marginTop:8,color:C.cyan}}>⏳ Yük tabloları yükleniyor...</div>}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ═══ CHART TAB ═══ */}
       {tab==="chart"&&(
@@ -1508,13 +1664,14 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               <div onClick={()=>setShowMobMenu(false)} style={{position:"absolute",inset:0,zIndex:25}}/>
               <div style={{position:"absolute",top:46,right:6,width:220,maxHeight:"calc(100% - 56px)",overflow:"auto",background:"rgba(10,31,18,0.96)",border:`1px solid ${C.green}40`,borderRadius:12,padding:6,zIndex:30,backdropFilter:"blur(12px)",touchAction:"auto",overscrollBehavior:"contain"}}>
                 {[
+                  {label:"Vinç Bul",icon:"🔍",action:()=>{setTab("find");setShowMobMenu(false);}},
                   {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
                   {label:"Kaldırma Planı",icon:"📋",action:()=>{setTab("liftplan");setShowMobMenu(false);}},
                   {label:"Hesaplamalar",icon:"🔢",action:()=>{setTab("calc");setShowMobMenu(false);}},
                   {label:"Dışa Aktar",icon:"📤",action:()=>{setTab("export");setShowMobMenu(false);}},
                   {label:"Grafik Sıfırla",icon:"🗑️",action:()=>{if(window.confirm("Tüm nesneler ve cetveller silinecek. Emin misiniz?")){setObjects([]);setRulers([]);}setShowMobMenu(false);}},
                 ].map((item,i)=>(
-                  <button key={i} onClick={item.action} style={{width:"100%",padding:"10px 12px",background:"transparent",border:"none",borderBottom:i<4?`1px solid ${C.green}15`:"none",color:C.g200,fontSize:13,textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:8,fontFamily:FB}}>
+                  <button key={i} onClick={item.action} style={{width:"100%",padding:"10px 12px",background:"transparent",border:"none",borderBottom:i<5?`1px solid ${C.green}15`:"none",color:C.g200,fontSize:13,textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:8,fontFamily:FB}}>
                     <span style={{fontSize:15}}>{item.icon}</span>{item.label}
                   </button>
                 ))}
