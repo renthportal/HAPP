@@ -1229,24 +1229,22 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   // Scroll to top when switching tabs
   useEffect(()=>{window.scrollTo(0,0);},[tab]);
 
-  // Lock body scroll on mobile chart tab to prevent page bounce
+  // Lock body scroll on mobile chart tab
   useEffect(()=>{
-    if(isMobile&&tab==="chart"){
-      // Prevent ALL touch-move scrolling at document level (non-passive)
-      const prevent=(e)=>{e.preventDefault();};
-      document.addEventListener("touchmove",prevent,{passive:false});
-      document.body.style.overflow="hidden";
-      document.body.style.position="fixed";
-      document.body.style.inset="0";
-      document.documentElement.style.overflow="hidden";
-      return()=>{
-        document.removeEventListener("touchmove",prevent);
-        document.body.style.overflow="";
-        document.body.style.position="";
-        document.body.style.inset="";
-        document.documentElement.style.overflow="";
-      };
-    }
+    if(!isMobile||tab!=="chart")return;
+    const prevent=(e)=>e.preventDefault();
+    document.addEventListener("touchmove",prevent,{passive:false});
+    document.body.style.overflow="hidden";
+    document.body.style.position="fixed";
+    document.body.style.inset="0";
+    document.documentElement.style.overflow="hidden";
+    return()=>{
+      document.removeEventListener("touchmove",prevent);
+      document.body.style.overflow="";
+      document.body.style.position="";
+      document.body.style.inset="";
+      document.documentElement.style.overflow="";
+    };
   },[isMobile,tab]);
 
   // Bridge for canvas to update config
@@ -1332,11 +1330,11 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   // JSON import handled inline in Export tab
 
   return(
-    <div style={{fontFamily:FB,background:`linear-gradient(135deg,${C.dark} 0%,${C.greenBg} 40%,${C.dark} 100%)`,height:isMobile&&tab==="chart"?"100vh":"auto",minHeight:"100vh",color:C.white,overflow:isMobile&&tab==="chart"?"hidden":"auto"}}>
+    <div style={{fontFamily:FB,background:`linear-gradient(135deg,${C.dark} 0%,${C.greenBg} 40%,${C.dark} 100%)`,color:C.white,...(isMobile&&tab==="chart"?{position:"fixed",inset:0,overflow:"hidden"}:{minHeight:"100vh"})}}>
       {showPDF&&<PDFPreview cfg={cfg} crane={crane} cap={cap} lp={lp} totalW={totalW} hookH={realHookH} radius={realRadius} realBoomTipH={realBoomTipH} onClose={()=>setShowPDF(false)}/>}
 
       {/* HEADER — quick actions always visible */}
-      <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`2px solid ${C.yellow}`,padding:isMobile?"6px 10px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:isMobile?4:8}}>
+      <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`2px solid ${C.yellow}`,padding:isMobile?"6px 10px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:isMobile?4:8,...(isMobile&&tab==="chart"?{position:"fixed",top:0,left:0,right:0,zIndex:50,height:52}:{})}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
           <img src={LOGO_DATA} alt="Hangle" style={{width:isMobile?28:42,height:isMobile?28:42,borderRadius:8,objectFit:"contain",flexShrink:0}}/>
           <div>
@@ -1361,9 +1359,9 @@ export default function App({onSave,initialData,projectName:extProjectName}){
       {/* ═══ CHART TAB ═══ */}
       {tab==="chart"&&(
         isMobile?(
-        <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 52px)",paddingBottom:"env(safe-area-inset-bottom,0px)",overflow:"hidden",touchAction:"none",overscrollBehavior:"none"}}>
+        <div style={{position:"fixed",top:52,left:0,right:0,bottom:0,display:"flex",flexDirection:"column",overflow:"hidden",touchAction:"none"}}>
           {/* CANVAS - takes all space */}
-          <div style={{flex:1,position:"relative"}}>
+          <div style={{flex:1,position:"relative",minHeight:0}}>
             <RangeChart cfg={cfg} crane={crane} skin={skin} objects={objects} selObj={selObj} setSelObj={setSelObj} rulers={rulers} setRulers={setRulers} tool={tool} setTool={setTool} addObj={addObj} updObj={updObj} delObj={delObj} isMobile={isMobile} craneColors={craneColors} setDragTarget={setDragTarget} onCfgUpdate={handleCfgUpdate} finalCap={cap} derating={combinedDerating} capSource={capSource} chartMismatch={chartMismatch}/>
             
             {/* Top-right floating toolbar */}
