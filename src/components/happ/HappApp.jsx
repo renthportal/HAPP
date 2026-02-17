@@ -1229,20 +1229,13 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   // Scroll to top when switching tabs
   useEffect(()=>{window.scrollTo(0,0);},[tab]);
 
-  // Lock body scroll on mobile chart tab
+  // Lock body scroll on mobile chart tab (position:fixed handles the rest)
   useEffect(()=>{
     if(!isMobile||tab!=="chart")return;
-    const prevent=(e)=>e.preventDefault();
-    document.addEventListener("touchmove",prevent,{passive:false});
     document.body.style.overflow="hidden";
-    document.body.style.position="fixed";
-    document.body.style.inset="0";
     document.documentElement.style.overflow="hidden";
     return()=>{
-      document.removeEventListener("touchmove",prevent);
       document.body.style.overflow="";
-      document.body.style.position="";
-      document.body.style.inset="";
       document.documentElement.style.overflow="";
     };
   },[isMobile,tab]);
@@ -1334,7 +1327,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
       {showPDF&&<PDFPreview cfg={cfg} crane={crane} cap={cap} lp={lp} totalW={totalW} hookH={realHookH} radius={realRadius} realBoomTipH={realBoomTipH} onClose={()=>setShowPDF(false)}/>}
 
       {/* HEADER — quick actions always visible */}
-      <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`2px solid ${C.yellow}`,padding:isMobile?"6px 10px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:isMobile?4:8,...(isMobile&&tab==="chart"?{position:"fixed",top:0,left:0,right:0,zIndex:50,height:52}:{})}}>
+      <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`2px solid ${C.yellow}`,padding:isMobile?"4px 8px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:isMobile?4:8,...(isMobile&&tab==="chart"?{position:"fixed",top:0,left:0,right:0,zIndex:50,height:44}:{})}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
           <img src={LOGO_DATA} alt="Hangle" style={{width:isMobile?28:42,height:isMobile?28:42,borderRadius:8,objectFit:"contain",flexShrink:0}}/>
           <div>
@@ -1359,31 +1352,33 @@ export default function App({onSave,initialData,projectName:extProjectName}){
       {/* ═══ CHART TAB ═══ */}
       {tab==="chart"&&(
         isMobile?(
-        <div style={{position:"fixed",top:52,left:0,right:0,bottom:0,display:"flex",flexDirection:"column",overflow:"hidden",touchAction:"none"}}>
+        <div style={{position:"fixed",top:44,left:0,right:0,bottom:0,display:"flex",flexDirection:"column",overflow:"hidden",touchAction:"none"}}>
           {/* CANVAS - takes all space */}
           <div style={{flex:1,position:"relative",minHeight:0}}>
             <RangeChart cfg={cfg} crane={crane} skin={skin} objects={objects} selObj={selObj} setSelObj={setSelObj} rulers={rulers} setRulers={setRulers} tool={tool} setTool={setTool} addObj={addObj} updObj={updObj} delObj={delObj} isMobile={isMobile} craneColors={craneColors} setDragTarget={setDragTarget} onCfgUpdate={handleCfgUpdate} finalCap={cap} derating={combinedDerating} capSource={capSource} chartMismatch={chartMismatch}/>
             
             {/* Top-right floating toolbar */}
-            <div style={{position:"absolute",top:8,right:8,display:"flex",gap:6,zIndex:20}}>
+            <div style={{position:"absolute",top:6,right:6,display:"flex",gap:4,zIndex:20}}>
               {[{id:"select",icon:"👆",tip:"Seç"},{id:"ruler",icon:"📏",tip:"Cetvel"},{id:"obj",icon:"📦",tip:"Nesne"}].map(b=>(
-                <button key={b.id} onClick={()=>{if(b.id==="obj"){setShowMobObj(!showMobObj);setShowMobMenu(false);}else{setTool(b.id==="select"?"select":"ruler");setShowMobObj(false);}}} style={{width:44,height:44,borderRadius:10,border:`2px solid ${(b.id==="obj"?showMobObj:tool===b.id)?C.yellow:C.green+"60"}`,background:(b.id==="obj"?showMobObj:tool===b.id)?"rgba(0,77,42,0.95)":"rgba(10,31,18,0.85)",color:"white",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(8px)"}} title={b.tip}>{b.icon}</button>
+                <button key={b.id} onClick={()=>{if(b.id==="obj"){setShowMobObj(!showMobObj);setShowMobMenu(false);}else{setTool(b.id==="select"?"select":"ruler");setShowMobObj(false);}}} style={{width:36,height:36,borderRadius:8,border:`2px solid ${(b.id==="obj"?showMobObj:tool===b.id)?C.yellow:C.green+"60"}`,background:(b.id==="obj"?showMobObj:tool===b.id)?"rgba(0,77,42,0.95)":"rgba(10,31,18,0.85)",color:"white",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(8px)"}} title={b.tip}>{b.icon}</button>
               ))}
-              <button onClick={()=>{setShowMobMenu(!showMobMenu);setShowMobObj(false);}} style={{width:44,height:44,borderRadius:10,border:`2px solid ${showMobMenu?C.yellow:C.green+"60"}`,background:showMobMenu?"rgba(0,77,42,0.95)":"rgba(10,31,18,0.85)",color:"white",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(8px)"}}>☰</button>
+              <button onClick={()=>{setShowMobMenu(!showMobMenu);setShowMobObj(false);}} style={{width:36,height:36,borderRadius:8,border:`2px solid ${showMobMenu?C.yellow:C.green+"60"}`,background:showMobMenu?"rgba(0,77,42,0.95)":"rgba(10,31,18,0.85)",color:"white",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(8px)"}}>☰</button>
             </div>
 
             {/* Objects overlay */}
-            {showMobObj&&(
-              <div style={{position:"absolute",top:52,right:8,width:200,maxHeight:"60vh",overflow:"auto",background:"rgba(10,31,18,0.95)",border:`1px solid ${C.green}40`,borderRadius:10,padding:8,zIndex:30,backdropFilter:"blur(12px)"}}>
+            {showMobObj&&(<>
+              <div onClick={()=>setShowMobObj(false)} style={{position:"absolute",inset:0,zIndex:25}}/>
+              <div style={{position:"absolute",top:46,right:6,width:200,maxHeight:"50vh",overflow:"auto",background:"rgba(10,31,18,0.95)",border:`1px solid ${C.green}40`,borderRadius:10,padding:8,zIndex:30,backdropFilter:"blur(12px)",touchAction:"auto",overscrollBehavior:"contain"}}>
                 <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
                   {OBJ_TYPES.map(o=><button key={o.id} onClick={()=>{addObj(o.id);setShowMobObj(false);}} style={{padding:"6px 10px",background:C.green+"25",border:`1px solid ${C.green}35`,borderRadius:8,color:C.g200,fontSize:10,cursor:"pointer"}}>{o.icon} {o.name}</button>)}
                 </div>
               </div>
-            )}
+            </>)}
 
-            {/* Menu overlay */}
-            {showMobMenu&&(
-              <div style={{position:"absolute",top:52,right:8,width:220,background:"rgba(10,31,18,0.96)",border:`1px solid ${C.green}40`,borderRadius:12,padding:6,zIndex:30,backdropFilter:"blur(12px)"}}>
+            {/* Menu overlay — scrollable */}
+            {showMobMenu&&(<>
+              <div onClick={()=>setShowMobMenu(false)} style={{position:"absolute",inset:0,zIndex:25}}/>
+              <div style={{position:"absolute",top:46,right:6,width:220,maxHeight:"calc(100% - 56px)",overflow:"auto",background:"rgba(10,31,18,0.96)",border:`1px solid ${C.green}40`,borderRadius:12,padding:6,zIndex:30,backdropFilter:"blur(12px)",touchAction:"auto",overscrollBehavior:"contain"}}>
                 {[
                   {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
                   {label:"Kaldırma Planı",icon:"📋",action:()=>{setTab("liftplan");setShowMobMenu(false);}},
@@ -1477,13 +1472,13 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                   </div>
                 </div>
               </div>
-            )}
+            </>)}
           </div>
 
           {/* BOTTOM VALUE BAR - Crangle style */}
           {selObjData?(
             /* Object selected mode */
-            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"6px 4px"}}>
+            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"4px 4px",flexShrink:0}}>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr auto",gap:3,alignItems:"center"}}>
                 <div style={{textAlign:"center"}}>
                   <div style={{fontSize:10,color:"#888"}}>Yükseklik</div>
@@ -1509,7 +1504,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
             </div>
           ):(
             /* Default: crane values — Crangle style 6-cell grid */
-            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"4px 3px"}}>
+            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"3px 3px",flexShrink:0}}>
               {(()=>{
                 const firstObj=objects[0];
                 return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:2}}>
