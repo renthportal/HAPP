@@ -438,7 +438,7 @@ const Num=({value,onChange,min,max,step=1,style:s})=>{const[local,setLocal]=useS
 
 const Sel=({value,onChange,children,style:s})=><select value={value} onChange={e=>onChange(e.target.value)} style={{width:"100%",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:8,color:C.white,padding:"10px 12px",fontSize:12,fontFamily:F,...s}}>{children}</select>;
 const Btn=({children,onClick,color=C.yellow,small,disabled,style:s})=><button onClick={onClick} disabled={disabled} style={{padding:small?"5px 12px":"8px 18px",background:color,border:"none",borderRadius:8,color:C.greenDark,fontWeight:700,fontSize:small?11:13,cursor:disabled?"not-allowed":"pointer",fontFamily:F,opacity:disabled?0.5:1,...s}}>{children}</button>;
-const MobNum=({value,onChange,step=0.1,label,style:s,inputMode:im})=>{const[local,setLocal]=useState(String(value));const ref=useRef(null);useEffect(()=>{if(ref.current!==document.activeElement)setLocal(String(value));},[value]);return<input ref={ref} type="number" inputMode={im||"decimal"} value={local} step={step} onChange={e=>{setLocal(e.target.value);const v=parseFloat(e.target.value);if(!isNaN(v))onChange(v);}} onBlur={()=>{const v=parseFloat(local);if(isNaN(v)){setLocal(String(value));}else{onChange(v);setLocal(String(v));}}} style={{width:"100%",textAlign:"center",fontSize:17,fontWeight:700,border:"2px solid #ccc",borderRadius:8,padding:"5px 2px",background:"white",fontFamily:F,...s}}/>;};
+const MobNum=({value,onChange,step=0.1,label,style:s,inputMode:im})=>{const[local,setLocal]=useState(String(value));const ref=useRef(null);useEffect(()=>{if(ref.current!==document.activeElement)setLocal(String(value));},[value]);return<input ref={ref} type="number" inputMode={im||"decimal"} value={local} step={step} onChange={e=>{setLocal(e.target.value);const v=parseFloat(e.target.value);if(!isNaN(v))onChange(v);}} onFocus={()=>{setTimeout(()=>window.scrollTo(0,0),50);}} onBlur={()=>{const v=parseFloat(local);if(isNaN(v)){setLocal(String(value));}else{onChange(v);setLocal(String(v));}setTimeout(()=>window.scrollTo(0,0),100);}} style={{width:"100%",textAlign:"center",fontSize:16,fontWeight:700,border:"2px solid #ccc",borderRadius:8,padding:"4px 2px",background:"white",fontFamily:F,...s}}/>;};
 
 const Row=({children,style})=><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8,...style}}>{children}</div>;
 
@@ -930,6 +930,24 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
 
     // Info box
     const hasCap=capVal!==null&&capVal!==undefined&&capVal>0;
+    if(isMobile){
+      // Compact mobile info box
+      const mBoxH=hasCap?48:56;
+      ctx.fillStyle=C.dark+"C0";ctx.fillRect(8,6,220,mBoxH);
+      ctx.strokeStyle=C.green+"30";ctx.lineWidth=1;ctx.strokeRect(8,6,220,mBoxH);
+      ctx.fillStyle=C.g200;ctx.font=`8px ${F}`;ctx.textAlign="left";
+      ctx.fillText(`${crane?.name||""} | ${cfg.boomLength}m @ ${cfg.boomAngle}°`,14,20);
+      if(hasCap){
+        ctx.fillStyle=capSource==="chart"?C.greenLight:C.cyan;
+        ctx.fillText(`Kap: ${capVal.toFixed(1)}t ${capSource==="chart"?"(tablodan)":"(elle)"}`,14,34);
+        if(derating!==undefined&&derating<1){ctx.fillStyle=C.orange;ctx.fillText(`Drt: ×${derating.toFixed(2)}`,14,46);}
+      } else {
+        ctx.fillStyle=C.orange;ctx.font=`bold 8px ${F}`;
+        ctx.fillText("Kapasite: — (Tablo seçin)",14,34);
+        ctx.fillStyle=C.g400;ctx.font=`7px ${F}`;
+        ctx.fillText("Menü (☰) → Yük Tablosu",14,46);
+      }
+    } else {
     const boxH=extChartMismatch?118:!hasCap?100:derating&&derating<1?108:90;
     ctx.fillStyle=C.dark+"D0";ctx.fillRect(10,10,260,boxH);
     ctx.strokeStyle=C.green+"40";ctx.lineWidth=1;ctx.strokeRect(10,10,260,boxH);
@@ -951,10 +969,12 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       ctx.fillStyle=C.orange;ctx.font=`bold 9px ${F}`;
       ctx.fillText("Kapasite: — (Tablo seçin veya elle girin)",18,72);
       ctx.fillStyle=C.g400;ctx.font=`8px ${F}`;
-      ctx.fillText(isMobile?"Menü (☰) → Yük Tablosu veya Elle Kapasite":"Sol panel → Yük Tablosu veya Elle Kapasite",18,86);
+      ctx.fillText("Sol panel → Yük Tablosu veya Elle Kapasite",18,86);
     }
+    } // end desktop info box
 
-    // Status bar
+    // Status bar (desktop only — mobile has bottom bar)
+    if(!isMobile){
     const barY=h-22;
     ctx.fillStyle=C.dark+"E0";ctx.fillRect(0,barY,w,22);
     ctx.fillStyle=C.g300;ctx.font=`9px ${F}`;ctx.textAlign="left";
@@ -967,6 +987,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
     // Interaction hint
     ctx.textAlign="right";ctx.fillStyle=C.g500;
     ctx.fillText("Gövde=Açı | Uç=Uzunluk | Nesne=Taşı/Boyut/Döndür",w-10,barY+14);
+    }
 
   },[cfg,crane,skin,objects,selObj,rulers,tool,magnifier,craneColors,realRadius,realHookH,realBoomTipH,effectiveJibAngle,finalCap,derating,extCapSource,extChartMismatch,isMobile]);
 
@@ -1478,7 +1499,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           {/* BOTTOM VALUE BAR - Crangle style */}
           {selObjData?(
             /* Object selected mode */
-            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"4px 4px",flexShrink:0}}>
+            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"4px 4px",paddingBottom:"max(4px, env(safe-area-inset-bottom, 0px))",flexShrink:0}}>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr auto",gap:3,alignItems:"center"}}>
                 <div style={{textAlign:"center"}}>
                   <div style={{fontSize:10,color:"#888"}}>Yükseklik</div>
@@ -1504,32 +1525,32 @@ export default function App({onSave,initialData,projectName:extProjectName}){
             </div>
           ):(
             /* Default: crane values — Crangle style 6-cell grid */
-            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"3px 3px",flexShrink:0}}>
+            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"3px 3px",paddingBottom:"max(3px, env(safe-area-inset-bottom, 0px))",flexShrink:0}}>
               {(()=>{
                 const firstObj=objects[0];
-                return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:2}}>
+                return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:1}}>
                 {[
-                  {label:"Bom Uzunluğu",value:cfg.boomLength,unit:"m",key:"boomLength",min:5,max:cfg.maxBoom||crane?.defBoom||100,step:0.5},
+                  {label:"Bom Uz.",value:cfg.boomLength,unit:"m",key:"boomLength",min:5,max:cfg.maxBoom||crane?.defBoom||100,step:0.5},
                   {label:"Yarıçap",value:realRadius,unit:"m",readonly:true},
-                  {label:firstObj?"Nesne Yüksekliği":"Uç Yüksekliği",value:firstObj?firstObj.h:realBoomTipH,unit:"m",readonly:true},
+                  {label:firstObj?"Nesne Y.":"Uç Yük.",value:firstObj?firstObj.h:realBoomTipH,unit:"m",readonly:true},
                 ].map((v,i)=>(
                   <div key={i} style={{textAlign:"center"}}>
-                    <div style={{fontSize:10,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
+                    <div style={{fontSize:9,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
                     {v.readonly?
-                      <div style={{fontSize:15,fontWeight:700,color:"#333",fontFamily:F,padding:"3px 0"}}>{fmtTR(v.value,1)}{v.unit}</div>:
+                      <div style={{fontSize:14,fontWeight:700,color:"#333",fontFamily:F,padding:"2px 0"}}>{fmtTR(v.value,1)}{v.unit}</div>:
                       <MobNum value={v.value} onChange={val=>up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
                     }
                   </div>
                 ))}
                 {[
-                  {label:"Bom Açısı",value:cfg.boomAngle,unit:"°",key:"boomAngle",min:0,max:85,step:1},
-                  {label:"Uç Yüksekliği",value:realBoomTipH,unit:"m",readonly:true},
-                  {label:firstObj?"Nesne Mesafesi":"Kapasite",value:firstObj?firstObj.x:(cap!==null?cap:null),unit:firstObj?"m":"t",readonly:true,color:!firstObj&&cap===null?"#999":undefined},
+                  {label:"Bom Açı",value:cfg.boomAngle,unit:"°",key:"boomAngle",min:0,max:85,step:1},
+                  {label:"Uç Yük.",value:realBoomTipH,unit:"m",readonly:true},
+                  {label:firstObj?"Nesne M.":"Kapasite",value:firstObj?firstObj.x:(cap!==null?cap:null),unit:firstObj?"m":"t",readonly:true,color:!firstObj&&cap===null?"#999":undefined},
                 ].map((v,i)=>(
                   <div key={i+3} style={{textAlign:"center"}}>
-                    <div style={{fontSize:10,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
+                    <div style={{fontSize:9,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
                     {v.readonly?
-                      <div style={{fontSize:15,fontWeight:700,color:v.color||"#333",fontFamily:F,padding:"3px 0"}}>{v.value!==null?fmtTR(v.value,v.unit==="°"?0:1):"—"}{v.value!==null?v.unit:""}</div>:
+                      <div style={{fontSize:14,fontWeight:700,color:v.color||"#333",fontFamily:F,padding:"2px 0"}}>{v.value!==null?fmtTR(v.value,v.unit==="°"?0:1):"—"}{v.value!==null?v.unit:""}</div>:
                       <MobNum value={v.value} onChange={val=>up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
                     }
                   </div>
