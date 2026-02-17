@@ -1232,7 +1232,14 @@ export default function App({onSave,initialData,projectName:extProjectName}){
 
   const [ci,setCi]=useState({load:0,wll:0,pct:75,outF:0,padW:1,padL:1,padShape:"square"});
   const [showPDF,setShowPDF]=useState(false);
-  const [customCharts,setCustomCharts]=useState({});
+  const [customCharts,setCustomCharts]=useState(()=>{
+    if(typeof window==="undefined")return{};
+    try{const s=localStorage.getItem("hangle_charts");return s?JSON.parse(s):{};}catch{return{};}
+  });
+  // Persist custom charts to localStorage
+  useEffect(()=>{
+    try{localStorage.setItem("hangle_charts",JSON.stringify(customCharts));}catch{}
+  },[customCharts]);
   const [saveStatus,setSaveStatus]=useState("idle");
   const [showMobMenu,setShowMobMenu]=useState(false);
   const [showMobObj,setShowMobObj]=useState(false);
@@ -1314,29 +1321,52 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   };
 
   // JSON Import
+  const csvInputRef=useRef(null);
   const importChartCSV=(e)=>{
     const file=e.target.files?.[0];if(!file)return;
     const reader=new FileReader();
     reader.onload=(ev)=>{
       try{
         const text=ev.target.result;
-        const lines=text.trim().split("\n").map(l=>l.split(",").map(s=>s.trim()));
-        if(lines.length<3){alert("CSV en az 3 satır olmalı (isim, boom uzunlukları, veri)");return;}
-        const name=lines[0][0]||"Özel Tablo";
-        const boomLengths=lines[1].slice(1).map(Number).filter(v=>!isNaN(v)&&v>0);
-        const rows=[];
-        for(let i=2;i<lines.length;i++){
-          const r=parseFloat(lines[i][0]);if(isNaN(r))continue;
-          const caps=lines[i].slice(1).map(v=>{const n=parseFloat(v);return isNaN(n)||n<=0?null:n;});
-          rows.push({r,caps});
+        // Split by --- for multi-table support
+        const sections=text.trim().split(/\n---\s*\n|\n---$/);
+        const newCharts={};
+        let firstName="";
+        let firstId="";
+        for(const section of sections){
+          const lines=section.trim().split("\n").map(l=>l.split(",").map(s=>s.trim()));
+          if(lines.length<3)continue;
+          const name=lines[0][0]||"Özel Tablo";
+          // Check if line 1 is a config: line
+          let configLine={};
+          let dataStart=1;
+          if(lines[1]&&lines[1][0]&&lines[1][0].toLowerCase().startsWith("config:")){
+            const cfgStr=lines[1].join(",").replace(/^config:\s*/i,"");
+            cfgStr.split(",").forEach(p=>{const[k,v]=p.split("=").map(s=>s.trim());if(k&&v)configLine[k]=v;});
+            dataStart=2;
+          }
+          const boomLengths=lines[dataStart].slice(1).map(v=>{const n=parseFloat(v.replace(",","."));return isNaN(n)?null:n;}).filter(v=>v!==null&&v>0);
+          const rows=[];
+          for(let i=dataStart+1;i<lines.length;i++){
+            if(!lines[i]||!lines[i][0])continue;
+            const r=parseFloat(lines[i][0].replace(",","."));if(isNaN(r))continue;
+            const caps=lines[i].slice(1).map(v=>{const n=parseFloat((v||"").replace(",","."));return isNaN(n)||n<=0?null:n;});
+            rows.push({r,caps});
+          }
+          if(boomLengths.length===0||rows.length===0)continue;
+          const maxCap=Math.max(...rows.flatMap(r=>r.caps.filter(v=>v!==null)));
+          const maxBoom=Math.max(...boomLengths);
+          const id="custom_"+Date.now()+"_"+Math.random().toString(36).slice(2,6);
+          newCharts[id]={name,maxCap,maxBoom,pivotH:parseFloat(configLine.pivotH)||3,boomLengths,rows,config:configLine};
+          if(!firstName){firstName=name;firstId=id;}
         }
-        if(boomLengths.length===0||rows.length===0){alert("Geçersiz tablo formatı");return;}
-        const maxCap=Math.max(...rows.flatMap(r=>r.caps.filter(v=>v!==null)));
-        const maxBoom=Math.max(...boomLengths);
-        const id="custom_"+Date.now();
-        setCustomCharts(p=>({...p,[id]:{name,maxCap,maxBoom,pivotH:3,boomLengths,rows}}));
-        up({chartId:id});
-        alert("Yük tablosu yüklendi: "+name+" ("+maxCap+"t, "+boomLengths.length+" boom konfig)");
+        const count=Object.keys(newCharts).length;
+        if(count===0){alert("Geçerli tablo bulunamadı. Format:\nSatır 1: Tablo adı\n(Opsiyonel) config: outrigger=full, cw=87.5\nSatır 2: ,boom1,boom2,...\nSatır 3+: menzil,kap1,kap2,...\n\nÇoklu tablolar --- ile ayrılır.");return;}
+        setCustomCharts(p=>({...p,...newCharts}));
+        up({chartId:firstId});
+        alert(count===1
+          ?`Yük tablosu yüklendi: ${firstName}`
+          :`${count} yük tablosu yüklendi! İlk tablo: ${firstName}`);
       }catch(err){alert("CSV parse hatası: "+err.message);}
     };
     reader.readAsText(file);
@@ -1427,6 +1457,13 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                     {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name}</option>)}
                   </select>
                   {cfg.chartId&&<div style={{fontSize:10,color:C.greenLight,marginTop:3}}>✓ Aktif</div>}
+                  <div style={{display:"flex",gap:4,marginTop:4}}>
+                    <label style={{flex:1,display:"block",padding:"6px 8px",background:C.g500+"40",borderRadius:4,color:C.g200,fontWeight:600,fontSize:10,textAlign:"center",cursor:"pointer",fontFamily:F}}>
+                      📄 CSV Yükle
+                      <input type="file" accept=".csv,.txt" onChange={e=>{importChartCSV(e);setShowMobMenu(false);}} style={{display:"none"}}/>
+                    </label>
+                    {cfg.chartId&&cfg.chartId.startsWith("custom_")&&<button onClick={()=>{setCustomCharts(p=>{const n={...p};delete n[cfg.chartId];return n;});up({chartId:""});}} style={{flex:1,padding:"6px 8px",background:"#c4444440",border:"none",borderRadius:4,color:"#f88",fontWeight:600,fontSize:10,cursor:"pointer",fontFamily:F}}>🗑 Tabloyu Sil</button>}
+                  </div>
                 </div>
                 {/* Load shape & sling config */}
                 <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
@@ -1578,10 +1615,9 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               </Sel>
               {cfg.chartId&&<div style={{fontSize:10,color:C.greenLight,marginTop:4,fontWeight:600}}>✓ Gerçek yük tablosu aktif</div>}
               {!cfg.chartId&&<div style={{fontSize:10,color:C.g400,marginTop:4}}>Kapasite elle girilecek ↓</div>}
-              <label style={{display:"inline-block",marginTop:8,cursor:"pointer"}}>
-                <Btn small color={C.g500}>📄 CSV Tablo Yükle</Btn>
-                <input type="file" accept=".csv,.txt" onChange={importChartCSV} style={{display:"none"}}/>
-              </label>
+              <Btn small color={C.g500} onClick={()=>csvInputRef.current?.click()} style={{marginTop:8}}>📄 CSV Tablo Yükle</Btn>
+              {cfg.chartId&&cfg.chartId.startsWith("custom_")&&<Btn small color="#c44" onClick={()=>{setCustomCharts(p=>{const n={...p};delete n[cfg.chartId];return n;});up({chartId:""});}} style={{marginTop:4,marginLeft:4}}>🗑 Sil</Btn>}
+              <input ref={csvInputRef} type="file" accept=".csv,.txt" onChange={importChartCSV} style={{display:"none"}}/>
             </Card>
 
             {/* Boom — en çok kullanılan ayar */}
