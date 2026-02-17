@@ -30,7 +30,7 @@ const catColors: Record<string, string> = { mobile: "#00A86B", crawler: "#FF6B35
 
 export default function CranesPage() {
   const [selCat, setSelCat] = useState('all')
-  const cats = ['all', ...new Set(CRANES.map(c => c.cat))]
+  const cats = ['all', ...Array.from(new Set(CRANES.map(c => c.cat)))]
   const filtered = selCat === 'all' ? CRANES : CRANES.filter(c => c.cat === selCat)
 
   return (
