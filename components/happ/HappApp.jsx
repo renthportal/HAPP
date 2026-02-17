@@ -1215,6 +1215,22 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   // Scroll to top when switching tabs
   useEffect(()=>{window.scrollTo(0,0);},[tab]);
 
+  // Lock body scroll on mobile chart tab to prevent page bounce
+  useEffect(()=>{
+    if(isMobile&&tab==="chart"){
+      document.body.style.overflow="hidden";
+      document.body.style.position="fixed";
+      document.body.style.width="100%";
+      document.body.style.height="100%";
+    }else{
+      document.body.style.overflow="";
+      document.body.style.position="";
+      document.body.style.width="";
+      document.body.style.height="";
+    }
+    return()=>{document.body.style.overflow="";document.body.style.position="";document.body.style.width="";document.body.style.height="";};
+  },[isMobile,tab]);
+
   // Bridge for canvas to update config
   // Config update callback for RangeChart child
   const handleCfgUpdate=useCallback((u)=>setCfg(p=>({...p,...u})),[]);
@@ -1298,7 +1314,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   // JSON import handled inline in Export tab
 
   return(
-    <div style={{fontFamily:FB,background:`linear-gradient(135deg,${C.dark} 0%,${C.greenBg} 40%,${C.dark} 100%)`,minHeight:"100vh",color:C.white}}>
+    <div style={{fontFamily:FB,background:`linear-gradient(135deg,${C.dark} 0%,${C.greenBg} 40%,${C.dark} 100%)`,height:isMobile&&tab==="chart"?"100vh":"auto",minHeight:"100vh",color:C.white,overflow:isMobile&&tab==="chart"?"hidden":"auto"}}>
       {showPDF&&<PDFPreview cfg={cfg} crane={crane} cap={cap} lp={lp} totalW={totalW} hookH={realHookH} radius={realRadius} realBoomTipH={realBoomTipH} onClose={()=>setShowPDF(false)}/>}
 
       {/* HEADER — quick actions always visible */}
@@ -1327,7 +1343,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
       {/* ═══ CHART TAB ═══ */}
       {tab==="chart"&&(
         isMobile?(
-        <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 52px)",paddingBottom:"env(safe-area-inset-bottom,0px)"}}>
+        <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 52px)",paddingBottom:"env(safe-area-inset-bottom,0px)",overflow:"hidden",touchAction:"none",overscrollBehavior:"none"}}>
           {/* CANVAS - takes all space */}
           <div style={{flex:1,position:"relative"}}>
             <RangeChart cfg={cfg} crane={crane} skin={skin} objects={objects} selObj={selObj} setSelObj={setSelObj} rulers={rulers} setRulers={setRulers} tool={tool} setTool={setTool} addObj={addObj} updObj={updObj} delObj={delObj} isMobile={isMobile} craneColors={craneColors} setDragTarget={setDragTarget} onCfgUpdate={handleCfgUpdate} finalCap={cap} derating={combinedDerating} capSource={capSource} chartMismatch={chartMismatch}/>
