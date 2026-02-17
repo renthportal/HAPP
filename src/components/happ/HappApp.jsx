@@ -1,5 +1,6 @@
 "use client";
 import{useState,useEffect,useRef,useCallback,useMemo}from"react";
+import{createClient}from"@/lib/supabase/client";
 
 // ═══ COLORS ═══
 const C={dark:"#0A1F12",darkSurf:"#132E1C",greenBg:"#0D2818",greenDark:"#004D2A",green:"#006838",greenLight:"#00A86B",yellow:"#FFC72C",yellowDark:"#B8860B",orange:"#FF6B35",cyan:"#00BCD4",red:"#DC2626",white:"#F0F4F1",g100:"#D9E5DD",g200:"#B8C9BE",g300:"#94A89A",g400:"#6B7E70",g500:"#475950",g600:"#2A3B30"};
@@ -1232,14 +1233,43 @@ export default function App({onSave,initialData,projectName:extProjectName}){
 
   const [ci,setCi]=useState({load:0,wll:0,pct:75,outF:0,padW:1,padL:1,padShape:"square"});
   const [showPDF,setShowPDF]=useState(false);
-  const [customCharts,setCustomCharts]=useState(()=>{
-    if(typeof window==="undefined")return{};
-    try{const s=localStorage.getItem("hangle_charts");return s?JSON.parse(s):{};}catch{return{};}
-  });
-  // Persist custom charts to localStorage
+  const [customCharts,setCustomCharts]=useState({});
+  const [chartsLoading,setChartsLoading]=useState(true);
+  const supabaseRef=useRef(null);
+  const userIdRef=useRef(null);
+
+  // Load custom charts from Supabase on mount
   useEffect(()=>{
-    try{localStorage.setItem("hangle_charts",JSON.stringify(customCharts));}catch{}
-  },[customCharts]);
+    const loadCharts=async()=>{
+      try{
+        const sb=createClient();
+        supabaseRef.current=sb;
+        const{data:{user}}=await sb.auth.getUser();
+        if(user)userIdRef.current=user.id;
+        // Load user's own charts + presets + public
+        const{data}=await sb.from("load_charts").select("*");
+        if(data&&data.length>0){
+          const charts={};
+          data.forEach(row=>{
+            charts[row.id]={
+              name:row.name,
+              maxCap:row.max_capacity,
+              maxBoom:row.max_boom,
+              pivotH:row.pivot_height||3,
+              boomLengths:row.boom_lengths||[],
+              rows:row.chart_data||[],
+              config:{outrigger:row.outrigger_config,cw:row.counterweight_config,manufacturer:row.manufacturer,model:row.model},
+              isPreset:row.is_preset||false,
+              isPublic:row.is_public||false,
+            };
+          });
+          setCustomCharts(charts);
+        }
+      }catch(e){console.warn("Chart load error:",e);}
+      setChartsLoading(false);
+    };
+    loadCharts();
+  },[]);
   const [saveStatus,setSaveStatus]=useState("idle");
   const [showMobMenu,setShowMobMenu]=useState(false);
   const [showMobObj,setShowMobObj]=useState(false);
@@ -1361,14 +1391,26 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           if(boomLengths.length===0||rows.length===0)continue;
           const maxCap=Math.max(...rows.flatMap(r=>r.caps.filter(v=>v!==null)));
           const maxBoom=Math.max(...boomLengths);
-          const id="custom_"+Date.now()+"_"+Math.random().toString(36).slice(2,6);
-          newCharts[id]={name,maxCap,maxBoom,pivotH:parseFloat(configLine.pivotH)||3,boomLengths,rows,config:configLine};
+          const id=crypto.randomUUID();
+          newCharts[id]={name,maxCap,maxBoom,pivotH:parseFloat(configLine.pivotH)||3,boomLengths,rows,config:configLine,isPreset:false};
           if(!firstName){firstName=name;firstId=id;}
         }
         const count=Object.keys(newCharts).length;
         if(count===0){alert("Geçerli tablo bulunamadı. Format:\nSatır 1: Tablo adı\n(Opsiyonel) config: outrigger=full, cw=87.5\nSatır 2: ,boom1,boom2,...\nSatır 3+: menzil,kap1,kap2,...\n\nÇoklu tablolar --- ile ayrılır.");return;}
         setCustomCharts(p=>({...p,...newCharts}));
         up({chartId:firstId});
+        // Save to Supabase
+        if(supabaseRef.current&&userIdRef.current){
+          const inserts=Object.entries(newCharts).map(([id,ch])=>({
+            id,user_id:userIdRef.current,name:ch.name,
+            max_capacity:ch.maxCap,max_boom:ch.maxBoom,pivot_height:ch.pivotH,
+            boom_lengths:ch.boomLengths,chart_data:ch.rows,
+            outrigger_config:ch.config?.outrigger||"full",
+            counterweight_config:ch.config?.cw||null,
+            source:"csv_import"
+          }));
+          supabaseRef.current.from("load_charts").insert(inserts).then(({error})=>{if(error)console.warn("Chart save error:",error);});
+        }
         alert(count===1
           ?`Yük tablosu yüklendi: ${firstName}`
           :`${count} yük tablosu yüklendi! İlk tablo: ${firstName}`);
@@ -1378,6 +1420,14 @@ export default function App({onSave,initialData,projectName:extProjectName}){
     e.target.value="";
   };
   // JSON import handled inline in Export tab
+
+  const deleteChart=(chartId)=>{
+    setCustomCharts(p=>{const n={...p};delete n[chartId];return n;});
+    up({chartId:""});
+    if(supabaseRef.current){
+      supabaseRef.current.from("load_charts").delete().eq("id",chartId).then(({error})=>{if(error)console.warn("Chart delete error:",error);});
+    }
+  };
 
   return(
     <div style={{fontFamily:FB,background:`linear-gradient(135deg,${C.dark} 0%,${C.greenBg} 40%,${C.dark} 100%)`,color:C.white,...(isMobile&&tab==="chart"?{position:"fixed",inset:0,overflow:"hidden"}:{minHeight:"100vh"})}}>
@@ -1467,7 +1517,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                       📄 CSV Yükle
                       <input type="file" accept=".csv,.txt" onChange={e=>{importChartCSV(e);setShowMobMenu(false);}} style={{display:"none"}}/>
                     </label>
-                    {cfg.chartId&&cfg.chartId.startsWith("custom_")&&<button onClick={()=>{setCustomCharts(p=>{const n={...p};delete n[cfg.chartId];return n;});up({chartId:""});}} style={{flex:1,padding:"6px 8px",background:"#c4444440",border:"none",borderRadius:4,color:"#f88",fontWeight:600,fontSize:10,cursor:"pointer",fontFamily:F}}>🗑 Tabloyu Sil</button>}
+                    {cfg.chartId&&customCharts[cfg.chartId]&&!customCharts[cfg.chartId].isPreset&&!LOAD_CHARTS[cfg.chartId]&&<button onClick={()=>deleteChart(cfg.chartId)} style={{flex:1,padding:"6px 8px",background:"#c4444440",border:"none",borderRadius:4,color:"#f88",fontWeight:600,fontSize:10,cursor:"pointer",fontFamily:F}}>🗑 Tabloyu Sil</button>}
                   </div>
                 </div>
                 {/* Load shape & sling config */}
@@ -1621,7 +1671,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               {cfg.chartId&&<div style={{fontSize:10,color:C.greenLight,marginTop:4,fontWeight:600}}>✓ Gerçek yük tablosu aktif</div>}
               {!cfg.chartId&&<div style={{fontSize:10,color:C.g400,marginTop:4}}>Kapasite elle girilecek ↓</div>}
               <Btn small color={C.g500} onClick={()=>csvInputRef.current?.click()} style={{marginTop:8}}>📄 CSV Tablo Yükle</Btn>
-              {cfg.chartId&&cfg.chartId.startsWith("custom_")&&<Btn small color="#c44" onClick={()=>{setCustomCharts(p=>{const n={...p};delete n[cfg.chartId];return n;});up({chartId:""});}} style={{marginTop:4,marginLeft:4}}>🗑 Sil</Btn>}
+              {cfg.chartId&&customCharts[cfg.chartId]&&!customCharts[cfg.chartId].isPreset&&!LOAD_CHARTS[cfg.chartId]&&<Btn small color="#c44" onClick={()=>deleteChart(cfg.chartId)} style={{marginTop:4,marginLeft:4}}>🗑 Sil</Btn>}
               <input ref={csvInputRef} type="file" accept=".csv,.txt" onChange={importChartCSV} style={{display:"none"}}/>
             </Card>
 
