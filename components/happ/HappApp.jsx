@@ -1173,17 +1173,19 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
   };
 
   // Register non-passive touch listeners to prevent page scroll during canvas interaction
+  const handlersRef=useRef({down:handleDown,move:handleMove,up:handleUp});
+  handlersRef.current={down:handleDown,move:handleMove,up:handleUp};
   useEffect(()=>{
     const c=canvasRef.current;if(!c)return;
     const opts={passive:false};
-    const tStart=(e)=>{e.preventDefault();handleDown(e);};
-    const tMove=(e)=>{e.preventDefault();handleMove(e);};
-    const tEnd=(e)=>{handleUp(e);};
+    const tStart=(e)=>{e.preventDefault();e.stopPropagation();handlersRef.current.down(e);};
+    const tMove=(e)=>{e.preventDefault();e.stopPropagation();handlersRef.current.move(e);};
+    const tEnd=(e)=>{e.preventDefault();handlersRef.current.up(e);};
     c.addEventListener("touchstart",tStart,opts);
     c.addEventListener("touchmove",tMove,opts);
-    c.addEventListener("touchend",tEnd);
+    c.addEventListener("touchend",tEnd,opts);
     return()=>{c.removeEventListener("touchstart",tStart);c.removeEventListener("touchmove",tMove);c.removeEventListener("touchend",tEnd);};
-  });
+  },[]);
 
   return(
     <canvas ref={canvasRef} style={{width:"100%",height:"100%",cursor:tool==="ruler"?"crosshair":drag?"grabbing":"default",touchAction:"none",borderRadius:8}}
@@ -1230,21 +1232,21 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   // Lock body scroll on mobile chart tab to prevent page bounce
   useEffect(()=>{
     if(isMobile&&tab==="chart"){
-      const s=document.documentElement.style;
-      const b=document.body.style;
-      s.overflow="hidden";s.height="100%";s.overscrollBehavior="none";
-      b.overflow="hidden";b.position="fixed";b.width="100%";b.height="100%";b.top="0";b.left="0";b.overscrollBehavior="none";b.touchAction="none";
-    }else{
-      const s=document.documentElement.style;
-      const b=document.body.style;
-      s.overflow="";s.height="";s.overscrollBehavior="";
-      b.overflow="";b.position="";b.width="";b.height="";b.top="";b.left="";b.overscrollBehavior="";b.touchAction="";
+      // Prevent ALL touch-move scrolling at document level (non-passive)
+      const prevent=(e)=>{e.preventDefault();};
+      document.addEventListener("touchmove",prevent,{passive:false});
+      document.body.style.overflow="hidden";
+      document.body.style.position="fixed";
+      document.body.style.inset="0";
+      document.documentElement.style.overflow="hidden";
+      return()=>{
+        document.removeEventListener("touchmove",prevent);
+        document.body.style.overflow="";
+        document.body.style.position="";
+        document.body.style.inset="";
+        document.documentElement.style.overflow="";
+      };
     }
-    return()=>{
-      const s=document.documentElement.style;const b=document.body.style;
-      s.overflow="";s.height="";s.overscrollBehavior="";
-      b.overflow="";b.position="";b.width="";b.height="";b.top="";b.left="";b.overscrollBehavior="";b.touchAction="";
-    };
   },[isMobile,tab]);
 
   // Bridge for canvas to update config
