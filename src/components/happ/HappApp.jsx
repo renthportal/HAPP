@@ -9,18 +9,18 @@ const FB="'Inter','SF Pro',-apple-system,sans-serif";
 
 // ═══ 12 CRANE TYPES (Crangle-style: visual only, no capacity data) ═══
 const CRANES=[
-  {id:"mobile",name:"Mobil Vinç",defBoom:60,pivotH:2.5,cat:"mobile"},
-  {id:"truck",name:"Kamyon Vinç",defBoom:40,pivotH:3,cat:"mobile"},
-  {id:"crawler",name:"Paletli Vinç",defBoom:100,pivotH:3.5,cat:"crawler"},
-  {id:"tower",name:"Kule Vinç",defBoom:80,pivotH:40,cat:"tower"},
-  {id:"rough",name:"Arazi Vinç",defBoom:50,pivotH:2.8,cat:"mobile"},
-  {id:"allterrain",name:"All Terrain Vinç",defBoom:70,pivotH:3,cat:"mobile"},
-  {id:"mini",name:"Mini/Örümcek Vinç",defBoom:20,pivotH:1.5,cat:"spider"},
-  {id:"telescopic",name:"Teleskopik Handler",defBoom:25,pivotH:2,cat:"telescopic"},
-  {id:"knuckle",name:"Eklemli Vinç (Boom Truck)",defBoom:35,pivotH:2,cat:"knuckle"},
-  {id:"franna",name:"Pick & Carry Vinç",defBoom:28,pivotH:2.2,cat:"franna"},
-  {id:"floating",name:"Yüzer Vinç",defBoom:120,pivotH:10,cat:"floating"},
-  {id:"gantry",name:"Portal Vinç",defBoom:40,pivotH:15,cat:"gantry"},
+  {id:"mobile",name:"Mobil Vinç",defBoom:60,pivotH:2.5,pivotDist:0,craneEnd:4,cat:"mobile"},
+  {id:"truck",name:"Kamyon Vinç",defBoom:40,pivotH:3,pivotDist:0,craneEnd:5,cat:"mobile"},
+  {id:"crawler",name:"Paletli Vinç",defBoom:100,pivotH:3.5,pivotDist:0,craneEnd:5,cat:"crawler"},
+  {id:"tower",name:"Kule Vinç",defBoom:80,pivotH:40,pivotDist:0,craneEnd:6,cat:"tower"},
+  {id:"rough",name:"Arazi Vinç",defBoom:50,pivotH:2.8,pivotDist:0,craneEnd:3.5,cat:"mobile"},
+  {id:"allterrain",name:"All Terrain Vinç",defBoom:70,pivotH:3,pivotDist:0,craneEnd:5,cat:"mobile"},
+  {id:"mini",name:"Mini/Örümcek Vinç",defBoom:20,pivotH:1.5,pivotDist:0,craneEnd:2,cat:"spider"},
+  {id:"telescopic",name:"Teleskopik Handler",defBoom:25,pivotH:2,pivotDist:0,craneEnd:3,cat:"telescopic"},
+  {id:"knuckle",name:"Eklemli Vinç (Boom Truck)",defBoom:35,pivotH:2,pivotDist:0,craneEnd:5,cat:"knuckle"},
+  {id:"franna",name:"Pick & Carry Vinç",defBoom:28,pivotH:2.2,pivotDist:0,craneEnd:3,cat:"franna"},
+  {id:"floating",name:"Yüzer Vinç",defBoom:120,pivotH:10,pivotDist:0,craneEnd:10,cat:"floating"},
+  {id:"gantry",name:"Portal Vinç",defBoom:40,pivotH:15,pivotDist:0,craneEnd:8,cat:"gantry"},
 ];
 
 // ═══ CRANE VISUAL CONFIGS ═══
@@ -1220,7 +1220,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
 // ═══ MAIN APP COMPONENT ═══
 export default function App({onSave,initialData,projectName:extProjectName}){
   const [tab,setTab]=useState("chart");
-  const [cfg,setCfg]=useState(initialData?.config||{craneType:"mobile",boomLength:30,boomAngle:45,jibEnabled:false,jibLength:10,jibAngle:15,pivotHeight:2.5,pivotDist:1.2,craneEnd:4,loadWeight:5,counterweight:20,windSpeed:0,skinId:"default",
+  const [cfg,setCfg]=useState(initialData?.config||{craneType:"mobile",boomLength:30,boomAngle:45,jibEnabled:false,jibLength:10,jibAngle:15,pivotHeight:2.5,pivotDist:0,craneEnd:4,loadWeight:5,counterweight:20,windSpeed:0,skinId:"default",
     loadW:3,loadH:2,loadShape:"box",slingType:"2leg",slingLength:4,slingLegs:2,hookBlockH:1.2,
     chartId:"",outriggerSpread:"full",cwConfig:"full",manualCap:0,maxBoom:60
   });
@@ -1274,6 +1274,11 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const handleCfgUpdate=useCallback((u)=>setCfg(p=>({...p,...u})),[]);
 
   const crane=CRANES.find(c2=>c2.id===cfg.craneType);
+  // Auto-sync crane geometry when crane type changes
+  useEffect(()=>{
+    if(!crane)return;
+    setCfg(p=>({...p,pivotHeight:crane.pivotH,pivotDist:crane.pivotDist??1.5,craneEnd:crane.craneEnd??4,maxBoom:crane.defBoom}));
+  },[cfg.craneType]);
   const skin=SKINS.find(s=>s.id===cfg.skinId)||SKINS[0];
   const realRadius=useMemo(()=>calcRadius(cfg),[cfg]);
   const realBoomTipH=useMemo(()=>calcBoomTipHeight(cfg),[cfg]);
@@ -1668,13 +1673,14 @@ export default function App({onSave,initialData,projectName:extProjectName}){
             <Card title="Detaylı Ayarlar" collapsed={!detailOpen} onToggle={()=>setDetailOpen(!detailOpen)}>
               {/* Max boom */}
               <Row><Lbl>Max Boom (m)</Lbl><Num value={cfg.maxBoom} onChange={v=>up({maxBoom:v})} min={10} max={200}/></Row>
-              {/* Geometry */}
-              <div style={{marginTop:8,marginBottom:4,fontSize:10,fontWeight:700,color:C.g400}}>Vinç Geometrisi</div>
-              <Row><Lbl>Pivot Yüksekliği</Lbl><Num value={cfg.pivotHeight} onChange={v=>up({pivotHeight:v})} min={0.5} max={50} step={0.1}/></Row>
-              <Sli value={cfg.pivotHeight} min={0.5} max={crane?.cat==="tower"?50:5} step={0.1} onChange={v=>up({pivotHeight:v})} color={C.g400}/>
-              <Row><Lbl>Pivot Mesafesi</Lbl><Num value={cfg.pivotDist} onChange={v=>up({pivotDist:v})} min={0} max={5} step={0.1}/></Row>
-              <Row><Lbl>Vinç Sonu</Lbl><Num value={cfg.craneEnd} onChange={v=>up({craneEnd:v})} min={0} max={15} step={0.5}/></Row>
-              <Row><Lbl>Karşı Ağırlık (t)</Lbl><Num value={cfg.counterweight} onChange={v=>up({counterweight:v})} min={0} max={200}/></Row>
+              {/* Crane geometry — auto from crane type, read-only display */}
+              <div style={{marginTop:8,marginBottom:4,fontSize:10,fontWeight:700,color:C.g400}}>Vinç Geometrisi (otomatik)</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4,fontSize:10,color:C.g500}}>
+                <div>Pivot Y: {cfg.pivotHeight}m</div>
+                <div>Pivot M: {cfg.pivotDist}m</div>
+                <div>Vinç Sonu: {cfg.craneEnd}m</div>
+              </div>
+              <Row style={{marginTop:4}}><Lbl>Karşı Ağırlık (t)</Lbl><Num value={cfg.counterweight} onChange={v=>up({counterweight:v})} min={0} max={200}/></Row>
               {/* Colors */}
               <div style={{marginTop:8,marginBottom:4,fontSize:10,fontWeight:700,color:C.g400}}>Boom & Jib Renkleri</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
