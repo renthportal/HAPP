@@ -7,20 +7,20 @@ const F="'Fira Code','SF Mono',monospace";
 const LOGO_DATA="data:image/jpeg;base64,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HHp0PLYjnu02zOONXSDVzR6j3CslquvCGY+B9irMIiLnasiIiws5lcdg8TZy2Wtx1KVZhfLLIdg0fUnoAOZPIL61pcQ1oxJXwkAYlM5lcdg8TZy2Wtx1KVZhfLLIdg0fUnoAOZPIKlvHDipkeIWW8iDzKmBrPJq1Sdi89PMk26uPYdGg7DuS44cVMjxCy3kQeZUwNZ5NWqTsXnp5km3Vx7Do0HYdyY2XVNm9mxRAVFQMZDwH7fn0VSudzM57OP8AT6/CIiK4qFREREREREREREREREREREREREREREREREREREREREREREREREREREREREVkPZz40+T7to/WFv7rlHj8hK74OwikJ7dg49Oh5bEWYXmurF+z7xxix9VmmNb3S2rCzankZN3FjQP4cncj8J/I9tue7TbMb2NVRtz/AOzR6j3CsdruuGEMx8D7FWSzWToYbE2crk7LKtOrGZJpXnk1o/yfQDmTyCpXxw4qZHiFlvIg8ypgazyatUnYvPTzJNurj2HRoOw7k/fjtxYva/yZo0TLV09WfvBATs6dw/3JPn6Dt/XcqL1IbNbNiiAqagf3DwH7fn0WvdLmZz2UR7vr8IiIrkoRERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERf//Z";
 const FB="'Inter','SF Pro',-apple-system,sans-serif";
 
-// ═══ 12 CRANE TYPES (Crangle-style) ═══
+// ═══ 12 CRANE TYPES (Crangle-style: visual only, no capacity data) ═══
 const CRANES=[
-  {id:"mobile",name:"Mobil Vinç",maxBoom:60,maxCap:100,pivotH:2.5,cat:"mobile"},
-  {id:"truck",name:"Kamyon Vinç",maxBoom:40,maxCap:60,pivotH:3,cat:"mobile"},
-  {id:"crawler",name:"Paletli Vinç",maxBoom:100,maxCap:200,pivotH:3.5,cat:"crawler"},
-  {id:"tower",name:"Kule Vinç",maxBoom:80,maxCap:120,pivotH:40,cat:"tower"},
-  {id:"rough",name:"Arazi Vinç",maxBoom:50,maxCap:80,pivotH:2.8,cat:"mobile"},
-  {id:"allterrain",name:"All Terrain Vinç",maxBoom:70,maxCap:150,pivotH:3,cat:"mobile"},
-  {id:"mini",name:"Mini/Örümcek Vinç",maxBoom:20,maxCap:10,pivotH:1.5,cat:"spider"},
-  {id:"telescopic",name:"Teleskopik Handler",maxBoom:25,maxCap:5,pivotH:2,cat:"telescopic"},
-  {id:"knuckle",name:"Eklemli Vinç (Boom Truck)",maxBoom:35,maxCap:40,pivotH:2,cat:"knuckle"},
-  {id:"franna",name:"Pick & Carry Vinç",maxBoom:28,maxCap:25,pivotH:2.2,cat:"franna"},
-  {id:"floating",name:"Yüzer Vinç",maxBoom:120,maxCap:500,pivotH:10,cat:"floating"},
-  {id:"gantry",name:"Portal Vinç",maxBoom:40,maxCap:150,pivotH:15,cat:"gantry"},
+  {id:"mobile",name:"Mobil Vinç",defBoom:60,pivotH:2.5,cat:"mobile"},
+  {id:"truck",name:"Kamyon Vinç",defBoom:40,pivotH:3,cat:"mobile"},
+  {id:"crawler",name:"Paletli Vinç",defBoom:100,pivotH:3.5,cat:"crawler"},
+  {id:"tower",name:"Kule Vinç",defBoom:80,pivotH:40,cat:"tower"},
+  {id:"rough",name:"Arazi Vinç",defBoom:50,pivotH:2.8,cat:"mobile"},
+  {id:"allterrain",name:"All Terrain Vinç",defBoom:70,pivotH:3,cat:"mobile"},
+  {id:"mini",name:"Mini/Örümcek Vinç",defBoom:20,pivotH:1.5,cat:"spider"},
+  {id:"telescopic",name:"Teleskopik Handler",defBoom:25,pivotH:2,cat:"telescopic"},
+  {id:"knuckle",name:"Eklemli Vinç (Boom Truck)",defBoom:35,pivotH:2,cat:"knuckle"},
+  {id:"franna",name:"Pick & Carry Vinç",defBoom:28,pivotH:2.2,cat:"franna"},
+  {id:"floating",name:"Yüzer Vinç",defBoom:120,pivotH:10,cat:"floating"},
+  {id:"gantry",name:"Portal Vinç",defBoom:40,pivotH:15,cat:"gantry"},
 ];
 
 // ═══ CRANE VISUAL CONFIGS ═══
@@ -31,671 +31,109 @@ const DEFAULT_CRANE_COLORS={
   hook:"#888888",wheels:"#222222",base:"#1A3D25"
 };
 
-// ═══ VISUAL DRAWING: each type draws differently ═══
+// ═══ CRANE SVG ICONS (yellow-gray Crangle-quality) ═══
+const _Y="#FFC72C",_YD="#C9A020",_YL="#FFD966",_G="#999",_GD="#666",_GDD="#444",_W="#8AC8DD";
+
+const CRANE_SVG_MAP={
+mobile:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"><line x1="25" y1="72" x2="8" y2="105" stroke="${_GD}" stroke-width="3"/><line x1="155" y1="72" x2="178" y2="105" stroke="${_GD}" stroke-width="3"/><rect x="2" y="103" width="14" height="5" rx="1" fill="${_GD}"/><rect x="172" y="103" width="14" height="5" rx="1" fill="${_GD}"/><rect x="18" y="72" width="145" height="12" rx="3" fill="${_G}"/><circle cx="35" cy="97" r="11" fill="${_GDD}"/><circle cx="35" cy="97" r="7" fill="${_GD}"/><circle cx="35" cy="97" r="3" fill="#888"/><circle cx="65" cy="97" r="11" fill="${_GDD}"/><circle cx="65" cy="97" r="7" fill="${_GD}"/><circle cx="65" cy="97" r="3" fill="#888"/><circle cx="115" cy="97" r="11" fill="${_GDD}"/><circle cx="115" cy="97" r="7" fill="${_GD}"/><circle cx="115" cy="97" r="3" fill="#888"/><circle cx="140" cy="97" r="11" fill="${_GDD}"/><circle cx="140" cy="97" r="7" fill="${_GD}"/><circle cx="140" cy="97" r="3" fill="#888"/><circle cx="90" cy="70" r="8" fill="#777"/><rect x="40" y="45" width="85" height="26" rx="4" fill="${_Y}"/><rect x="40" y="45" width="85" height="8" rx="3" fill="${_YL}" opacity="0.4"/><rect x="42" y="48" width="28" height="20" rx="3" fill="${_GD}"/><line x1="50" y1="50" x2="50" y2="66" stroke="#555" stroke-width="0.8"/><line x1="58" y1="50" x2="58" y2="66" stroke="#555" stroke-width="0.8"/><path d="M82,22 L114,22 L118,45 L78,45 Z" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="84" y="25" width="28" height="14" rx="2" fill="${_W}" opacity="0.7"/><line x1="98" y1="25" x2="98" y2="39" stroke="${_YD}" stroke-width="0.7"/><rect x="86" y="38" width="12" height="8" rx="1" fill="${_YD}"/></svg>`,
+allterrain:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 120"><line x1="25" y1="72" x2="5" y2="105" stroke="${_GD}" stroke-width="3"/><line x1="175" y1="72" x2="198" y2="105" stroke="${_GD}" stroke-width="3"/><rect x="0" y="103" width="13" height="5" rx="1" fill="${_GD}"/><rect x="192" y="103" width="13" height="5" rx="1" fill="${_GD}"/><rect x="15" y="72" width="175" height="12" rx="3" fill="${_G}"/><circle cx="30" cy="97" r="10" fill="${_GDD}"/><circle cx="30" cy="97" r="6.5" fill="${_GD}"/><circle cx="30" cy="97" r="3" fill="#888"/><circle cx="60" cy="97" r="10" fill="${_GDD}"/><circle cx="60" cy="97" r="6.5" fill="${_GD}"/><circle cx="60" cy="97" r="3" fill="#888"/><circle cx="110" cy="97" r="10" fill="${_GDD}"/><circle cx="110" cy="97" r="6.5" fill="${_GD}"/><circle cx="110" cy="97" r="3" fill="#888"/><circle cx="140" cy="97" r="10" fill="${_GDD}"/><circle cx="140" cy="97" r="6.5" fill="${_GD}"/><circle cx="140" cy="97" r="3" fill="#888"/><circle cx="170" cy="97" r="10" fill="${_GDD}"/><circle cx="170" cy="97" r="6.5" fill="${_GD}"/><circle cx="170" cy="97" r="3" fill="#888"/><rect x="45" y="44" width="100" height="27" rx="4" fill="${_Y}"/><rect x="45" y="44" width="100" height="8" rx="3" fill="${_YL}" opacity="0.35"/><rect x="48" y="47" width="32" height="21" rx="3" fill="${_GD}"/><path d="M95,20 L128,20 L132,44 L90,44 Z" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="97" y="23" width="28" height="14" rx="2" fill="${_W}" opacity="0.7"/><line x1="112" y1="23" x2="112" y2="37" stroke="${_YD}" stroke-width="0.7"/><rect x="100" y="38" width="12" height="8" rx="1" fill="${_YD}"/></svg>`,
+truck:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"><rect x="12" y="72" width="160" height="10" rx="2" fill="${_G}"/><circle cx="145" cy="95" r="11" fill="${_GDD}"/><circle cx="145" cy="95" r="7" fill="${_GD}"/><circle cx="145" cy="95" r="3" fill="#888"/><circle cx="50" cy="95" r="11" fill="${_GDD}"/><circle cx="50" cy="95" r="7" fill="${_GD}"/><circle cx="50" cy="95" r="3" fill="#888"/><circle cx="30" cy="95" r="11" fill="${_GDD}"/><circle cx="30" cy="95" r="7" fill="${_GD}"/><circle cx="30" cy="95" r="3" fill="#888"/><rect x="130" y="40" width="38" height="32" rx="4" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="134" y="44" width="28" height="14" rx="2" fill="${_W}" opacity="0.7"/><line x1="148" y1="44" x2="148" y2="58" stroke="${_YD}" stroke-width="0.7"/><rect x="60" y="48" width="65" height="24" rx="4" fill="${_Y}"/><rect x="62" y="50" width="22" height="19" rx="2" fill="${_GD}"/><path d="M88,28 L112,28 L115,48 L85,48 Z" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="90" y="30" width="20" height="11" rx="2" fill="${_W}" opacity="0.6"/><rect x="92" y="42" width="10" height="7" rx="1" fill="${_YD}"/></svg>`,
+crawler:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"><rect x="15" y="78" width="150" height="28" rx="13" fill="${_GDD}"/><rect x="18" y="80" width="144" height="24" rx="11" fill="#555" stroke="#444" stroke-width="1"/><circle cx="30" cy="92" r="10" fill="#555"/><circle cx="30" cy="92" r="6" fill="${_GD}"/><circle cx="150" cy="92" r="8" fill="#555"/><circle cx="150" cy="92" r="5" fill="${_GD}"/><circle cx="55" cy="100" r="3.5" fill="#555"/><circle cx="75" cy="100" r="3.5" fill="#555"/><circle cx="95" cy="100" r="3.5" fill="#555"/><circle cx="115" cy="100" r="3.5" fill="#555"/><circle cx="135" cy="100" r="3.5" fill="#555"/><rect x="30" y="45" width="110" height="33" rx="5" fill="${_Y}"/><rect x="30" y="45" width="110" height="9" rx="4" fill="${_YL}" opacity="0.3"/><path d="M32,48 L60,48 L60,75 L36,75 Q30,75 30,69 L30,52 Q30,48 32,48Z" fill="${_GD}"/><line x1="42" y1="50" x2="42" y2="73" stroke="#555" stroke-width="0.8"/><line x1="52" y1="50" x2="52" y2="73" stroke="#555" stroke-width="0.8"/><path d="M72,22 L108,22 L112,45 L68,45 Z" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="75" y="25" width="30" height="14" rx="2" fill="${_W}" opacity="0.7"/><line x1="90" y1="25" x2="90" y2="39" stroke="${_YD}" stroke-width="0.7"/><line x1="80" y1="45" x2="95" y2="15" stroke="${_YD}" stroke-width="3"/><line x1="110" y1="45" x2="95" y2="15" stroke="${_YD}" stroke-width="3"/><circle cx="95" cy="14" r="4" fill="${_YD}"/></svg>`,
+tower:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140"><rect x="50" y="130" width="55" height="6" rx="2" fill="${_GD}"/><line x1="60" y1="130" x2="68" y2="28" stroke="${_G}" stroke-width="2.5"/><line x1="95" y1="130" x2="88" y2="28" stroke="${_G}" stroke-width="2.5"/><circle cx="78" cy="28" r="6" fill="#777"/><rect x="64" y="18" width="28" height="12" rx="2" fill="${_Y}"/><rect x="68" y="10" width="22" height="10" rx="2" fill="${_Y}" stroke="${_YD}" stroke-width="0.8"/><rect x="70" y="11" width="16" height="6" rx="1" fill="${_W}" opacity="0.6"/><line x1="78" y1="22" x2="15" y2="18" stroke="${_G}" stroke-width="2"/><line x1="78" y1="16" x2="15" y2="18" stroke="${_G}" stroke-width="1"/><rect x="8" y="10" width="16" height="14" rx="2" fill="${_GD}"/></svg>`,
+rough:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 120"><rect x="20" y="72" width="120" height="11" rx="3" fill="${_G}"/><circle cx="45" cy="97" r="14" fill="${_GDD}"/><circle cx="45" cy="97" r="9" fill="${_GD}"/><circle cx="45" cy="97" r="4" fill="#888"/><circle cx="120" cy="97" r="14" fill="${_GDD}"/><circle cx="120" cy="97" r="9" fill="${_GD}"/><circle cx="120" cy="97" r="4" fill="#888"/><rect x="35" y="46" width="80" height="26" rx="4" fill="${_Y}"/><rect x="35" y="46" width="80" height="7" rx="3" fill="${_YL}" opacity="0.35"/><rect x="38" y="49" width="22" height="20" rx="3" fill="${_GD}"/><path d="M72,24 L100,24 L103,46 L68,46 Z" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="74" y="27" width="24" height="12" rx="2" fill="${_W}" opacity="0.7"/><line x1="86" y1="27" x2="86" y2="39" stroke="${_YD}" stroke-width="0.7"/><rect x="78" y="40" width="10" height="7" rx="1" fill="${_YD}"/></svg>`,
+mini:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 130"><line x1="60" y1="78" x2="15" y2="85" stroke="${_GD}" stroke-width="2.5"/><line x1="15" y1="85" x2="5" y2="118" stroke="${_GD}" stroke-width="2.5"/><line x1="65" y1="78" x2="40" y2="90" stroke="${_GD}" stroke-width="2.5"/><line x1="40" y1="90" x2="25" y2="118" stroke="${_GD}" stroke-width="2.5"/><line x1="100" y1="78" x2="120" y2="90" stroke="${_GD}" stroke-width="2.5"/><line x1="120" y1="90" x2="135" y2="118" stroke="${_GD}" stroke-width="2.5"/><line x1="105" y1="78" x2="145" y2="85" stroke="${_GD}" stroke-width="2.5"/><line x1="145" y1="85" x2="160" y2="118" stroke="${_GD}" stroke-width="2.5"/><rect x="0" y="117" width="12" height="4" rx="1" fill="${_GD}"/><rect x="20" y="117" width="12" height="4" rx="1" fill="${_GD}"/><rect x="130" y="117" width="12" height="4" rx="1" fill="${_GD}"/><rect x="155" y="117" width="12" height="4" rx="1" fill="${_GD}"/><rect x="50" y="80" width="30" height="12" rx="5" fill="${_GDD}"/><rect x="90" y="80" width="30" height="12" rx="5" fill="${_GDD}"/><rect x="55" y="58" width="55" height="22" rx="4" fill="${_Y}"/><rect x="62" y="42" width="28" height="17" rx="3" fill="${_Y}" stroke="${_YD}" stroke-width="0.8"/><rect x="65" y="44" width="20" height="9" rx="1.5" fill="${_W}" opacity="0.6"/><rect x="76" y="52" width="8" height="7" rx="1" fill="${_YD}"/></svg>`,
+telescopic:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120"><rect x="25" y="52" width="90" height="28" rx="5" fill="${_Y}"/><rect x="25" y="52" width="90" height="8" rx="4" fill="${_YL}" opacity="0.3"/><rect x="80" y="55" width="30" height="22" rx="3" fill="${_YD}" opacity="0.4"/><circle cx="40" cy="97" r="15" fill="${_GDD}"/><circle cx="40" cy="97" r="10" fill="${_GD}"/><circle cx="40" cy="97" r="4.5" fill="#888"/><circle cx="100" cy="97" r="15" fill="${_GDD}"/><circle cx="100" cy="97" r="10" fill="${_GD}"/><circle cx="100" cy="97" r="4.5" fill="#888"/><rect x="26" y="26" width="40" height="27" rx="3" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="30" y="29" width="30" height="13" rx="2" fill="${_W}" opacity="0.7"/><line x1="45" y1="29" x2="45" y2="42" stroke="${_YD}" stroke-width="0.7"/><rect x="38" y="46" width="10" height="7" rx="1" fill="${_YD}"/></svg>`,
+knuckle:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120"><rect x="10" y="72" width="200" height="8" rx="2" fill="${_G}"/><rect x="10" y="60" width="130" height="13" rx="2" fill="${_G}" opacity="0.6"/><circle cx="185" cy="95" r="11" fill="${_GDD}"/><circle cx="185" cy="95" r="7" fill="${_GD}"/><circle cx="185" cy="95" r="3" fill="#888"/><circle cx="35" cy="95" r="11" fill="${_GDD}"/><circle cx="35" cy="95" r="7" fill="${_GD}"/><circle cx="35" cy="95" r="3" fill="#888"/><circle cx="55" cy="95" r="11" fill="${_GDD}"/><circle cx="55" cy="95" r="7" fill="${_GD}"/><circle cx="55" cy="95" r="3" fill="#888"/><circle cx="75" cy="95" r="11" fill="${_GDD}"/><circle cx="75" cy="95" r="7" fill="${_GD}"/><circle cx="75" cy="95" r="3" fill="#888"/><rect x="170" y="38" width="40" height="34" rx="4" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="174" y="42" width="30" height="14" rx="2" fill="${_W}" opacity="0.7"/><line x1="189" y1="42" x2="189" y2="56" stroke="${_YD}" stroke-width="0.7"/><rect x="135" y="38" width="18" height="34" rx="2" fill="${_Y}"/><rect x="138" y="34" width="12" height="8" rx="1" fill="${_YD}"/><circle cx="144" cy="30" r="5" fill="${_YD}"/></svg>`,
+franna:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 120"><rect x="20" y="72" width="130" height="10" rx="3" fill="${_G}"/><circle cx="45" cy="95" r="12" fill="${_GDD}"/><circle cx="45" cy="95" r="8" fill="${_GD}"/><circle cx="45" cy="95" r="3.5" fill="#888"/><circle cx="130" cy="95" r="12" fill="${_GDD}"/><circle cx="130" cy="95" r="8" fill="${_GD}"/><circle cx="130" cy="95" r="3.5" fill="#888"/><rect x="30" y="46" width="100" height="26" rx="4" fill="${_Y}"/><rect x="30" y="46" width="100" height="7" rx="3" fill="${_YL}" opacity="0.35"/><path d="M72,24 L105,24 L108,46 L68,46 Z" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="74" y="27" width="28" height="12" rx="2" fill="${_W}" opacity="0.7"/><rect x="55" y="85" width="8" height="10" rx="1" fill="${_GD}"/><rect x="80" y="40" width="10" height="7" rx="1" fill="${_YD}"/></svg>`,
+floating:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 130"><path d="M0,110 Q20,106 40,110 Q60,114 80,110 Q100,106 120,110 Q140,114 160,110 Q180,106 200,110 Q220,114 240,110" fill="none" stroke="#4a90c0" stroke-width="1.5" opacity="0.4"/><path d="M15,80 L8,108 L222,108 L215,80 Z" fill="#7a8a9a" stroke="#6a7a8a" stroke-width="1.5"/><line x1="12" y1="98" x2="218" y2="98" stroke="#c44" stroke-width="0.8" opacity="0.5"/><rect x="14" y="77" width="202" height="5" rx="1" fill="#8a9aaa"/><rect x="145" y="50" width="60" height="28" rx="3" fill="${_G}"/><rect x="55" y="48" width="70" height="30" rx="4" fill="${_Y}"/><rect x="57" y="52" width="22" height="23" rx="3" fill="${_GD}"/><rect x="85" y="30" width="30" height="20" rx="3" fill="${_Y}" stroke="${_YD}" stroke-width="1"/><rect x="88" y="33" width="22" height="10" rx="2" fill="${_W}" opacity="0.6"/><rect x="94" y="44" width="10" height="7" rx="1" fill="${_YD}"/></svg>`,
+gantry:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140"><rect x="10" y="132" width="180" height="4" rx="1" fill="${_GD}"/><path d="M25,132 L45,132 L68,20 L58,20 Z" fill="${_G}" stroke="${_GD}" stroke-width="1"/><path d="M155,132 L175,132 L148,20 L138,20 Z" fill="${_G}" stroke="${_GD}" stroke-width="1"/><rect x="56" y="12" width="94" height="12" rx="2" fill="${_Y}"/><rect x="56" y="12" width="94" height="4" rx="2" fill="${_YL}" opacity="0.3"/><rect x="88" y="4" width="28" height="10" rx="2" fill="${_Y}" stroke="${_YD}" stroke-width="0.8"/><circle cx="30" cy="134" r="4" fill="#555"/><circle cx="42" cy="134" r="4" fill="#555"/><circle cx="160" cy="134" r="4" fill="#555"/><circle cx="172" cy="134" r="4" fill="#555"/></svg>`
+};
+
+// Convert SVGs to data URIs and preload as images
+const CRANE_IMGS={};
+if(typeof window!=="undefined"){Object.entries(CRANE_SVG_MAP).forEach(([id,svg])=>{
+  const img=new Image();
+  img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+  CRANE_IMGS[id]=img;
+});}
+
+// Get thumbnail data URI for dropdown
+function getCraneSvgUri(id){
+  return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(CRANE_SVG_MAP[id]||"");
+}
+
+// ═══ VISUAL DRAWING: SVG body + dynamic boom/jib ═══
 function drawCraneVisual(ctx,type,SC,VS,pivotX,pivotY,boomTipX,boomTipY,colors,cfg,jibTipX,jibTipY){
   const cr=CRANES.find(c=>c.id===type);
   if(!cr) return;
   const cat=cr.cat;
   const groundY=pivotY+cfg.pivotHeight*VS;
-  // BIGGER body dimensions for clear visibility
-  const bodyW=Math.max(cfg.craneEnd*SC, 60);
-  const bodyH=Math.max(4*VS, 55);
-  const cabW=Math.max(2.5*SC, 28);
-  const cabH=Math.max(2.5*VS, 30);
-  const s=Math.max(0.7, Math.min(VS/6, 2.2));
+  const boomW=Math.max(4, 2*SC*0.15);
   
   ctx.save();
   
-  // ── Helper: detailed wheel ──
-  const drawWheel=(wx,wy,r)=>{
-    ctx.fillStyle="#1a1a1a";
-    ctx.beginPath();ctx.arc(wx,wy,r,0,Math.PI*2);ctx.fill();
-    // Tread
-    ctx.strokeStyle="#2a2a2a";ctx.lineWidth=Math.max(1.5,r*0.12);
-    ctx.beginPath();ctx.arc(wx,wy,r*0.85,0,Math.PI*2);ctx.stroke();
-    // Rim outer
-    ctx.fillStyle="#777";
-    ctx.beginPath();ctx.arc(wx,wy,r*0.58,0,Math.PI*2);ctx.fill();
-    // Rim inner
-    ctx.fillStyle="#999";
-    ctx.beginPath();ctx.arc(wx,wy,r*0.4,0,Math.PI*2);ctx.fill();
-    // Hub bolts
-    ctx.fillStyle="#666";
-    const bolts=5;
-    for(let b=0;b<bolts;b++){
-      const ba=b*(Math.PI*2/bolts);
-      ctx.beginPath();ctx.arc(wx+Math.cos(ba)*r*0.28,wy+Math.sin(ba)*r*0.28,r*0.06,0,Math.PI*2);ctx.fill();
-    }
-    // Center cap
-    ctx.fillStyle="#888";
-    ctx.beginPath();ctx.arc(wx,wy,r*0.15,0,Math.PI*2);ctx.fill();
-  };
-  
-  // ── Helper: cab with windows ──
-  const drawCab=(cx,cy,cw,ch,opts={})=>{
-    const r=Math.min(5,ch*0.12);
-    const {slant=0,windowRatio=0.45}=opts;
-    ctx.fillStyle=colors.cab;
-    ctx.beginPath();
-    ctx.moveTo(cx+r,cy);
-    ctx.lineTo(cx+cw-slant,cy);
-    ctx.lineTo(cx+cw,cy+ch);
-    ctx.lineTo(cx,cy+ch);
-    ctx.lineTo(cx,cy+r);
-    ctx.quadraticCurveTo(cx,cy,cx+r,cy);
-    ctx.closePath();ctx.fill();
-    // Outline
-    ctx.strokeStyle="rgba(0,0,0,0.25)";ctx.lineWidth=1;ctx.stroke();
-    // Main window
-    const wp=cw*0.1;
-    const wt=ch*0.1;
-    const ww=cw-wp*2-slant*0.5;
-    const wh=ch*windowRatio;
-    ctx.fillStyle="rgba(140,210,245,0.5)";
-    ctx.beginPath();ctx.roundRect(cx+wp,cy+wt,ww,wh,Math.min(3,r*0.6));ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=0.8;ctx.stroke();
-    // Window divider
-    ctx.beginPath();ctx.moveTo(cx+wp+ww*0.6,cy+wt);ctx.lineTo(cx+wp+ww*0.6,cy+wt+wh);ctx.stroke();
-    // Door line
-    ctx.strokeStyle="rgba(0,0,0,0.12)";ctx.lineWidth=0.6;
-    ctx.beginPath();ctx.moveTo(cx+cw*0.45,cy+wt+wh+2);ctx.lineTo(cx+cw*0.45,cy+ch-2);ctx.stroke();
-  };
-  
-  // ── Helper: outrigger with pad ──
-  const drawOutrigger=(ox,oy,ex,ey,padW)=>{
-    // Cylinder
-    ctx.strokeStyle="#666";ctx.lineWidth=Math.max(3,4*s);ctx.lineCap="round";
-    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);ctx.stroke();
-    // Inner rod
-    ctx.strokeStyle=colors.outriggers;ctx.lineWidth=Math.max(1.5,2.5*s);
-    ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ex,ey);ctx.stroke();
-    // Pad
-    const ph=Math.max(4,5*s);
-    ctx.fillStyle="#555";
-    ctx.fillRect(ex-padW/2,ey-1,padW,ph);
-    ctx.fillStyle="#666";
-    ctx.fillRect(ex-padW*0.4,ey,padW*0.8,ph-2);
-    ctx.lineCap="butt";
-  };
-
-  // ── Helper: counterweight block ──
-  const drawCW=(cx,cy,cw,ch)=>{
-    ctx.fillStyle=colors.counterweight;
-    ctx.beginPath();ctx.roundRect(cx,cy,cw,ch,Math.min(4,ch*0.15));ctx.fill();
-    // Horizontal grooves
-    ctx.strokeStyle="rgba(0,0,0,0.18)";ctx.lineWidth=0.8;
-    const n=Math.max(2,Math.floor(ch/6));
-    for(let i=1;i<n;i++){
-      const ly=cy+i*(ch/n);
-      ctx.beginPath();ctx.moveTo(cx+2,ly);ctx.lineTo(cx+cw-2,ly);ctx.stroke();
-    }
-    // Outline
-    ctx.strokeStyle="rgba(0,0,0,0.22)";ctx.lineWidth=1;
-    ctx.beginPath();ctx.roundRect(cx,cy,cw,ch,Math.min(4,ch*0.15));ctx.stroke();
-  };
-
-  // ── Helper: body panel with gradient ──
-  const drawBody=(bx,by,bw,bh,r)=>{
-    r=r||4;
-    ctx.fillStyle=colors.body;
-    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,r);ctx.fill();
-    const g=ctx.createLinearGradient(bx,by,bx,by+bh);
-    g.addColorStop(0,"rgba(255,255,255,0.1)");
-    g.addColorStop(0.4,"rgba(255,255,255,0)");
-    g.addColorStop(1,"rgba(0,0,0,0.1)");
-    ctx.fillStyle=g;
-    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,r);ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.18)";ctx.lineWidth=1;
-    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,r);ctx.stroke();
-  };
-
-  // ═══════════════════════════════════════
-  // CRANE BODIES - Crangle-quality details
-  // ═══════════════════════════════════════
-  
-  if(cat==="mobile"||cat==="franna"){
-    const wheelR=Math.max(8, Math.min(1.2*VS, 16));
-    const chassisH=Math.max(8, bodyH*0.16);
-    const chassisBottom=groundY-wheelR*0.4;
-    const chassisTop=chassisBottom-chassisH;
-    const totalW=bodyW+cabW*0.5;
-    
-    // ── Wheels by type ──
-    let wPos=[];
-    if(type==="allterrain"){
-      for(let i=0;i<5;i++) wPos.push(pivotX-bodyW*0.95+i*(totalW*0.95/4));
-    } else if(type==="truck"){
-      wPos=[pivotX-bodyW*0.85, pivotX-bodyW*0.15, pivotX+cabW*0.1];
-    } else if(type==="rough"){
-      wPos=[pivotX-bodyW*0.7, pivotX+cabW*0.05];
-    } else if(type==="franna"){
-      wPos=[pivotX-bodyW*0.65, pivotX+cabW*0.0];
-    } else {
-      for(let i=0;i<4;i++) wPos.push(pivotX-bodyW*0.9+i*(totalW*0.9/3));
-    }
-    
-    // Fender / mudguard arches
-    wPos.forEach(wx=>{
-      ctx.fillStyle=colors.body;
-      ctx.beginPath();ctx.arc(wx,chassisBottom,wheelR*1.25,Math.PI,0);ctx.fill();
-      ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=1;
-      ctx.beginPath();ctx.arc(wx,chassisBottom,wheelR*1.25,Math.PI,0);ctx.stroke();
-    });
-    
-    // Wheels
-    wPos.forEach(wx=>drawWheel(wx,chassisBottom,wheelR));
-    
-    // Carrier chassis (long beam)
-    drawBody(pivotX-bodyW*1.0, chassisTop, totalW*1.05, chassisH, 3);
-    
-    // ── Upper structure (slewing unit) ──
-    const upperW=bodyW*0.75;
-    const upperH=Math.max(18, bodyH*0.32);
-    const upperTop=chassisTop-upperH;
-    
-    // Turntable circle
-    ctx.fillStyle="#4a4a4a";
-    ctx.beginPath();ctx.arc(pivotX-cabW*0.1, chassisTop, Math.max(6,cabW*0.22),0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle="#5a5a5a";ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.arc(pivotX-cabW*0.1, chassisTop, Math.max(4,cabW*0.15),0,Math.PI*2);ctx.stroke();
-    
-    // Upper body
-    drawBody(pivotX-upperW*0.85, upperTop, upperW, upperH, 4);
-    
-    // Engine compartment louvers
-    ctx.strokeStyle="rgba(0,0,0,0.12)";ctx.lineWidth=0.7;
-    const louverX=pivotX-upperW*0.8;
-    for(let i=0;i<4;i++){
-      const ly=upperTop+upperH*0.25+i*upperH*0.15;
-      ctx.beginPath();ctx.moveTo(louverX,ly);ctx.lineTo(louverX+upperW*0.2,ly);ctx.stroke();
-    }
-    
-    // Counterweight (rear overhang, prominent)
-    const cwW=Math.max(16, upperW*0.38);
-    const cwH=Math.max(14, upperH*0.85);
-    drawCW(pivotX-upperW*0.82, upperTop+upperH*0.08, cwW, cwH);
-    
-    // ── Cab ──
-    const cabX2=pivotX-cabW*0.45;
-    const cabY2=upperTop-cabH*0.75;
-    drawCab(cabX2, cabY2, cabW*1.0, cabH*0.8, {slant:cabW*0.08});
-    
-    // ── Outriggers (not franna/rough) ──
-    if(type!=="franna"&&type!=="rough"){
-      const outY=chassisTop+chassisH*0.3;
-      const padW=Math.max(10,14*s);
-      drawOutrigger(pivotX+cabW*0.2, outY, pivotX+cabW*1.2, groundY, padW);
-      drawOutrigger(pivotX-bodyW*0.9, outY, pivotX-bodyW*1.35, groundY, padW);
-    }
-    
-    // Boom foot pin area
-    ctx.fillStyle="#666";
-    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,6*s), 0, Math.PI*2);ctx.fill();
-
-  } else if(cat==="crawler"){
-    // ── CRAWLER CRANE ──
-    const trackH=Math.max(14, 2.2*VS);
-    const trackW=Math.max(70, bodyW*1.3);
-    const trackX=pivotX-trackW*0.6;
-    const trackTop=groundY-trackH;
-    const trackR=trackH*0.38;
-    
-    // Track body
-    ctx.fillStyle=colors.tracks;
-    ctx.beginPath();ctx.roundRect(trackX, trackTop, trackW, trackH, trackR);ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.3)";ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.roundRect(trackX, trackTop, trackW, trackH, trackR);ctx.stroke();
-    
-    // Track shoe segments
-    const shoeCount=Math.max(12, Math.floor(trackW/6));
-    ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=1;
-    for(let i=1;i<shoeCount;i++){
-      const sx=trackX+trackR*0.5+i*((trackW-trackR)/shoeCount);
-      ctx.beginPath();ctx.moveTo(sx,trackTop+trackH*0.05);ctx.lineTo(sx,trackTop+trackH*0.95);ctx.stroke();
-    }
-    
-    // Track grouser teeth (bottom)
-    ctx.fillStyle="rgba(0,0,0,0.2)";
-    for(let i=0;i<Math.floor(trackW/8);i++){
-      const gx=trackX+trackR+i*8;
-      ctx.fillRect(gx, trackTop+trackH*0.88, 4, trackH*0.12);
-    }
-    
-    // Drive sprocket (rear, bigger)
-    ctx.fillStyle="#444";
-    ctx.beginPath();ctx.arc(trackX+trackR*0.75, trackTop+trackH*0.5, trackH*0.28, 0, Math.PI*2);ctx.fill();
-    ctx.fillStyle="#555";
-    ctx.beginPath();ctx.arc(trackX+trackR*0.75, trackTop+trackH*0.5, trackH*0.18, 0, Math.PI*2);ctx.fill();
-    // Idler (front)
-    ctx.fillStyle="#444";
-    ctx.beginPath();ctx.arc(trackX+trackW-trackR*0.75, trackTop+trackH*0.5, trackH*0.25, 0, Math.PI*2);ctx.fill();
-    ctx.fillStyle="#555";
-    ctx.beginPath();ctx.arc(trackX+trackW-trackR*0.75, trackTop+trackH*0.5, trackH*0.16, 0, Math.PI*2);ctx.fill();
-    
-    // Bottom carrier rollers
-    ctx.fillStyle="#555";
-    for(let i=0;i<6;i++){
-      const rx=trackX+trackW*0.18+i*(trackW*0.64/5);
-      ctx.beginPath();ctx.arc(rx, trackTop+trackH*0.78, trackH*0.08, 0, Math.PI*2);ctx.fill();
-    }
-    // Top carrier rollers
-    for(let i=0;i<2;i++){
-      const rx=trackX+trackW*0.3+i*trackW*0.35;
-      ctx.beginPath();ctx.arc(rx, trackTop+trackH*0.22, trackH*0.06, 0, Math.PI*2);ctx.fill();
-    }
-    
-    // ── Upper body / carbody ──
-    const upperH=Math.max(20, bodyH*0.4);
-    const upperW=Math.max(50, bodyW*0.85);
-    const upperTop=trackTop-upperH;
-    drawBody(pivotX-upperW*0.55, upperTop, upperW, upperH, 5);
-    
-    // Counterweight (big, rounded back)
-    const cwW=Math.max(18, upperW*0.35);
-    const cwH=upperH*0.9;
-    drawCW(pivotX-upperW*0.52, upperTop+upperH*0.05, cwW, cwH);
-    
-    // Cab
-    const cabX2=pivotX-cabW*0.35;
-    drawCab(cabX2, upperTop-cabH*0.7, cabW*1.2, cabH*0.72, {slant:0});
-    
-    // A-frame mast
-    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(2.5, 3*s);
-    ctx.beginPath();ctx.moveTo(pivotX-cabW*0.25, upperTop);ctx.lineTo(pivotX+cabW*0.05, pivotY);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(pivotX+cabW*0.35, upperTop);ctx.lineTo(pivotX+cabW*0.05, pivotY);ctx.stroke();
-    
-    // Boom foot pin
-    ctx.fillStyle="#666";
-    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,6*s), 0, Math.PI*2);ctx.fill();
-
-  } else if(cat==="tower"){
-    // ── TOWER CRANE ──
-    const mastW=Math.max(12, 2.5*SC);
-    const baseW=mastW*1.6;
-    
-    // Concrete base
-    ctx.fillStyle="#777";
-    ctx.fillRect(pivotX-baseW*0.7, groundY-5, baseW*1.4, 7);
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
-    ctx.strokeRect(pivotX-baseW*0.7, groundY-5, baseW*1.4, 7);
-    
-    // Mast legs (tapered)
-    const mL=pivotX-mastW*0.35;
-    const mR=pivotX+mastW*0.35;
-    const bL=pivotX-baseW*0.5;
-    const bR=pivotX+baseW*0.5;
-    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(2.5, 3*s);
-    ctx.beginPath();ctx.moveTo(bL, groundY-5);ctx.lineTo(mL, pivotY);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(bR, groundY-5);ctx.lineTo(mR, pivotY);ctx.stroke();
-    
-    // Lattice cross-braces
-    const nB=Math.max(5, Math.floor((groundY-pivotY)/18));
-    ctx.lineWidth=Math.max(1, 1.5*s);
-    for(let i=0;i<nB;i++){
-      const t1=i/nB; const t2=(i+1)/nB;
-      const y1=pivotY+t1*(groundY-5-pivotY);
-      const y2=pivotY+t2*(groundY-5-pivotY);
-      const xL1=mL+(bL-mL)*t1; const xR1=mR+(bR-mR)*t1;
-      const xL2=mL+(bL-mL)*t2; const xR2=mR+(bR-mR)*t2;
-      // Horizontal
-      ctx.strokeStyle=colors.body;
-      ctx.beginPath();ctx.moveTo(xL1,y1);ctx.lineTo(xR1,y1);ctx.stroke();
-      // X braces
-      ctx.strokeStyle="rgba(100,100,100,0.6)";
-      ctx.beginPath();ctx.moveTo(xL1,y1);ctx.lineTo(xR2,y2);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(xR1,y1);ctx.lineTo(xL2,y2);ctx.stroke();
-    }
-    
-    // Slewing unit at top
-    ctx.fillStyle="#555";
-    ctx.beginPath();ctx.arc(pivotX, pivotY, mastW*0.35, 0, Math.PI*2);ctx.fill();
-    ctx.strokeStyle="#666";ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.arc(pivotX, pivotY, mastW*0.25, 0, Math.PI*2);ctx.stroke();
-    
-    // Machine house (top)
-    const mhW=mastW*1.8;
-    const mhH=Math.max(10, cabH*0.35);
-    drawBody(pivotX-mhW*0.4, pivotY-mhH*1.2, mhW, mhH, 3);
-    
-    // Cab
-    const tcW=mastW*1.4;
-    const tcH=Math.max(10, cabH*0.4);
-    drawCab(pivotX-tcW*0.3, pivotY-mhH*1.2-tcH, tcW, tcH, {windowRatio:0.5});
-    
-    // Counter-jib (rear horizontal)
-    ctx.strokeStyle=colors.body;ctx.lineWidth=Math.max(2, 2.5*s);
-    const cjLen=mastW*4;
-    ctx.beginPath();ctx.moveTo(pivotX, pivotY-mhH*0.5);ctx.lineTo(pivotX-cjLen, pivotY-mhH*0.5-cjLen*0.04);ctx.stroke();
-    // Counter-jib lattice
-    ctx.lineWidth=Math.max(0.8, 1*s);
-    ctx.beginPath();ctx.moveTo(pivotX, pivotY-mhH*1.2);ctx.lineTo(pivotX-cjLen, pivotY-mhH*0.5-cjLen*0.04);ctx.stroke();
-    
-    // Counterweight on counter-jib
-    drawCW(pivotX-cjLen-mastW*0.3, pivotY-mhH*0.5-cjLen*0.04-mastW*0.8, mastW*1.5, mastW*1.0);
-    
-    // Pendant lines (support cables to boom)
-    ctx.strokeStyle="rgba(150,150,150,0.4)";ctx.lineWidth=0.8;
-    const topMast=pivotY-mhH*1.2-tcH;
-    ctx.beginPath();ctx.moveTo(pivotX, topMast);ctx.lineTo(boomTipX, boomTipY);ctx.stroke();
-
-  } else if(cat==="spider"){
-    // ── SPIDER / MINI CRANE ──
-    const bW=Math.max(20, cabW*1.0);
-    const bH=Math.max(14, bodyH*0.22);
-    const baseY=groundY-bH*2.5;
-    
-    // Track base (mini crawler tracks)
-    const trkW=bW*0.6;
-    const trkH=Math.max(8, bH*0.5);
-    // Left track
-    ctx.fillStyle=colors.tracks;
-    ctx.beginPath();ctx.roundRect(pivotX-bW*0.55, groundY-trkH, trkW, trkH, trkH*0.3);ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
-    ctx.beginPath();ctx.roundRect(pivotX-bW*0.55, groundY-trkH, trkW, trkH, trkH*0.3);ctx.stroke();
-    // Right track  
-    ctx.fillStyle=colors.tracks;
-    ctx.beginPath();ctx.roundRect(pivotX+bW*0.55-trkW, groundY-trkH, trkW, trkH, trkH*0.3);ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
-    ctx.beginPath();ctx.roundRect(pivotX+bW*0.55-trkW, groundY-trkH, trkW, trkH, trkH*0.3);ctx.stroke();
-    
-    // Spider legs (deployed outriggers)
-    ctx.strokeStyle=colors.outriggers;ctx.lineWidth=Math.max(2, 2.5*s);
-    const legData=[
-      {sx:-0.15, knee:-0.55, foot:-0.9},
-      {sx:-0.05, knee:-0.35, foot:-0.7},
-      {sx:0.05, knee:0.35, foot:0.7},
-      {sx:0.15, knee:0.55, foot:0.9},
-    ];
-    legData.forEach(leg=>{
-      const startX=pivotX+leg.sx*bW;
-      const kneeX=pivotX+leg.knee*bodyW;
-      const footX=pivotX+leg.foot*bodyW;
-      const kneeY=baseY+bH*1.5;
-      // Upper segment
-      ctx.beginPath();ctx.moveTo(startX, baseY+bH);ctx.lineTo(kneeX, kneeY);ctx.stroke();
-      // Lower segment
-      ctx.beginPath();ctx.moveTo(kneeX, kneeY);ctx.lineTo(footX, groundY);ctx.stroke();
-      // Foot pad
-      ctx.fillStyle="#555";
-      ctx.fillRect(footX-5*s, groundY-2, 10*s, 4);
-    });
-    
-    // Compact body
-    drawBody(pivotX-bW*0.4, baseY, bW*0.8, bH, 3);
-    
-    // Mini cab
-    const mcW=bW*0.5;
-    const mcH=bH*0.8;
-    drawCab(pivotX-mcW*0.3, baseY-mcH, mcW, mcH, {windowRatio:0.5});
-    
-    // Boom foot
-    ctx.fillStyle="#666";
-    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(3,4*s), 0, Math.PI*2);ctx.fill();
-
-  } else if(cat==="knuckle"){
-    // ── BOOM TRUCK / KNUCKLE BOOM ──
-    const wheelR=Math.max(7, Math.min(1*VS, 13));
-    const truckW=Math.max(80, bodyW*1.8);
-    const chassisH=Math.max(6, bodyH*0.12);
-    const chassisBottom=groundY-wheelR*0.4;
-    const chassisTop=chassisBottom-chassisH;
-    const truckX=pivotX-truckW*0.2;
-    
-    // Wheels: front axle + rear tandem
-    const frontW=truckX+truckW*0.85;
-    const rearW1=truckX+truckW*0.15;
-    const rearW2=truckX+truckW*0.25;
-    
-    // Fender arches
-    [frontW,rearW1,rearW2].forEach(wx=>{
-      ctx.fillStyle=colors.body;
-      ctx.beginPath();ctx.arc(wx,chassisBottom,wheelR*1.2,Math.PI,0);ctx.fill();
-    });
-    
-    drawWheel(frontW, chassisBottom, wheelR);
-    drawWheel(rearW1, chassisBottom, wheelR);
-    drawWheel(rearW2, chassisBottom, wheelR);
-    
-    // Truck frame beam
-    ctx.fillStyle="#444";
-    ctx.fillRect(truckX, chassisTop+chassisH*0.4, truckW, chassisH*0.4);
-    
-    // Truck bed / flatbed
-    const bedH=Math.max(6, bodyH*0.1);
-    drawBody(truckX, chassisTop-bedH, truckW*0.65, bedH+chassisH, 3);
-    
-    // Truck cab at front (big, boxy)
-    const tcW=Math.max(22, truckW*0.22);
-    const tcH=Math.max(22, cabH*0.9);
-    drawCab(truckX+truckW*0.72, chassisTop-tcH+chassisH*0.3, tcW, tcH, {slant:tcW*0.1,windowRatio:0.42});
-    
-    // Crane pedestal (mounted behind cab)
-    const pedW=Math.max(10, cabW*0.4);
-    const pedH=Math.max(18, bodyH*0.3);
-    ctx.fillStyle=colors.body;
-    ctx.fillRect(pivotX-pedW/2, chassisTop-pedH, pedW, pedH);
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
-    ctx.strokeRect(pivotX-pedW/2, chassisTop-pedH, pedW, pedH);
-    
-    // Hydraulic lines on pedestal
-    ctx.strokeStyle="rgba(0,0,0,0.1)";ctx.lineWidth=0.7;
-    for(let i=0;i<3;i++){
-      ctx.beginPath();ctx.moveTo(pivotX-pedW*0.3, chassisTop-pedH+5+i*5);
-      ctx.lineTo(pivotX+pedW*0.3, chassisTop-pedH+5+i*5);ctx.stroke();
-    }
-    
-    // Boom foot
-    ctx.fillStyle="#666";
-    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,5*s), 0, Math.PI*2);ctx.fill();
-
-  } else if(cat==="telescopic"){
-    // ── TELEHANDLER ──
-    const wheelR=Math.max(10, Math.min(1.5*VS, 18));
-    const chassisBottom=groundY-wheelR*0.3;
-    const bW=Math.max(45, bodyW*0.85);
-    const bH=Math.max(18, bodyH*0.3);
-    const topY=chassisBottom-bH;
-    
-    // 2 large wheels
-    drawWheel(pivotX-bW*0.35, chassisBottom, wheelR);
-    drawWheel(pivotX+bW*0.3, chassisBottom, wheelR);
-    
-    // Body
-    drawBody(pivotX-bW*0.45, topY, bW*0.85, bH, 5);
-    
-    // Cab (full enclosed)
-    const tcW=cabW*1.1;
-    const tcH=Math.max(18, cabH*0.7);
-    drawCab(pivotX-bW*0.42, topY-tcH*0.85, tcW, tcH, {windowRatio:0.48});
-    
-    // Rear counterweight
-    drawCW(pivotX+bW*0.1, topY+2, bW*0.25, bH-4);
-    
-    // Engine cover
-    ctx.fillStyle="rgba(0,0,0,0.08)";
-    ctx.fillRect(pivotX+bW*0.1, topY+1, bW*0.28, bH*0.4);
-    
-    // Boom foot
-    ctx.fillStyle="#666";
-    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,5*s), 0, Math.PI*2);ctx.fill();
-
-  } else if(cat==="floating"){
-    // ── FLOATING CRANE ──
-    const bargeW=Math.max(120, bodyW*2.5);
-    const bargeH=Math.max(16, bodyH*0.35);
-    const bargeX=pivotX-bargeW*0.5;
-    const deckY=groundY-bargeH;
-    
-    // Water waves
-    ctx.strokeStyle="rgba(40,130,210,0.3)";ctx.lineWidth=1.2;
-    for(let w=0;w<5;w++){
-      ctx.beginPath();
-      const wy=groundY+3+w*5;
-      for(let i=0;i<10;i++){
-        const wx=bargeX-15+i*(bargeW+30)/9;
-        if(i===0) ctx.moveTo(wx,wy);
-        else ctx.quadraticCurveTo(wx-(bargeW+30)/18, wy-3-Math.sin(i+w)*2, wx, wy);
-      }
-      ctx.stroke();
-    }
-    
-    // Hull
-    ctx.fillStyle="#6d7f8e";
-    ctx.beginPath();
-    ctx.moveTo(bargeX+bargeW*0.02, deckY);
-    ctx.lineTo(bargeX-bargeW*0.02, groundY+2);
-    ctx.lineTo(bargeX+bargeW*1.02, groundY+2);
-    ctx.lineTo(bargeX+bargeW*0.98, deckY);
-    ctx.closePath();ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.25)";ctx.lineWidth=1.5;ctx.stroke();
-    
-    // Waterline
-    ctx.strokeStyle="rgba(200,50,50,0.35)";ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(bargeX+2, groundY-bargeH*0.35);
-    ctx.lineTo(bargeX+bargeW-2, groundY-bargeH*0.35);ctx.stroke();
-    
-    // Deck
-    ctx.fillStyle="#8a9aab";
-    ctx.fillRect(bargeX-1, deckY-3, bargeW+2, 5);
-    
-    // Deck house
-    drawBody(bargeX+bargeW*0.55, deckY-bargeH*0.9-3, bargeW*0.35, bargeH*0.9, 3);
-    
-    // Crane superstructure on deck
-    const csW=cabW*1.8;
-    const csH=bodyH*0.35;
-    drawBody(pivotX-csW*0.5, deckY-csH-3, csW, csH, 4);
-    drawCab(pivotX-cabW*0.4, deckY-csH-cabH*0.55-3, cabW*0.9, cabH*0.55, {});
-    drawCW(pivotX+cabW*0.25, deckY-csH+2-3, cabW*0.5, csH-4);
-    
-    // Boom foot
-    ctx.fillStyle="#666";
-    ctx.beginPath();ctx.arc(pivotX, pivotY, Math.max(4,5*s), 0, Math.PI*2);ctx.fill();
-
-  } else if(cat==="gantry"){
-    // ── GANTRY / PORTAL CRANE ──
-    const gW=Math.max(80, bodyW*1.7);
-    const legW=Math.max(5, SC*0.5);
-    
-    // Ground rails
-    ctx.fillStyle="#666";
-    ctx.fillRect(pivotX-gW*0.6, groundY-3, gW*1.2, 5);
-    ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=0.8;
-    // Rail detail
-    for(let i=0;i<Math.floor(gW*1.2/10);i++){
-      const rx=pivotX-gW*0.6+i*10;
-      ctx.beginPath();ctx.moveTo(rx, groundY+2);ctx.lineTo(rx+5, groundY+2);ctx.stroke();
-    }
-    
-    // Left A-frame leg
-    ctx.fillStyle=colors.body;
-    ctx.beginPath();
-    ctx.moveTo(pivotX-gW/2-legW*1.2, groundY-3);
-    ctx.lineTo(pivotX-gW/2+legW*1.2, groundY-3);
-    ctx.lineTo(pivotX-gW*0.33+legW*0.5, pivotY+3);
-    ctx.lineTo(pivotX-gW*0.33-legW*0.5, pivotY+3);
-    ctx.closePath();ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.18)";ctx.lineWidth=1;ctx.stroke();
-    
-    // Right A-frame leg
-    ctx.fillStyle=colors.body;
-    ctx.beginPath();
-    ctx.moveTo(pivotX+gW/2-legW*1.2, groundY-3);
-    ctx.lineTo(pivotX+gW/2+legW*1.2, groundY-3);
-    ctx.lineTo(pivotX+gW*0.33+legW*0.5, pivotY+3);
-    ctx.lineTo(pivotX+gW*0.33-legW*0.5, pivotY+3);
-    ctx.closePath();ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,0.18)";ctx.lineWidth=1;ctx.stroke();
-    
-    // Leg cross braces
-    for(let side=-1;side<=1;side+=2){
-      const nB=Math.max(3, Math.floor((groundY-pivotY)/25));
-      ctx.strokeStyle="rgba(100,100,100,0.35)";ctx.lineWidth=Math.max(0.8,1.2*s);
-      for(let i=1;i<nB;i++){
-        const t=i/nB;
-        const y=pivotY+t*(groundY-pivotY);
-        const xI=pivotX+side*gW*0.33;
-        const xO=pivotX+side*gW/2;
-        const xl=xI+(xO-xI)*t;
-        ctx.beginPath();ctx.moveTo(xl-legW*(1-t*0.5), y);ctx.lineTo(xl+legW*(1-t*0.5), y);ctx.stroke();
-      }
-    }
-    
-    // Top girder
-    const girderH=Math.max(8, bodyH*0.18);
-    drawBody(pivotX-gW*0.36, pivotY-girderH, gW*0.72, girderH, 3);
-    
-    // Trolley
-    const trW=Math.max(16, cabW*0.7);
-    const trH=Math.max(6, girderH*0.5);
-    ctx.fillStyle=colors.cab;
-    ctx.fillRect(pivotX-trW/2, pivotY-girderH-trH, trW, trH);
-    ctx.strokeStyle="rgba(0,0,0,0.2)";ctx.lineWidth=1;
-    ctx.strokeRect(pivotX-trW/2, pivotY-girderH-trH, trW, trH);
-    
-    // Trolley wheels
-    ctx.fillStyle="#555";
-    ctx.beginPath();ctx.arc(pivotX-trW*0.35, pivotY-girderH+1, Math.max(3,4*s), 0, Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(pivotX+trW*0.35, pivotY-girderH+1, Math.max(3,4*s), 0, Math.PI*2);ctx.fill();
-    
-    // Gantry rail wheels
-    for(let side=-1;side<=1;side+=2){
-      ctx.fillStyle="#444";
-      for(let i=0;i<2;i++){
-        ctx.beginPath();ctx.arc(pivotX+side*(gW/2-legW+i*legW*2), groundY-2, Math.max(4,5*s), 0, Math.PI*2);ctx.fill();
-      }
-    }
+  // ═══ DRAW SVG BODY IMAGE ═══
+  const img=CRANE_IMGS[type];
+  if(img&&img.complete&&img.naturalWidth>0){
+    // Scale SVG to fit crane area
+    const bodyW=Math.max(cfg.craneEnd*SC, 50);
+    const bodyH=Math.max(cfg.pivotHeight*VS*0.85, 40);
+    // Image aspect ratio
+    const iAR=img.naturalWidth/img.naturalHeight;
+    let drawW=bodyW*1.4;
+    let drawH=drawW/iAR;
+    // For tower crane, make it taller
+    if(cat==="tower"){ drawH=Math.max(drawH, cfg.pivotHeight*VS*0.95); drawW=drawH*iAR; }
+    // For gantry, also taller
+    if(cat==="gantry"){ drawH=Math.max(drawH, cfg.pivotHeight*VS*0.9); drawW=drawH*iAR; }
+    
+    // Position: anchor to pivot point and ground
+    const imgX=pivotX-drawW*0.55;
+    const imgY=groundY-drawH;
+    
+    ctx.drawImage(img, imgX, imgY, drawW, drawH);
   }
   
-  // ═══ BOOM ═══
-  const boomW=Math.max(4, 2*SC*0.15);
+  // ═══ BOOM (dynamic) ═══
   const bdx=boomTipX-pivotX; const bdy=boomTipY-pivotY;
   const bLen=Math.sqrt(bdx*bdx+bdy*bdy);
   if(bLen<1){ctx.restore();return;}
   
+  const s=Math.max(0.7, Math.min(VS/6, 2.2));
+  
   if(cat==="crawler"||cat==="tower"||cat==="gantry"){
-    // ── Lattice boom ──
+    // Lattice boom
     const nx=-bdy/bLen*boomW; const ny=bdx/bLen*boomW;
-    ctx.strokeStyle=colors.boom;
-    // Chords
+    ctx.strokeStyle="#FFC72C";
     ctx.lineWidth=Math.max(1.8, 2.2*s);
     ctx.beginPath();ctx.moveTo(pivotX+nx,pivotY+ny);ctx.lineTo(boomTipX+nx,boomTipY+ny);ctx.stroke();
     ctx.beginPath();ctx.moveTo(pivotX-nx,pivotY-ny);ctx.lineTo(boomTipX-nx,boomTipY-ny);ctx.stroke();
-    // Lattice web
     ctx.lineWidth=Math.max(0.8, 1.2*s);
     const segs=Math.max(8, Math.floor(bLen/14));
     for(let i=0;i<segs;i++){
       const t1=i/segs; const t2=(i+1)/segs;
       const x1=pivotX+bdx*t1, y1=pivotY+bdy*t1;
       const x2=pivotX+bdx*t2, y2=pivotY+bdy*t2;
-      // Verticals
       ctx.beginPath();ctx.moveTo(x1+nx,y1+ny);ctx.lineTo(x1-nx,y1-ny);ctx.stroke();
-      // Diagonals
       ctx.beginPath();ctx.moveTo(x1+nx,y1+ny);ctx.lineTo(x2-nx,y2-ny);ctx.stroke();
       ctx.beginPath();ctx.moveTo(x1-nx,y1-ny);ctx.lineTo(x2+nx,y2+ny);ctx.stroke();
     }
     ctx.beginPath();ctx.moveTo(boomTipX+nx,boomTipY+ny);ctx.lineTo(boomTipX-nx,boomTipY-ny);ctx.stroke();
   } else {
-    // ── Telescopic boom (3-section) ──
-    // Base section
-    ctx.strokeStyle=colors.boom;ctx.lineCap="round";
-    ctx.lineWidth=boomW*3;
+    // Telescopic boom (3-section)
+    ctx.lineCap="round";
+    ctx.strokeStyle="#FFC72C";ctx.lineWidth=boomW*3;
     ctx.beginPath();ctx.moveTo(pivotX,pivotY);ctx.lineTo(pivotX+bdx*0.42,pivotY+bdy*0.42);ctx.stroke();
-    // Section 2
     ctx.lineWidth=boomW*2.2;
     ctx.beginPath();ctx.moveTo(pivotX+bdx*0.18,pivotY+bdy*0.18);ctx.lineTo(pivotX+bdx*0.72,pivotY+bdy*0.72);ctx.stroke();
-    // Section 3 (tip)
-    ctx.strokeStyle=C.yellowDark;ctx.lineWidth=boomW*1.5;
+    ctx.strokeStyle="#B8860B";ctx.lineWidth=boomW*1.5;
     ctx.beginPath();ctx.moveTo(pivotX+bdx*0.4,pivotY+bdy*0.4);ctx.lineTo(boomTipX,boomTipY);ctx.stroke();
     // Section joint lines
     ctx.strokeStyle="rgba(0,0,0,0.15)";ctx.lineWidth=1;
     [0.38,0.6].forEach(t=>{
       const jnx=-bdy/bLen; const jny=bdx/bLen;
       const jx=pivotX+bdx*t; const jy=pivotY+bdy*t;
-      ctx.beginPath();
-      ctx.moveTo(jx+jnx*boomW*1.2,jy+jny*boomW*1.2);
-      ctx.lineTo(jx-jnx*boomW*1.2,jy-jny*boomW*1.2);
-      ctx.stroke();
+      ctx.beginPath();ctx.moveTo(jx+jnx*boomW*1.2,jy+jny*boomW*1.2);ctx.lineTo(jx-jnx*boomW*1.2,jy-jny*boomW*1.2);ctx.stroke();
     });
     ctx.lineCap="butt";
   }
@@ -707,11 +145,9 @@ function drawCraneVisual(ctx,type,SC,VS,pivotX,pivotY,boomTipX,boomTipY,colors,c
     if(jLen>1){
       const jW=boomW*0.55;
       const jnx=-jDy/jLen*jW; const jny=jDx/jLen*jW;
-      ctx.strokeStyle=colors.jib;ctx.lineWidth=Math.max(1.2, 1.8*s);
-      // Chords
+      ctx.strokeStyle="#FF6B35";ctx.lineWidth=Math.max(1.2, 1.8*s);
       ctx.beginPath();ctx.moveTo(boomTipX+jnx,boomTipY+jny);ctx.lineTo(jibTipX+jnx,jibTipY+jny);ctx.stroke();
       ctx.beginPath();ctx.moveTo(boomTipX-jnx,boomTipY-jny);ctx.lineTo(jibTipX-jnx,jibTipY-jny);ctx.stroke();
-      // Lattice
       ctx.lineWidth=Math.max(0.6, 0.9*s);
       const jSegs=Math.max(4, Math.floor(jLen/16));
       for(let i=0;i<=jSegs;i++){
@@ -726,22 +162,21 @@ function drawCraneVisual(ctx,type,SC,VS,pivotX,pivotY,boomTipX,boomTipY,colors,c
         }
       }
     }
-    // Jib tip
-    ctx.fillStyle=colors.jib;
+    ctx.fillStyle="#FF6B35";
     ctx.beginPath();ctx.arc(jibTipX,jibTipY,4,0,Math.PI*2);ctx.fill();
     ctx.strokeStyle="rgba(255,255,255,0.5)";ctx.lineWidth=1;
     ctx.beginPath();ctx.arc(jibTipX,jibTipY,4,0,Math.PI*2);ctx.stroke();
   }
   
-  // ═══ BOOM TIP (drag handle) ═══
-  ctx.fillStyle=colors.boom;
+  // Boom tip (drag handle)
+  ctx.fillStyle="#FFC72C";
   ctx.beginPath();ctx.arc(boomTipX,boomTipY,6,0,Math.PI*2);ctx.fill();
   ctx.strokeStyle="white";ctx.lineWidth=2;
   ctx.beginPath();ctx.arc(boomTipX,boomTipY,6,0,Math.PI*2);ctx.stroke();
   ctx.fillStyle="white";
   ctx.beginPath();ctx.arc(boomTipX,boomTipY,2.5,0,Math.PI*2);ctx.fill();
   
-  // ═══ PIVOT POINT ═══
+  // Pivot point
   ctx.fillStyle=C.red;
   ctx.beginPath();ctx.arc(pivotX,pivotY,5,0,Math.PI*2);ctx.fill();
   ctx.strokeStyle="rgba(255,255,255,0.5)";ctx.lineWidth=1.5;
@@ -749,7 +184,6 @@ function drawCraneVisual(ctx,type,SC,VS,pivotX,pivotY,boomTipX,boomTipY,colors,c
   
   ctx.restore();
 }
-
 
 // ═══ OBJECT TYPES ═══
 const OBJ_TYPES=[
@@ -873,6 +307,50 @@ const LOAD_CHARTS={
       {r:34,caps:[null,null,null,null,5,4,3]},
       {r:42,caps:[null,null,null,null,null,3,2]},
     ]
+  },
+  "cc300":{
+    name:"300t Paletli Vinç (CC 2800)",maxCap:300,maxBoom:96,pivotH:3.5,
+    boomLengths:[18,24,30,42,54,66,78,96],
+    rows:[
+      {r:4,caps:[300,260,null,null,null,null,null,null]},
+      {r:5,caps:[250,225,200,null,null,null,null,null]},
+      {r:6,caps:[210,192,175,145,null,null,null,null]},
+      {r:7,caps:[178,165,152,130,108,null,null,null]},
+      {r:8,caps:[155,144,134,116,98,82,null,null]},
+      {r:10,caps:[118,112,105,93,80,68,56,null]},
+      {r:12,caps:[94,90,85,77,67,58,49,38]},
+      {r:14,caps:[76,73,70,64,56,49,42,33]},
+      {r:16,caps:[63,61,58,54,48,42,37,29]},
+      {r:18,caps:[53,52,50,46,41,37,32,26]},
+      {r:20,caps:[45,44,43,40,36,32,28,23]},
+      {r:24,caps:[null,34,33,31,28,26,23,19]},
+      {r:28,caps:[null,null,26,25,23,21,19,16]},
+      {r:32,caps:[null,null,null,20,19,17,15,13]},
+      {r:38,caps:[null,null,null,null,14,13,12,10]},
+      {r:44,caps:[null,null,null,null,null,10,9,7]},
+      {r:52,caps:[null,null,null,null,null,null,7,5]},
+      {r:62,caps:[null,null,null,null,null,null,null,4]},
+    ]
+  },
+  "tc120":{
+    name:"120t Kule Vinç (Liebherr 1000EC)",maxCap:120,maxBoom:60,pivotH:40,
+    boomLengths:[25,30,35,40,45,50,55,60],
+    rows:[
+      {r:8,caps:[120,110,null,null,null,null,null,null]},
+      {r:10,caps:[96,90,82,null,null,null,null,null]},
+      {r:12,caps:[80,76,70,64,null,null,null,null]},
+      {r:14,caps:[68,65,61,56,50,null,null,null]},
+      {r:16,caps:[59,57,54,50,45,40,null,null]},
+      {r:18,caps:[52,50,48,44,40,36,32,null]},
+      {r:20,caps:[46,45,43,40,36,33,29,26]},
+      {r:24,caps:[null,37,35,33,30,28,25,22]},
+      {r:28,caps:[null,null,30,28,26,24,21,19]},
+      {r:32,caps:[null,null,null,24,22,20,18,16]},
+      {r:36,caps:[null,null,null,null,19,17,15,14]},
+      {r:40,caps:[null,null,null,null,null,14,13,11]},
+      {r:45,caps:[null,null,null,null,null,null,10,9]},
+      {r:50,caps:[null,null,null,null,null,null,null,7]},
+    ]
   }
 };
 
@@ -906,93 +384,211 @@ function lookupChart(chart,boomLen,radius){
 function calcRadius(cfg){
   const bRad=toRad(cfg.boomAngle);
   let r=cfg.pivotDist+cfg.boomLength*Math.cos(bRad);
-  if(cfg.jibEnabled){
-    const effJA=Math.min(cfg.jibAngle,cfg.boomAngle);
-    r+=cfg.jibLength*Math.cos(toRad(effJA));
+  if(cfg.jibEnabled&&cfg.jibLength>0){
+    // Jib angle is measured DOWN from boom axis. Effective angle from horizontal:
+    const jibFromHoriz=cfg.boomAngle-cfg.jibAngle;
+    r+=cfg.jibLength*Math.cos(toRad(Math.max(0,jibFromHoriz)));
   }
   return Math.max(0,r);
 }
 
-function calcHookHeight(cfg){
+function calcBoomTipHeight(cfg){
   const bRad=toRad(cfg.boomAngle);
   let h=cfg.pivotHeight+cfg.boomLength*Math.sin(bRad);
-  if(cfg.jibEnabled){
-    const effJA=Math.min(cfg.jibAngle,cfg.boomAngle);
-    h+=cfg.jibLength*Math.sin(toRad(effJA));
+  if(cfg.jibEnabled&&cfg.jibLength>0){
+    const jibFromHoriz=cfg.boomAngle-cfg.jibAngle;
+    h+=cfg.jibLength*Math.sin(toRad(Math.max(0,jibFromHoriz)));
   }
   return h;
 }
 
-function calcCap(crane,boomLen,radius){
-  if(!crane)return 0;
-  const base=crane.maxCap;const maxR=boomLen*1.1;
-  if(radius>maxR)return 0;
-  const rFactor=1-Math.pow(radius/maxR,1.3);
-  const bFactor=1-Math.pow(boomLen/crane.maxBoom,0.8)*0.3;
-  return Math.max(0,base*rFactor*bFactor);
+function calcHookHeight(cfg){
+  // Net hook height = boom tip - hook block - sling length
+  const tipH=calcBoomTipHeight(cfg);
+  return Math.max(0, tipH - (cfg.hookBlockH||1.2) - (cfg.slingLength||4)*0.3);
 }
+
+// calcCap REMOVED — Crangle philosophy: no fake capacity formula.
+// Capacity comes ONLY from real load charts or manual user input.
 
 function calcSlingAngle(slingLength,loadWidth,legs){
   if(legs<2||slingLength<=0||loadWidth<=0)return 0;
-  const halfSpan=loadWidth/2;
+  // 4-leg: slings go to corners, diagonal spread = sqrt(w²+w²)/2 ≈ w*0.707
+  const halfSpan=legs>=4?(loadWidth*0.707/2):(loadWidth/2);
   if(slingLength<=halfSpan)return 90;
   return toDeg(Math.asin(halfSpan/slingLength));
 }
 
-function ptLoad(force,padW,padL){
-  const area=padW*padL;
-  return area>0?force/area:0;
-}
 
-// ═══ UI COMPONENTS ═══
-const Card=({children,style,...p})=><div style={{background:C.darkSurf+"E0",borderRadius:10,padding:12,marginBottom:10,border:`1px solid ${C.green}15`,backdropFilter:"blur(8px)",...style}} {...p}>{children}</div>;
-const Title=({children,color=C.yellow,style,...p})=><div style={{fontSize:10,fontWeight:800,letterSpacing:2,color,marginBottom:8,fontFamily:F,textTransform:"uppercase",...style}} {...p}>{children}</div>;
-const Lbl=({children})=><span style={{fontSize:9,color:C.g300,fontFamily:F}}>{children}</span>;
-const Sli=({value,min,max,step=1,onChange,color=C.yellow})=><input type="range" min={min} max={max} step={step} value={value} onChange={e=>onChange(+e.target.value)} style={{width:"100%",accentColor:color,height:4}}/>;
-const Num=({value,onChange,min,max,step=1,style:s})=><input type="number" value={value} min={min} max={max} step={step} onChange={e=>onChange(+e.target.value)} style={{width:50,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.yellow,textAlign:"center",padding:"2px 4px",fontSize:10,fontFamily:F,...s}}/>;
-const Sel=({value,onChange,children,style:s})=><select value={value} onChange={e=>onChange(e.target.value)} style={{width:"100%",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.white,padding:"8px 10px",fontSize:10,fontFamily:F,...s}}>{children}</select>;
-const Btn=({children,onClick,color=C.yellow,small,disabled,style:s})=><button onClick={onClick} disabled={disabled} style={{padding:small?"3px 8px":"6px 14px",background:color,border:"none",borderRadius:6,color:C.greenDark,fontWeight:700,fontSize:small?9:10,cursor:disabled?"not-allowed":"pointer",fontFamily:F,opacity:disabled?0.5:1,...s}}>{children}</button>;
-const Badge=({children,color=C.yellow})=><span style={{display:"inline-block",padding:"2px 8px",borderRadius:10,background:color+"20",color,fontSize:9,fontWeight:600,fontFamily:F}}>{children}</span>;
-const Row=({children,style})=><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6,...style}}>{children}</div>;
+// ═══ UI COMPONENTS (Field/Sales optimized: bigger fonts, bigger targets) ═══
+const Card=({children,style,collapsed,onToggle,title,...p})=>{
+  if(title!==undefined)return<div style={{background:C.darkSurf+"E0",borderRadius:10,marginBottom:10,border:`1px solid ${C.green}15`,backdropFilter:"blur(8px)",...style}} {...p}>
+    <div onClick={onToggle} style={{padding:"10px 12px",cursor:onToggle?"pointer":"default",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:collapsed?`none`:`1px solid ${C.green}10`}}>
+      <span style={{fontSize:11,fontWeight:800,letterSpacing:1.5,color:C.yellow,fontFamily:F,textTransform:"uppercase"}}>{title}</span>
+      {onToggle&&<span style={{color:C.g400,fontSize:12}}>{collapsed?"▸":"▾"}</span>}
+    </div>
+    {!collapsed&&<div style={{padding:12}}>{children}</div>}
+  </div>;
+  return<div style={{background:C.darkSurf+"E0",borderRadius:10,padding:12,marginBottom:10,border:`1px solid ${C.green}15`,backdropFilter:"blur(8px)",...style}} {...p}>{children}</div>;
+};
+const Title=({children,color=C.yellow,style,...p})=><div style={{fontSize:11,fontWeight:800,letterSpacing:1.5,color,marginBottom:8,fontFamily:F,textTransform:"uppercase",...style}} {...p}>{children}</div>;
+const Lbl=({children})=><span style={{fontSize:11,color:C.g300,fontFamily:F}}>{children}</span>;
+const Sli=({value,min,max,step=1,onChange,color=C.yellow})=><input type="range" min={min} max={max} step={step} value={value} onChange={e=>onChange(+e.target.value)} style={{width:"100%",accentColor:color,height:8,cursor:"pointer"}}/>;
+const Num=({value,onChange,min,max,step=1,style:s})=>{const[local,setLocal]=useState(String(value));const ref=useRef(null);useEffect(()=>{if(ref.current!==document.activeElement)setLocal(String(value));},[value]);return<input ref={ref} type="number" value={local} min={min} max={max} step={step} onChange={e=>{setLocal(e.target.value);const v=parseFloat(e.target.value);if(!isNaN(v))onChange(clamp(v,min??-Infinity,max??Infinity));}} onBlur={()=>{const v=parseFloat(local);if(isNaN(v))setLocal(String(value));else{const clamped=clamp(v,min??-Infinity,max??Infinity);onChange(clamped);setLocal(String(clamped));}}} style={{width:62,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.yellow,textAlign:"center",padding:"5px 6px",fontSize:13,fontWeight:600,fontFamily:F,...s}}/>;};
 
-// ═══ PDF PREVIEW (simplified) ═══
-function PDFPreview({cfg,crane,cap,lp,totalW,hookH,radius,onClose}){
-  return(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
-    <div style={{background:C.white,borderRadius:12,padding:30,maxWidth:700,width:"100%",maxHeight:"90vh",overflow:"auto",color:"#222"}} onClick={e=>e.stopPropagation()}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-        <div><div style={{fontSize:28,fontWeight:900,color:C.greenDark,letterSpacing:4,fontFamily:F}}>Hangel</div><div style={{fontSize:10,color:"#666"}}>Kaldırma Planı</div></div>
-        <div style={{textAlign:"right",fontSize:10,color:"#888"}}><div>{new Date().toLocaleDateString("tr-TR")}</div></div>
+const Sel=({value,onChange,children,style:s})=><select value={value} onChange={e=>onChange(e.target.value)} style={{width:"100%",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:8,color:C.white,padding:"10px 12px",fontSize:12,fontFamily:F,...s}}>{children}</select>;
+const Btn=({children,onClick,color=C.yellow,small,disabled,style:s})=><button onClick={onClick} disabled={disabled} style={{padding:small?"5px 12px":"8px 18px",background:color,border:"none",borderRadius:8,color:C.greenDark,fontWeight:700,fontSize:small?11:13,cursor:disabled?"not-allowed":"pointer",fontFamily:F,opacity:disabled?0.5:1,...s}}>{children}</button>;
+const MobNum=({value,onChange,step=0.1,label,style:s,inputMode:im})=>{const[local,setLocal]=useState(String(value));const ref=useRef(null);useEffect(()=>{if(ref.current!==document.activeElement)setLocal(String(value));},[value]);return<input ref={ref} type="number" inputMode={im||"decimal"} value={local} step={step} onChange={e=>{setLocal(e.target.value);const v=parseFloat(e.target.value);if(!isNaN(v))onChange(v);}} onBlur={()=>{const v=parseFloat(local);if(isNaN(v)){setLocal(String(value));}else{onChange(v);setLocal(String(v));}}} style={{width:"100%",textAlign:"center",fontSize:17,fontWeight:700,border:"2px solid #ccc",borderRadius:8,padding:"5px 2px",background:"white",fontFamily:F,...s}}/>;};
+
+const Row=({children,style})=><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8,...style}}>{children}</div>;
+
+// Turkish decimal formatter (34.70 → "34,70")
+const fmtTR=(v,d=2)=>v.toFixed(d).replace(".",",");
+
+// ═══ PDF PREVIEW (Crangle-style Kaldırma Planı) ═══
+function PDFPreview({cfg,crane,cap,lp,totalW,hookH,radius,onClose,realBoomTipH}){
+  const wllPct=lp.wll>0?(totalW/lp.wll*100):0;
+  const padArea=(lp.padShape||"square")==="round"?Math.PI*(lp.padW/2)*(lp.padL/2):lp.padW*lp.padL;
+  const tpm2=padArea>0?lp.outForce/padArea:0;
+  const kpa=tpm2*9.81;
+  const hdr={background:"#36b5c0",color:"#fff",padding:"6px 10px",fontWeight:700,fontSize:12,textAlign:"center"};
+  const cell={padding:"5px 8px",borderBottom:"1px solid #e0e0e0",fontSize:10};
+  const cellR={...cell,textAlign:"right",fontWeight:600};
+  // Capture canvas screenshot for Page 2
+  const [chartImg,setChartImg]=useState(null);
+  useEffect(()=>{const c=document.querySelector("canvas");if(c)setChartImg(c.toDataURL("image/png"));},[]);
+  return(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose} onKeyDown={e=>{if(e.key==="Escape")onClose();}} tabIndex={0}>
+    <style>{`@media print{body>*{display:none!important}#hangle-pdf-print{display:block!important;position:fixed!important;inset:0!important;z-index:99999!important;background:white!important;overflow:auto!important}}`}</style>
+    <div id="hangle-pdf-print" style={{background:"#fff",borderRadius:12,padding:24,maxWidth:700,width:"100%",maxHeight:"90vh",overflow:"auto",color:"#222"}} onClick={e=>e.stopPropagation()}>
+      {/* Title */}
+      <div style={{textAlign:"center",fontSize:22,fontWeight:700,color:"#36b5c0",marginBottom:16,fontFamily:"sans-serif"}}>Kaldırma Planı</div>
+
+      {/* Tedarikçi + Müşteri side by side */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0,border:"1px solid #ddd",borderRadius:4,marginBottom:12}}>
+        <div><div style={hdr}>Vinç Tedarikçisi</div><div style={{padding:10,minHeight:50,fontSize:10,borderRight:"1px solid #ddd"}}>{lp.supplier&&<div>{lp.supplier}</div>}{lp.supplierAddr&&<div>{lp.supplierAddr}</div>}{lp.supplierContact&&<div>{lp.supplierContact}</div>}{lp.supplierPhone&&<div>{lp.supplierPhone}</div>}{lp.supplierEmail&&<div>{lp.supplierEmail}</div>}</div></div>
+        <div><div style={hdr}>Müşteri</div><div style={{padding:10,minHeight:50,fontSize:10}}>{lp.client&&<div>{lp.client}</div>}{lp.clientAddr&&<div>{lp.clientAddr}</div>}{lp.clientContact&&<div>{lp.clientContact}</div>}{lp.clientPhone&&<div>{lp.clientPhone}</div>}{lp.clientEmail&&<div>{lp.clientEmail}</div>}</div></div>
       </div>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+
+      {/* İş Detayları */}
+      <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #ddd",marginBottom:12}}>
+        <thead><tr><td colSpan={2} style={hdr}>İş Detayları</td></tr></thead>
         <tbody>
-          {[["Tedarikçi",lp.supplier],["Müşteri",lp.client],["İş No",lp.jobNumber],["Proje",lp.jobName],["Adres",lp.jobAddress],["Tarih",lp.jobDate],["Vinç",`${crane?.name} — ${lp.craneMake} ${lp.craneModel}`],["Boom",`${cfg.boomLength}m @ ${cfg.boomAngle}°`],["Menzil / Yükseklik",`${radius.toFixed(1)}m / ${hookH.toFixed(1)}m`],["Kapasite",`${cap.toFixed(1)}t`],["Toplam Yük",`${totalW.toFixed(1)}t`],["Kullanım",`${(cap>0?(totalW/cap*100):0).toFixed(0)}%`]].map(([k,v])=>(
-            <tr key={k}><td style={{padding:"6px 8px",borderBottom:"1px solid #eee",fontWeight:600,width:"40%"}}>{k}</td><td style={{padding:"6px 8px",borderBottom:"1px solid #eee"}}>{v}</td></tr>
-          ))}
+          {[["Referans Numarası",lp.jobNumber],["Proje Adı",lp.jobName],["Proje Adresi",lp.jobAddress],["İş Tarihi",lp.jobDate]].map(([k,v])=><tr key={k}><td style={cell}>{k}</td><td style={cellR}>{v||"—"}</td></tr>)}
+          <tr style={{borderTop:"2px solid #ddd"}}><td style={cell}>Vinç</td><td style={cellR}>{lp.craneMake||"—"}</td></tr>
+          <tr><td style={cell}>Kapasite</td><td style={cellR}>{lp.craneModel||"—"}</td></tr>
+          {lp.craneRego&&<tr><td style={cell}>Plaka/Seri No</td><td style={cellR}>{lp.craneRego}</td></tr>}
         </tbody>
       </table>
-      {lp.notes&&<div style={{marginTop:15,padding:10,background:"#f5f5f5",borderRadius:6,fontSize:10}}><strong>Notlar:</strong> {lp.notes}</div>}
-      <div style={{textAlign:"center",marginTop:20}}><Btn onClick={()=>{window.print()}} color={C.green} style={{color:"white"}}>Yazdır / PDF</Btn> <Btn onClick={onClose} color="#ddd" style={{marginLeft:8}}>Kapat</Btn></div>
+
+      {/* Halat ve Denge Ağırlığı */}
+      <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #ddd",marginBottom:12}}>
+        <thead><tr><td colSpan={2} style={hdr}>Halat ve Denge Ağırlığı</td></tr></thead>
+        <tbody>
+          {[["Hat Çekme",lp.linePull||"—"],["Hattın Parçaları",lp.partsOfLine||"—"],["Denge Ağırlığı Konfigürasyonu",lp.cwConfig||"—"]].map(([k,v])=><tr key={k}><td style={cell}>{k}</td><td style={cellR}>{v}</td></tr>)}
+        </tbody>
+      </table>
+
+      {/* Vinç Konfigürasyonu */}
+      <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #ddd",marginBottom:12}}>
+        <thead><tr><td colSpan={2} style={hdr}>Vinç Konfigürasyonu</td></tr></thead>
+        <tbody>
+          {[["Bom Uzunluğu",fmtTR(cfg.boomLength)+"m"],["Bom Açısı",fmtTR(cfg.boomAngle)+"°"],...(cfg.jibEnabled?[["Pergel Uzunluğu",fmtTR(cfg.jibLength)+"m"],["Pergel Ofseti",fmtTR(cfg.jibAngle)+"°"]]:[]),["Kaldırma Yüksekliği",fmtTR(realBoomTipH||0)+"m"],["Yarıçap",fmtTR(radius,1)+"m"]].map(([k,v])=><tr key={k}><td style={cell}>{k}</td><td style={{...cellR,color:"#222"}}>{v}</td></tr>)}
+        </tbody>
+      </table>
+
+      {/* Yük Detayları */}
+      <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #ddd",marginBottom:12}}>
+        <thead><tr><td colSpan={2} style={hdr}>Yük Detayları</td></tr></thead>
+        <tbody>
+          {lp.loadDesc&&<tr><td colSpan={2} style={{...cell,color:"#36b5c0",fontStyle:"italic"}}>{lp.loadDesc}</td></tr>}
+          {[["Yük Ağırlığı",lp.loadWeight||"00"],["Donanım Ağırlığı",lp.riggingWeight||"00"],["Kanca Ağırlığı",lp.hookBlockWeight||"00"],["Ek Ağırlık",lp.addWeight||"00"]].map(([k,v])=><tr key={k}><td style={cell}>{k}</td><td style={cellR}>{v}</td></tr>)}
+          <tr style={{background:"#f8f8f8"}}><td style={{...cell,fontWeight:700}}>Toplam Ağırlık</td><td style={{...cellR,color:"#36b5c0",fontWeight:700}}>{totalW.toFixed(1)}</td></tr>
+        </tbody>
+      </table>
+
+      {/* Çalışma Yükü Sınırı (WLL) */}
+      <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #ddd",marginBottom:12}}>
+        <thead><tr><td colSpan={2} style={hdr}>Çalışma Yükü Sınırı (WLL)</td></tr></thead>
+        <tbody>
+          <tr><td style={cell}>Vinç Çalışma Yük Sınırı</td><td style={cellR}>{lp.wll||"00"}</td></tr>
+          <tr><td style={cell}>Vincin çalıştığı çizelge %'si</td><td style={{...cellR,color:wllPct>100?"#e74c3c":wllPct>90?"#f39c12":"#36b5c0"}}>{wllPct.toFixed(0)}%</td></tr>
+          <tr><td colSpan={2} style={{padding:"6px 8px"}}>
+            <div style={{position:"relative",height:16,background:"#eee",borderRadius:3,overflow:"hidden",border:"1px solid #ddd"}}>
+              <div style={{position:"absolute",left:0,top:0,bottom:0,width:Math.min(wllPct/130*100,100)+"%",background:wllPct>100?"#e74c3c":wllPct>90?"#f39c12":"#27ae60",opacity:0.6,borderRadius:2}}/>
+              {[90,100].map(v=><div key={v} style={{position:"absolute",left:(v/130*100)+"%",top:0,bottom:0,width:1,background:"#999"}}/>)}
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:8,color:"#888",marginTop:2}}><span>0</span><span>90</span><span>100</span><span>130</span></div>
+          </td></tr>
+        </tbody>
+      </table>
+
+      {/* Tekil Yük */}
+      <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #ddd",marginBottom:12}}>
+        <thead><tr><td colSpan={2} style={hdr}>Tekil Yük</td></tr></thead>
+        <tbody>
+          {[["Uskundra Gücü",(lp.outForce||0)+"T"],["Uskundra Ped Boyutu",(lp.padW||0)+"m × "+(lp.padL||0)+"m"],["Uskundra Ped Alanı",padArea.toFixed(2)+"m²"],["Tekil Yük",tpm2.toFixed(1)+"Tpm²   "+kpa.toFixed(1)+"Kpa"]].map(([k,v])=><tr key={k}><td style={cell}>{k}</td><td style={{...cellR,color:k==="Tekil Yük"?"#36b5c0":"#222"}}>{v}</td></tr>)}
+        </tbody>
+      </table>
+
+      {lp.notes&&<div style={{marginTop:8,padding:10,background:"#f5f5f5",borderRadius:6,fontSize:10,border:"1px solid #ddd"}}><strong>Notlar:</strong> {lp.notes}</div>}
+
+      <div style={{textAlign:"right",marginTop:12,fontSize:10,color:"#888"}}>Powered by <span style={{color:"#36b5c0",fontWeight:700}}>HANGLE</span></div>
+
+      {/* ═══ SAYFA 2: Menzil Çizelgesi ═══ */}
+      <div style={{pageBreakBefore:"always",marginTop:24,paddingTop:16,borderTop:"2px solid #36b5c0"}}>
+        <div style={{textAlign:"center",fontSize:16,fontWeight:700,color:"#36b5c0",marginBottom:12,fontFamily:"sans-serif"}}>Sayfa 2</div>
+        {/* Summary table above chart (Crangle style) */}
+        <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #ddd",marginBottom:12}}>
+          <tbody>
+            <tr>
+              <td style={cell}>Bom Uzunluğu</td><td style={cellR}>{fmtTR(cfg.boomLength)+"m"}</td>
+              {cfg.jibEnabled?<><td style={cell}>Pergel Uzunluğu</td><td style={cellR}>{fmtTR(cfg.jibLength)+"m"}</td></>:<><td style={cell}>Uç Yüksekliği</td><td style={cellR}>{fmtTR(realBoomTipH||0)+"m"}</td></>}
+            </tr>
+            <tr>
+              <td style={cell}>Bom Açısı</td><td style={cellR}>{fmtTR(cfg.boomAngle)+"°"}</td>
+              {cfg.jibEnabled?<><td style={cell}>Pergel Açısı</td><td style={cellR}>{fmtTR(cfg.jibAngle)+"°"}</td></>:<><td style={cell}>Yarıçap</td><td style={cellR}>{fmtTR(radius,1)+"m"}</td></>}
+            </tr>
+            {cfg.jibEnabled&&<tr>
+              <td style={cell}>Yarıçap</td><td style={cellR}>{fmtTR(radius,1)+"m"}</td>
+              <td style={cell}>Uç Yüksekliği</td><td style={cellR}>{fmtTR(realBoomTipH||0)+"m"}</td>
+            </tr>}
+          </tbody>
+        </table>
+        {/* Chart screenshot */}
+        {chartImg?<div style={{border:"1px solid #ddd",borderRadius:4,overflow:"hidden"}}><img src={chartImg} alt="Menzil Çizelgesi" style={{width:"100%",display:"block"}}/></div>
+          :<div style={{padding:40,textAlign:"center",color:"#aaa",border:"1px dashed #ddd",borderRadius:4}}>Menzil çizelgesi yüklenemedi</div>}
+        <div style={{textAlign:"right",marginTop:8,fontSize:10,color:"#888"}}>Powered by <span style={{color:"#36b5c0",fontWeight:700}}>HANGLE</span></div>
+      </div>
+
+      <div style={{textAlign:"center",marginTop:16}}><Btn onClick={()=>{window.print()}} color="#36b5c0" style={{color:"white",padding:"10px 24px"}}>Yazdır / PDF</Btn> <Btn onClick={onClose} color="#ddd" style={{marginLeft:8}}>Kapat</Btn></div>
     </div>
   </div>);
 }
 
 // ═══ RANGE CHART CANVAS ═══
-function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,tool,setTool,addObj,updObj,delObj,isMobile,craneColors,setDragTarget}){
+function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,tool,setTool,addObj,updObj,delObj,isMobile,craneColors,setDragTarget,onCfgUpdate,finalCap,derating,capSource:extCapSource,chartMismatch:extChartMismatch}){
   const canvasRef=useRef(null);
   const [drag,setDrag]=useState(null);
   const [magnifier,setMagnifier]=useState(null);
 
   const realRadius=useMemo(()=>calcRadius(cfg),[cfg]);
+  const realBoomTipH=useMemo(()=>calcBoomTipHeight(cfg),[cfg]);
   const realHookH=useMemo(()=>calcHookHeight(cfg),[cfg]);
-  const effectiveJibAngle=cfg.jibEnabled?Math.min(cfg.jibAngle,cfg.boomAngle):0;
+  const effectiveJibAngle=cfg.jibEnabled?Math.max(0,cfg.boomAngle-cfg.jibAngle):0;
 
+  const canvasSizeRef=useRef({w:0,h:0});
   const draw=useCallback(()=>{
     const canvas=canvasRef.current;if(!canvas)return;
     const ctx=canvas.getContext("2d");
-    const W=canvas.width=canvas.offsetWidth*(window.devicePixelRatio||1);
-    const H=canvas.height=canvas.offsetHeight*(window.devicePixelRatio||1);
-    ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);
-    const w=canvas.offsetWidth;const h=canvas.offsetHeight;
+    const dpr=window.devicePixelRatio||1;
+    const ow=canvas.offsetWidth;const oh=canvas.offsetHeight;
+    if(canvasSizeRef.current.w!==ow||canvasSizeRef.current.h!==oh){
+      canvas.width=ow*dpr;canvas.height=oh*dpr;
+      canvasSizeRef.current={w:ow,h:oh};
+    }
+    const W=canvas.width;const H=canvas.height;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const w=ow;const h=oh;
 
     // Scale calculations
     const maxDim=Math.max(cfg.boomLength*1.5,40);
@@ -1226,10 +822,15 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       const dist=Math.sqrt(dx*dx+dy*dy);
       ctx.strokeStyle=C.cyan;ctx.lineWidth=1.5;
       ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-      // Endpoints
-      ctx.fillStyle=C.cyan;
-      ctx.beginPath();ctx.arc(x1,y1,4,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.arc(x2,y2,4,0,Math.PI*2);ctx.fill();
+      // Draggable endpoints (larger with white border)
+      [x1,y1,x2,y2].forEach((_,idx)=>{
+        if(idx%2!==0)return;
+        const ex=idx===0?x1:x2;const ey=idx===0?y1:y2;
+        ctx.fillStyle=C.cyan;
+        ctx.beginPath();ctx.arc(ex,ey,6,0,Math.PI*2);ctx.fill();
+        ctx.strokeStyle="#fff";ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.arc(ex,ey,6,0,Math.PI*2);ctx.stroke();
+      });
       // Distance label
       const mx=(x1+x2)/2;const my=(y1+y2)/2;
       ctx.fillStyle=C.dark;ctx.fillRect(mx-20,my-8,40,16);
@@ -1265,33 +866,99 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
     ctx.fillStyle=C.greenLight;ctx.font=`bold 9px ${F}`;ctx.textAlign="center";
     ctx.fillText(`R: ${realRadius.toFixed(1)}m`,pivotX+realRadius*SC/2,groundY+10);
 
-    // Capacity from chart
-    const chartInDraw=cfg.chartId?LOAD_CHARTS[cfg.chartId]:null;
-    const capVal=chartInDraw?(lookupChart(chartInDraw,cfg.boomLength,realRadius)||calcCap(crane,cfg.boomLength,realRadius)):calcCap(crane,cfg.boomLength,realRadius);
-    const capSource=chartInDraw?"chart":"formula";
+    // ═══ BOOM TIP CROSSHAIR GUIDE LINES (Crangle style) ═══
+    // Vertical line: full height at tip X. Horizontal line: full width at tip Y.
+    {
+      const tipX=cfg.jibEnabled?jibTipX:boomTipX;
+      const tipY=cfg.jibEnabled?jibTipY:boomTipY;
+      const tipHeightM=(groundY-tipY)/VS;
+      const tipReachM=(tipX-pivotX)/SC;
+
+      if(tipHeightM>0.5){
+        ctx.save();
+        ctx.strokeStyle="rgba(220,40,40,0.45)";
+        ctx.lineWidth=1;
+
+        // Full vertical line (edge-to-edge)
+        ctx.beginPath();
+        ctx.moveTo(tipX,10);
+        ctx.lineTo(tipX,groundY);
+        ctx.stroke();
+
+        // Full horizontal line (edge-to-edge)
+        ctx.beginPath();
+        ctx.moveTo(pivotX,tipY);
+        ctx.lineTo(w,tipY);
+        ctx.stroke();
+
+        // Boundary rectangle (Crangle red box)
+        ctx.strokeStyle="rgba(220,40,40,0.35)";
+        ctx.lineWidth=1.5;
+        ctx.strokeRect(pivotX,tipY,tipX-pivotX,groundY-tipY);
+
+        // Red dot at boom tip
+        ctx.fillStyle="rgba(220,40,40,0.9)";
+        ctx.beginPath();ctx.arc(tipX,tipY,5,0,Math.PI*2);ctx.fill();
+
+        // Labels
+        ctx.font=`bold 9px ${F}`;
+        // Height label on Y axis (offset left to clear grid labels)
+        ctx.fillStyle="rgba(180,30,30,0.85)";
+        ctx.textAlign="right";
+        const hLabel=tipHeightM.toFixed(1)+"m";
+        const hlW=ctx.measureText(hLabel).width+6;
+        ctx.fillRect(pivotX-hlW-14,tipY-7,hlW+4,14);
+        ctx.fillStyle="#fff";
+        ctx.fillText(hLabel,pivotX-14,tipY+3);
+
+        // Reach label on X axis (offset below to clear distance markers)
+        ctx.fillStyle="rgba(180,30,30,0.85)";
+        ctx.textAlign="center";
+        const rLabel=tipReachM.toFixed(1)+"m";
+        const rlW=ctx.measureText(rLabel).width+6;
+        ctx.fillRect(tipX-rlW/2,groundY+22,rlW,14);
+        ctx.fillStyle="#fff";
+        ctx.fillText(rLabel,tipX,groundY+33);
+
+        ctx.restore();
+      }
+    }
+
+    // Capacity from parent (chart or manual only — no formula)
+    const capVal=finalCap;
+    const capSource=extCapSource||"none";
 
     // Info box
-    ctx.fillStyle=C.dark+"D0";ctx.fillRect(10,10,220,90);
-    ctx.strokeStyle=C.green+"40";ctx.lineWidth=1;ctx.strokeRect(10,10,220,90);
+    const hasCap=capVal!==null&&capVal!==undefined&&capVal>0;
+    const boxH=extChartMismatch?118:!hasCap?100:derating&&derating<1?108:90;
+    ctx.fillStyle=C.dark+"D0";ctx.fillRect(10,10,260,boxH);
+    ctx.strokeStyle=C.green+"40";ctx.lineWidth=1;ctx.strokeRect(10,10,260,boxH);
     ctx.fillStyle=C.yellow;ctx.font=`bold 11px ${F}`;ctx.textAlign="left";
-    ctx.fillText("Hangel",18,28);
+    ctx.fillText("Hangle",18,28);
     ctx.fillStyle=C.g200;ctx.font=`9px ${F}`;
     ctx.fillText(`${crane?.name||""}`,70,28);
     ctx.fillText(`Boom: ${cfg.boomLength}m @ ${cfg.boomAngle}°`,18,44);
-    ctx.fillText(`Menzil: ${realRadius.toFixed(1)}m  Kanca H: ${realHookH.toFixed(1)}m`,18,58);
-    ctx.fillText(`Kapasite: ${capVal.toFixed(1)}t`,18,72);
-    // Source badge
-    if(capSource==="chart"){
-      ctx.fillStyle=C.greenLight;ctx.fillText("✓ Yük Tablosundan",18,86);
+    ctx.fillText(`Menzil: ${realRadius.toFixed(1)}m  Uç: ${realBoomTipH.toFixed(1)}m  Kanca: ${realHookH.toFixed(1)}m`,18,58);
+    if(hasCap){
+      ctx.fillText(`Kapasite: ${capVal.toFixed(1)}t`,18,72);
+      if(derating!==undefined&&derating<1){
+        ctx.fillStyle=C.orange;ctx.fillText(`Derating: ×${derating.toFixed(2)} (outrigger/CW/rüzgar)`,18,86);
+      }
+      const srcY=derating&&derating<1?100:86;
+      if(capSource==="chart"){ctx.fillStyle=C.greenLight;ctx.fillText("✓ Yük Tablosundan",18,srcY);}
+      else if(capSource==="manual"){ctx.fillStyle=C.cyan;ctx.fillText("✎ Elle Girildi",18,srcY);}
     } else {
-      ctx.fillStyle=C.orange;ctx.fillText("⚠ YAKLAŞIK — Üretici tablosunu kullanın",18,86);
+      ctx.fillStyle=C.orange;ctx.font=`bold 9px ${F}`;
+      ctx.fillText("Kapasite: — (Tablo seçin veya elle girin)",18,72);
+      ctx.fillStyle=C.g400;ctx.font=`8px ${F}`;
+      ctx.fillText(isMobile?"Menü (☰) → Yük Tablosu veya Elle Kapasite":"Sol panel → Yük Tablosu veya Elle Kapasite",18,86);
     }
 
     // Status bar
     const barY=h-22;
     ctx.fillStyle=C.dark+"E0";ctx.fillRect(0,barY,w,22);
     ctx.fillStyle=C.g300;ctx.font=`9px ${F}`;ctx.textAlign="left";
-    const items=[`${crane?.name}`,`Boom: ${cfg.boomLength}m @ ${cfg.boomAngle}°`,`R: ${realRadius.toFixed(1)}m`,`H: ${realHookH.toFixed(1)}m`,`Kap: ${capVal.toFixed(1)}t`];
+    const items=[`${crane?.name}`,`Boom: ${cfg.boomLength}m @ ${cfg.boomAngle}°`,`R: ${realRadius.toFixed(1)}m`,`Uç: ${realBoomTipH.toFixed(1)}m`,`Kanca: ${realHookH.toFixed(1)}m`,hasCap?`Kap: ${capVal.toFixed(1)}t`:`Kap: —`];
     items.forEach((item,i)=>{
       const badge=i===1;
       ctx.fillStyle=badge?C.yellow:C.g300;
@@ -1301,10 +968,11 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
     ctx.textAlign="right";ctx.fillStyle=C.g500;
     ctx.fillText("Gövde=Açı | Uç=Uzunluk | Nesne=Taşı/Boyut/Döndür",w-10,barY+14);
 
-  },[cfg,crane,skin,objects,selObj,rulers,tool,magnifier,craneColors,realRadius,realHookH,effectiveJibAngle]);
+  },[cfg,crane,skin,objects,selObj,rulers,tool,magnifier,craneColors,realRadius,realHookH,realBoomTipH,effectiveJibAngle,finalCap,derating,extCapSource,extChartMismatch,isMobile]);
 
-  useEffect(()=>{draw();},[draw]);
-  useEffect(()=>{const onResize=()=>draw();window.addEventListener("resize",onResize);return()=>window.removeEventListener("resize",onResize);},[draw]);
+  const rafRef=useRef(null);
+  useEffect(()=>{if(rafRef.current)cancelAnimationFrame(rafRef.current);rafRef.current=requestAnimationFrame(draw);return()=>{if(rafRef.current)cancelAnimationFrame(rafRef.current);};},[draw]);
+  useEffect(()=>{const onResize=()=>{if(rafRef.current)cancelAnimationFrame(rafRef.current);rafRef.current=requestAnimationFrame(draw);};window.addEventListener("resize",onResize);return()=>window.removeEventListener("resize",onResize);},[draw]);
 
   // ═══ MOUSE/TOUCH INTERACTION ═══
   const getPos=(e)=>{
@@ -1314,6 +982,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
   };
 
   const handleDown=(e)=>{
+    if(e.touches)e.preventDefault();
     const pos=getPos(e);
     const canvas=canvasRef.current;if(!canvas)return;
     const w=canvas.offsetWidth;const h=canvas.offsetHeight;
@@ -1353,7 +1022,24 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       return;
     }
 
-    // Ruler tool
+    // Check ruler endpoints (drag to fine-tune) — works in both select and ruler mode
+    for(let ri=rulers.length-1;ri>=0;ri--){
+      const r=rulers[ri];
+      const rx1=pivotX+r.x1*SC;const ry1=groundY-r.y1*VS;
+      const rx2=pivotX+r.x2*SC;const ry2=groundY-r.y2*VS;
+      if(Math.hypot(pos.x-rx1,pos.y-ry1)<12){
+        setDrag({type:"rulerEnd",rulerId:r.id,end:1,pivotX,groundY,SC,VS});
+        setMagnifier(pos);
+        return;
+      }
+      if(Math.hypot(pos.x-rx2,pos.y-ry2)<12){
+        setDrag({type:"rulerEnd",rulerId:r.id,end:2,pivotX,groundY,SC,VS});
+        setMagnifier(pos);
+        return;
+      }
+    }
+
+    // Ruler tool — create new ruler
     if(tool==="ruler"){
       const rx=(pos.x-pivotX)/SC;const ry=(groundY-pos.y)/VS;
       setDrag({type:"ruler",x1:rx,y1:ry,x2:rx,y2:ry,pivotX,groundY,SC,VS});
@@ -1392,6 +1078,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
 
   const handleMove=(e)=>{
     if(!drag)return;
+    if(e.touches)e.preventDefault();
     const pos=getPos(e);
 
     if(drag.type==="boomTip"){
@@ -1399,7 +1086,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       const dx=pos.x-drag.pivotX;const dy=drag.pivotY-pos.y;
       const dist=Math.sqrt(dx*dx+dy*dy)/drag.SC;
       const crane=CRANES.find(c=>c.id===cfg.craneType);
-      const newLen=clamp(Math.round(dist),5,crane?.maxBoom||100);
+      const newLen=clamp(Math.round(dist),5,cfg.maxBoom||crane?.defBoom||100);
       const newAngle=clamp(Math.round(toDeg(Math.atan2(dy,dx))),0,85);
       if(setDragTarget)setDragTarget("boomTip");
       // Update both length and angle when dragging tip
@@ -1418,6 +1105,10 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       const rx=(pos.x-drag.pivotX)/drag.SC;const ry=(drag.groundY-pos.y)/drag.VS;
       setDrag(p=>({...p,x2:rx,y2:ry}));
       setMagnifier(pos);
+    } else if(drag.type==="rulerEnd"){
+      const rx=(pos.x-drag.pivotX)/drag.SC;const ry=(drag.groundY-pos.y)/drag.VS;
+      setRulers(p=>p.map(r=>r.id===drag.rulerId?(drag.end===1?{...r,x1:rx,y1:ry}:{...r,x2:rx,y2:ry}):r));
+      setMagnifier(pos);
     } else if(drag.type==="moveObj"){
       const newX=(pos.x-drag.offX-drag.pivotX)/drag.SC;
       updObj(drag.objId,{x:Math.max(-10,newX)});
@@ -1434,7 +1125,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
 
   const updFromCanvas=(updates)=>{
     // This calls up in parent
-    if(window._happCfgUpdate) window._happCfgUpdate(updates);
+    if(onCfgUpdate) onCfgUpdate(updates);
   };
 
   const handleUp=()=>{
@@ -1448,9 +1139,43 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
     if(setDragTarget)setDragTarget(null);
   };
 
+  // Double-click/tap on ruler endpoint or line → delete that ruler
+  const handleDblClick=(e)=>{
+    const pos=getPos(e);
+    const canvas=canvasRef.current;if(!canvas)return;
+    const w=canvas.offsetWidth;const h=canvas.offsetHeight;
+    const maxDim=Math.max(cfg.boomLength*1.5,40);
+    const SC=Math.min(w*0.6,h*0.5)/maxDim;
+    const VS=SC;
+    const groundY=h*0.78;
+    const pivotX=w*0.32;
+
+    for(let ri=rulers.length-1;ri>=0;ri--){
+      const r=rulers[ri];
+      const rx1=pivotX+r.x1*SC;const ry1=groundY-r.y1*VS;
+      const rx2=pivotX+r.x2*SC;const ry2=groundY-r.y2*VS;
+      // Hit on endpoints
+      if(Math.hypot(pos.x-rx1,pos.y-ry1)<14||Math.hypot(pos.x-rx2,pos.y-ry2)<14){
+        setRulers(p=>p.filter((_,i)=>i!==ri));
+        return;
+      }
+      // Hit on line body (distance from point to line segment)
+      const ldx=rx2-rx1;const ldy=ry2-ry1;const len2=ldx*ldx+ldy*ldy;
+      if(len2>0){
+        const t=Math.max(0,Math.min(1,((pos.x-rx1)*ldx+(pos.y-ry1)*ldy)/len2));
+        const projX=rx1+t*ldx;const projY=ry1+t*ldy;
+        if(Math.hypot(pos.x-projX,pos.y-projY)<10){
+          setRulers(p=>p.filter((_,i)=>i!==ri));
+          return;
+        }
+      }
+    }
+  };
+
   return(
     <canvas ref={canvasRef} style={{width:"100%",height:"100%",cursor:tool==="ruler"?"crosshair":drag?"grabbing":"default",touchAction:"none",borderRadius:8}}
       onMouseDown={handleDown} onMouseMove={handleMove} onMouseUp={handleUp} onMouseLeave={handleUp}
+      onDoubleClick={handleDblClick}
       onTouchStart={handleDown} onTouchMove={handleMove} onTouchEnd={handleUp}
     />
   );
@@ -1461,44 +1186,56 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const [tab,setTab]=useState("chart");
   const [cfg,setCfg]=useState(initialData?.config||{craneType:"mobile",boomLength:30,boomAngle:45,jibEnabled:false,jibLength:10,jibAngle:15,pivotHeight:2.5,pivotDist:1.2,craneEnd:4,loadWeight:5,counterweight:20,windSpeed:0,skinId:"default",
     loadW:3,loadH:2,loadShape:"box",slingType:"2leg",slingLength:4,slingLegs:2,hookBlockH:1.2,
-    chartId:""
+    chartId:"",outriggerSpread:"full",cwConfig:"full",manualCap:0,maxBoom:60
   });
   const [objects,setObjects]=useState(initialData?.objects||[]);
   const [selObj,setSelObj]=useState(null);
   const [rulers,setRulers]=useState(initialData?.rulers||[]);
   const [tool,setTool]=useState("select");
-  const [lp,setLp]=useState(initialData?.lift_plan||{supplier:"",supplierContact:"",supplierPhone:"",client:"",clientContact:"",clientPhone:"",jobNumber:"",jobName:"",jobAddress:"",jobDate:new Date().toISOString().split("T")[0],craneMake:"",craneModel:"",craneRego:"",linePull:"",partsOfLine:4,cwConfig:"",loadDesc:"",loadWeight:0,riggingWeight:0,hookBlockWeight:0,addWeight:0,wll:0,notes:"",outForce:0,padW:1,padL:1});
-  const [calcTab,setCalcTab]=useState("pct");
-  const [ci,setCi]=useState({load:0,rigging:0,wll:0,pct:75,outF:0,padW:1,padL:1});
+  const [lp,setLp]=useState(initialData?.lift_plan||{supplier:"",supplierContact:"",supplierPhone:"",supplierEmail:"",supplierAddr:"",client:"",clientContact:"",clientPhone:"",clientEmail:"",clientAddr:"",jobNumber:"",jobName:"",jobAddress:"",jobDate:new Date().toISOString().split("T")[0],craneMake:"",craneModel:"",craneRego:"",linePull:0,partsOfLine:4,cwConfig:"",loadDesc:"",loadWeight:0,riggingWeight:0,hookBlockWeight:0,addWeight:0,wll:0,notes:"",outForce:0,padShape:"square",padW:1,padL:1});
+
+  const [ci,setCi]=useState({load:0,wll:0,pct:75,outF:0,padW:1,padL:1,padShape:"square"});
   const [showPDF,setShowPDF]=useState(false);
+  const [customCharts,setCustomCharts]=useState({});
   const [saveStatus,setSaveStatus]=useState("idle");
-  const [mobilePanel,setMobilePanel]=useState("controls");
+  const [showMobMenu,setShowMobMenu]=useState(false);
+  const [showMobObj,setShowMobObj]=useState(false);
   const [isMobile,setIsMobile]=useState(typeof window!=="undefined"&&window.innerWidth<768);
   const [craneColors,setCraneColors]=useState({...DEFAULT_CRANE_COLORS});
   const [colorEditPart,setColorEditPart]=useState(null);
   const [dragTarget,setDragTarget]=useState(null);
   const [showObjPanel,setShowObjPanel]=useState(false);
+  const [detailOpen,setDetailOpen]=useState(false); // Detail sections collapsed by default
 
   useEffect(()=>{
     const onResize=()=>setIsMobile(window.innerWidth<768);
     window.addEventListener("resize",onResize);return()=>window.removeEventListener("resize",onResize);
   },[]);
 
+  // Scroll to top when switching tabs
+  useEffect(()=>{window.scrollTo(0,0);},[tab]);
+
   // Bridge for canvas to update config
-  useEffect(()=>{window._happCfgUpdate=(u)=>setCfg(p=>({...p,...u}));return()=>{delete window._happCfgUpdate};},[]);
+  // Config update callback for RangeChart child
+  const handleCfgUpdate=useCallback((u)=>setCfg(p=>({...p,...u})),[]);
 
   const crane=CRANES.find(c2=>c2.id===cfg.craneType);
   const skin=SKINS.find(s=>s.id===cfg.skinId)||SKINS[0];
   const realRadius=useMemo(()=>calcRadius(cfg),[cfg]);
+  const realBoomTipH=useMemo(()=>calcBoomTipHeight(cfg),[cfg]);
   const realHookH=useMemo(()=>calcHookHeight(cfg),[cfg]);
-  const activeChart=cfg.chartId?LOAD_CHARTS[cfg.chartId]:null;
-  const cap=activeChart?(lookupChart(activeChart,cfg.boomLength,realRadius)||calcCap(crane,cfg.boomLength,realRadius)):calcCap(crane,cfg.boomLength,realRadius);
-  const capSource=activeChart?"chart":"formula";
+  const allCharts=useMemo(()=>({...LOAD_CHARTS,...customCharts}),[customCharts]);
+  const activeChart=cfg.chartId?allCharts[cfg.chartId]:null;
+  const rawCap=activeChart?lookupChart(activeChart,cfg.boomLength,realRadius):null;
+  const cap=rawCap!==null?rawCap:(cfg.manualCap>0?cfg.manualCap:null);
+  const capSource=rawCap!==null?"chart":(cfg.manualCap>0?"manual":"none");
+  const combinedDerating=1; // No fake derating — real charts already account for configuration
+  const chartMismatch=false; // No fake crane capacity to compare against
   const totalW=lp.loadWeight+lp.riggingWeight+lp.hookBlockWeight+lp.addWeight;
   const selObjData=objects.find(o=>o.id===selObj);
 
-  const up=(u)=>setCfg(p=>({...p,...u}));
-  const upLP=(k,v)=>setLp(p=>({...p,[k]:v}));
+  const up=(u)=>{setCfg(p=>({...p,...u}));if(u.loadWeight!==undefined)setLp(p=>({...p,loadWeight:u.loadWeight}));};
+  const upLP=(k,v)=>{setLp(p=>({...p,[k]:v}));if(k==="loadWeight")setCfg(p=>({...p,loadWeight:v}));};
   const upCI=(k,v)=>setCi(p=>({...p,[k]:v}));
 
   const addObj=(type)=>{const d=OBJ_TYPES.find(o=>o.id===type);setObjects(p=>[...p,{id:uid(),type,x:10+Math.random()*15,w:d.w,h:d.h,rotation:0,name:d.name,color:C.g400,elevate:0,showTop:false,showSlew:false,flipped:false}]);};
@@ -1516,164 +1253,363 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   };
 
   // Calculations
-  const pctCalc=ci.wll>0?(ci.load+ci.rigging)/ci.wll*100:0;
+  const pctCalc=ci.wll>0?ci.load/ci.wll*100:0;
   const maxLoadCalc=ci.wll*ci.pct/100;
-  const minWllCalc=ci.pct>0?(ci.load+ci.rigging)/ci.pct*100:0;
-  const pl=ptLoad(ci.outF,ci.padW,ci.padL);
+  const minWllCalc=ci.pct>0?ci.load/ci.pct*100:0;
 
   // Export: canvas screenshot
   const exportScreenshot=()=>{
     const canvas=document.querySelector("canvas");if(!canvas)return;
     const link=document.createElement("a");
-    link.download=`Hangel-${new Date().toISOString().split("T")[0]}.png`;
+    link.download=`Hangle-${new Date().toISOString().split("T")[0]}.png`;
     link.href=canvas.toDataURL("image/png");
     link.click();
   };
 
+  // JSON Import
+  const importChartCSV=(e)=>{
+    const file=e.target.files?.[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=(ev)=>{
+      try{
+        const text=ev.target.result;
+        const lines=text.trim().split("\n").map(l=>l.split(",").map(s=>s.trim()));
+        if(lines.length<3){alert("CSV en az 3 satır olmalı (isim, boom uzunlukları, veri)");return;}
+        const name=lines[0][0]||"Özel Tablo";
+        const boomLengths=lines[1].slice(1).map(Number).filter(v=>!isNaN(v)&&v>0);
+        const rows=[];
+        for(let i=2;i<lines.length;i++){
+          const r=parseFloat(lines[i][0]);if(isNaN(r))continue;
+          const caps=lines[i].slice(1).map(v=>{const n=parseFloat(v);return isNaN(n)||n<=0?null:n;});
+          rows.push({r,caps});
+        }
+        if(boomLengths.length===0||rows.length===0){alert("Geçersiz tablo formatı");return;}
+        const maxCap=Math.max(...rows.flatMap(r=>r.caps.filter(v=>v!==null)));
+        const maxBoom=Math.max(...boomLengths);
+        const id="custom_"+Date.now();
+        setCustomCharts(p=>({...p,[id]:{name,maxCap,maxBoom,pivotH:3,boomLengths,rows}}));
+        up({chartId:id});
+        alert("Yük tablosu yüklendi: "+name+" ("+maxCap+"t, "+boomLengths.length+" boom konfig)");
+      }catch(err){alert("CSV parse hatası: "+err.message);}
+    };
+    reader.readAsText(file);
+    e.target.value="";
+  };
+  // JSON import handled inline in Export tab
+
   return(
     <div style={{fontFamily:FB,background:`linear-gradient(135deg,${C.dark} 0%,${C.greenBg} 40%,${C.dark} 100%)`,minHeight:"100vh",color:C.white}}>
-      {showPDF&&<PDFPreview cfg={cfg} crane={crane} cap={cap} lp={lp} totalW={totalW} hookH={realHookH} radius={realRadius} onClose={()=>setShowPDF(false)}/>}
+      {showPDF&&<PDFPreview cfg={cfg} crane={crane} cap={cap} lp={lp} totalW={totalW} hookH={realHookH} radius={realRadius} realBoomTipH={realBoomTipH} onClose={()=>setShowPDF(false)}/>}
 
-      {/* HEADER */}
-      <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`3px solid ${C.yellow}`,padding:isMobile?"8px 12px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:6}}>
+      {/* HEADER — quick actions always visible */}
+      <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`2px solid ${C.yellow}`,padding:isMobile?"6px 10px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:isMobile?4:8}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <img src={LOGO_DATA} alt="Hangel" style={{width:isMobile?32:42,height:isMobile?32:42,borderRadius:6,objectFit:"contain",flexShrink:0}}/>
+          <img src={LOGO_DATA} alt="Hangle" style={{width:isMobile?28:42,height:isMobile?28:42,borderRadius:8,objectFit:"contain",flexShrink:0}}/>
           <div>
-            <div style={{fontSize:isMobile?16:24,fontWeight:900,letterSpacing:isMobile?3:5,color:C.yellow,fontFamily:F}}>Hangel</div>
-            {!isMobile&&<div style={{fontSize:8,color:C.greenLight,letterSpacing:2,fontFamily:F}}>AĞIR YÜK & VİNÇ PLANLAMA SİSTEMİ v4.0</div>}
+            <div style={{fontSize:isMobile?16:24,fontWeight:900,letterSpacing:isMobile?3:5,color:C.yellow,fontFamily:F}}>Hangle</div>
+            {!isMobile&&<div style={{fontSize:9,color:C.greenLight,letterSpacing:2,fontFamily:F}}>VİNÇ PLANLAMA v5.3</div>}
           </div>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:6}}>
-          {onSave&&<div onClick={handleSave} style={{display:"flex",alignItems:"center",gap:4,cursor:"pointer",padding:"4px 10px",borderRadius:6,background:saveStatus==="saved"?C.greenLight+"25":saveStatus==="saving"?C.yellow+"25":C.g500+"25"}}>
-            <span style={{fontSize:10}}>{saveStatus==="saved"?"✅":saveStatus==="saving"?"🔄":"💾"}</span>
-            <span style={{fontSize:9,fontWeight:600,color:saveStatus==="saved"?C.greenLight:saveStatus==="saving"?C.yellow:C.g300,fontFamily:F}}>
-              {saveStatus==="saved"?"Kaydedildi":saveStatus==="saving"?"Kaydediliyor...":"Kaydet"}
-            </span>
-          </div>}
+        {/* Quick actions — always visible */}
+        <div style={{display:"flex",alignItems:"center",gap:isMobile?4:6}}>
+          {isMobile&&tab!=="chart"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>← Şema</button>}
+          <button onClick={()=>setShowPDF(true)} style={{padding:isMobile?"6px 10px":"6px 14px",background:C.yellow,border:"none",borderRadius:8,color:C.greenDark,fontWeight:700,fontSize:isMobile?10:12,cursor:"pointer",fontFamily:F}}>📋 {isMobile?"PDF":"Kaldırma Planı"}</button>
+          {!isMobile&&<button onClick={exportScreenshot} style={{padding:"6px 14px",background:C.g500+"80",border:`1px solid ${C.g400}40`,borderRadius:8,color:C.g200,fontWeight:600,fontSize:11,cursor:"pointer",fontFamily:F}}>📷 Ekran Görüntüsü</button>}
+          {onSave&&<button onClick={handleSave} style={{padding:isMobile?"6px 10px":"6px 14px",background:saveStatus==="saved"?C.greenLight+"30":C.g500+"80",border:`1px solid ${saveStatus==="saved"?C.greenLight:C.g400}40`,borderRadius:8,color:saveStatus==="saved"?C.greenLight:C.g200,fontWeight:600,fontSize:isMobile?10:11,cursor:"pointer",fontFamily:F}}>
+            {saveStatus==="saved"?"✅ Kaydedildi":saveStatus==="saving"?"⏳":"💾 Kaydet"}
+          </button>}
         </div>
-        <nav style={{display:"flex",gap:2,background:C.greenDark,borderRadius:8,padding:3,overflowX:"auto",width:"100%",WebkitOverflowScrolling:"touch"}}>
-          {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:isMobile?"5px 8px":"6px 12px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:"transparent",color:tab===t.id?C.greenDark:C.g300,fontWeight:tab===t.id?700:500,fontSize:isMobile?9:10,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap",flexShrink:0}}>{t.icon}{isMobile?"":" "+t.label}</button>))}
-        </nav>
+        {!isMobile&&<nav style={{display:"flex",gap:3,background:C.greenDark,borderRadius:8,padding:3,width:"100%"}}>
+          {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:"transparent",color:tab===t.id?C.greenDark:C.g300,fontWeight:tab===t.id?700:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>{t.icon} {t.label}</button>))}
+        </nav>}
       </header>
 
       {/* ═══ CHART TAB ═══ */}
       {tab==="chart"&&(
         isMobile?(
-        <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 95px)"}}>
+        <div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 52px)",paddingBottom:"env(safe-area-inset-bottom,0px)"}}>
+          {/* CANVAS - takes all space */}
           <div style={{flex:1,position:"relative"}}>
-            <RangeChart cfg={cfg} crane={crane} skin={skin} objects={objects} selObj={selObj} setSelObj={setSelObj} rulers={rulers} setRulers={setRulers} tool={tool} setTool={setTool} addObj={addObj} updObj={updObj} delObj={delObj} isMobile={isMobile} craneColors={craneColors} setDragTarget={setDragTarget}/>
-          </div>
-          {/* Mobile panel tabs */}
-          <div style={{display:"flex",gap:2,padding:"4px 6px",background:C.darkSurf}}>
-            {["controls","objects","capacity"].map(p=>(<button key={p} onClick={()=>setMobilePanel(p)} style={{flex:1,padding:"4px",border:"none",borderRadius:4,background:mobilePanel===p?C.yellow:"transparent",color:mobilePanel===p?C.greenDark:C.g400,fontSize:8,fontWeight:600,cursor:"pointer",fontFamily:F}}>{p==="controls"?"Kontroller":p==="objects"?"Nesneler":"Kapasite"}</button>))}
-          </div>
-          <div style={{height:220,overflow:"auto",padding:8,background:C.dark}}>
-            {mobilePanel==="controls"&&(
-              <div>
-                <Row><Lbl>Vinç</Lbl></Row>
-                <Sel value={cfg.craneType} onChange={v=>up({craneType:v})}>{CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name} ({c2.maxCap}t)</option>)}</Sel>
-                <Row style={{marginTop:8}}><Lbl>Boom: {cfg.boomLength}m</Lbl><Num value={cfg.boomLength} onChange={v=>up({boomLength:v})} min={5} max={crane?.maxBoom||100}/></Row>
-                <Sli value={cfg.boomLength} min={5} max={crane?.maxBoom||100} onChange={v=>up({boomLength:v})}/>
-                <Row><Lbl>Açı: {cfg.boomAngle}°</Lbl><Num value={cfg.boomAngle} onChange={v=>up({boomAngle:v})} min={0} max={85}/></Row>
-                <Sli value={cfg.boomAngle} min={0} max={85} onChange={v=>up({boomAngle:v})} color={C.greenLight}/>
-                <Row><Lbl>Jib</Lbl><input type="checkbox" checked={cfg.jibEnabled} onChange={e=>up({jibEnabled:e.target.checked})}/></Row>
+            <RangeChart cfg={cfg} crane={crane} skin={skin} objects={objects} selObj={selObj} setSelObj={setSelObj} rulers={rulers} setRulers={setRulers} tool={tool} setTool={setTool} addObj={addObj} updObj={updObj} delObj={delObj} isMobile={isMobile} craneColors={craneColors} setDragTarget={setDragTarget} onCfgUpdate={handleCfgUpdate} finalCap={cap} derating={combinedDerating} capSource={capSource} chartMismatch={chartMismatch}/>
+            
+            {/* Top-right floating toolbar */}
+            <div style={{position:"absolute",top:8,right:8,display:"flex",gap:6,zIndex:20}}>
+              {[{id:"select",icon:"👆",tip:"Seç"},{id:"ruler",icon:"📏",tip:"Cetvel"},{id:"obj",icon:"📦",tip:"Nesne"}].map(b=>(
+                <button key={b.id} onClick={()=>{if(b.id==="obj"){setShowMobObj(!showMobObj);setShowMobMenu(false);}else{setTool(b.id==="select"?"select":"ruler");setShowMobObj(false);}}} style={{width:44,height:44,borderRadius:10,border:`2px solid ${(b.id==="obj"?showMobObj:tool===b.id)?C.yellow:C.green+"60"}`,background:(b.id==="obj"?showMobObj:tool===b.id)?"rgba(0,77,42,0.95)":"rgba(10,31,18,0.85)",color:"white",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(8px)"}} title={b.tip}>{b.icon}</button>
+              ))}
+              <button onClick={()=>{setShowMobMenu(!showMobMenu);setShowMobObj(false);}} style={{width:44,height:44,borderRadius:10,border:`2px solid ${showMobMenu?C.yellow:C.green+"60"}`,background:showMobMenu?"rgba(0,77,42,0.95)":"rgba(10,31,18,0.85)",color:"white",fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(8px)"}}>☰</button>
+            </div>
+
+            {/* Objects overlay */}
+            {showMobObj&&(
+              <div style={{position:"absolute",top:52,right:8,width:200,maxHeight:"60vh",overflow:"auto",background:"rgba(10,31,18,0.95)",border:`1px solid ${C.green}40`,borderRadius:10,padding:8,zIndex:30,backdropFilter:"blur(12px)"}}>
+                <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                  {OBJ_TYPES.map(o=><button key={o.id} onClick={()=>{addObj(o.id);setShowMobObj(false);}} style={{padding:"6px 10px",background:C.green+"25",border:`1px solid ${C.green}35`,borderRadius:8,color:C.g200,fontSize:10,cursor:"pointer"}}>{o.icon} {o.name}</button>)}
+                </div>
               </div>
             )}
-            {mobilePanel==="objects"&&(
-              <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                {OBJ_TYPES.map(o=><button key={o.id} onClick={()=>addObj(o.id)} style={{padding:"4px 8px",background:C.green+"30",border:`1px solid ${C.green}40`,borderRadius:6,color:C.g200,fontSize:8,cursor:"pointer"}}>{o.icon} {o.name}</button>)}
-              </div>
-            )}
-            {mobilePanel==="capacity"&&(
-              <div>
-                <Row><Lbl>Menzil</Lbl><span style={{color:C.yellow,fontSize:10,fontFamily:F}}>{realRadius.toFixed(1)}m</span></Row>
-                <Row><Lbl>Kanca H</Lbl><span style={{color:C.yellow,fontSize:10,fontFamily:F}}>{realHookH.toFixed(1)}m</span></Row>
-                <Row><Lbl>Kapasite</Lbl><span style={{color:capSource==="chart"?C.greenLight:C.orange,fontSize:10,fontFamily:F}}>{cap.toFixed(1)}t</span></Row>
+
+            {/* Menu overlay */}
+            {showMobMenu&&(
+              <div style={{position:"absolute",top:52,right:8,width:220,background:"rgba(10,31,18,0.96)",border:`1px solid ${C.green}40`,borderRadius:12,padding:6,zIndex:30,backdropFilter:"blur(12px)"}}>
+                {[
+                  {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
+                  {label:"Kaldırma Planı",icon:"📋",action:()=>{setTab("liftplan");setShowMobMenu(false);}},
+                  {label:"Hesaplamalar",icon:"🔢",action:()=>{setTab("calc");setShowMobMenu(false);}},
+                  {label:"Dışa Aktar",icon:"📤",action:()=>{setTab("export");setShowMobMenu(false);}},
+                  {label:"Grafik Sıfırla",icon:"🗑️",action:()=>{if(window.confirm("Tüm nesneler ve cetveller silinecek. Emin misiniz?")){setObjects([]);setRulers([]);}setShowMobMenu(false);}},
+                ].map((item,i)=>(
+                  <button key={i} onClick={item.action} style={{width:"100%",padding:"10px 12px",background:"transparent",border:"none",borderBottom:i<4?`1px solid ${C.green}15`:"none",color:C.g200,fontSize:13,textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:8,fontFamily:FB}}>
+                    <span style={{fontSize:15}}>{item.icon}</span>{item.label}
+                  </button>
+                ))}
+                {/* Crane type selector */}
+                <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
+                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Vinç Tipi</div>
+                  <select value={cfg.craneType} onChange={e=>{up({craneType:e.target.value});setShowMobMenu(false);}} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.yellow,fontSize:11,fontFamily:F}}>
+                    {CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name}</option>)}
+                  </select>
+                </div>
+                {/* Load chart selector */}
+                <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
+                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Yük Tablosu</div>
+                  <select value={cfg.chartId||""} onChange={e=>{up({chartId:e.target.value});setShowMobMenu(false);}} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:capSource==="chart"?C.greenLight:C.g300,fontSize:13,fontFamily:F}}>
+                    <option value="">Tablo seçilmedi</option>
+                    {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name}</option>)}
+                  </select>
+                  {cfg.chartId&&<div style={{fontSize:10,color:C.greenLight,marginTop:3}}>✓ Aktif</div>}
+                </div>
+                {/* Load shape & sling config */}
+                <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
+                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Tema</div>
+                  <select value={cfg.skinId} onChange={e=>{up({skinId:e.target.value});}} style={{width:"100%",padding:6,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.g200,fontSize:10,fontFamily:F}}>
+                    {SKINS.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                </div>
+                {/* Yük & Koşullar */}
+                <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
+                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Yük & Koşullar</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
+                    <div>
+                      <div style={{fontSize:10,color:"#999"}}>Yük (t)</div>
+                      <MobNum value={cfg.loadWeight} onChange={v=>up({loadWeight:clamp(v,0,999)})} step={0.5} style={{fontSize:14,padding:"4px 2px"}}/>
+                    </div>
+                    <div>
+                      <div style={{fontSize:10,color:"#999"}}>Rüzgar (km/h)</div>
+                      <MobNum value={cfg.windSpeed} onChange={v=>up({windSpeed:clamp(v,0,100)})} step={1} style={{fontSize:14,padding:"4px 2px"}}/>
+                    </div>
+                  </div>
+                  {!activeChart&&<div style={{marginTop:4}}>
+                    <div style={{fontSize:10,color:C.cyan}}>Elle Kapasite (t)</div>
+                    <MobNum value={cfg.manualCap} onChange={v=>up({manualCap:clamp(v,0,9999)})} step={0.5} style={{fontSize:14,padding:"4px 2px",borderColor:C.cyan}}/>
+                  </div>}
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,marginTop:4}}>
+                    <div>
+                      <div style={{fontSize:10,color:"#999"}}>Outrigger</div>
+                      <select value={cfg.outriggerSpread||"full"} onChange={e=>up({outriggerSpread:e.target.value})} style={{width:"100%",padding:"8px 6px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:11,fontFamily:F}}>
+                        <option value="full">Tam</option><option value="75">%75</option><option value="50">%50</option><option value="0">Kapalı</option>
+                      </select>
+                    </div>
+                    <div>
+                      <div style={{fontSize:10,color:"#999"}}>Karşı Ağ.</div>
+                      <select value={cfg.cwConfig||"full"} onChange={e=>up({cwConfig:e.target.value})} style={{width:"100%",padding:"8px 6px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:11,fontFamily:F}}>
+                        <option value="full">Tam</option><option value="half">Yarım</option><option value="none">Yok</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                {/* Yük & Sapan */}
+                <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
+                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Yük Şekli & Sapan</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
+                    <div>
+                      <div style={{fontSize:10,color:"#999"}}>Yük Şekli</div>
+                      <select value={cfg.loadShape} onChange={e=>up({loadShape:e.target.value})} style={{width:"100%",padding:"8px 6px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:11,fontFamily:F}}>
+                        {LOAD_SHAPES.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <div style={{fontSize:10,color:"#999"}}>Sapan Tipi</div>
+                      <select value={cfg.slingType} onChange={e=>{const st=SLING_TYPES.find(s=>s.id===e.target.value);up({slingType:e.target.value,slingLegs:st?.legs||2});}} style={{width:"100%",padding:"8px 6px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:11,fontFamily:F}}>
+                        {SLING_TYPES.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <div style={{fontSize:10,color:"#999"}}>Yük G.(m)</div>
+                      <MobNum value={cfg.loadW} onChange={v=>up({loadW:clamp(v,0.5,20)})} step={0.5} style={{fontSize:13,padding:"4px 2px"}}/>
+                    </div>
+                    <div>
+                      <div style={{fontSize:10,color:"#999"}}>Yük Y.(m)</div>
+                      <MobNum value={cfg.loadH} onChange={v=>up({loadH:clamp(v,0.5,20)})} step={0.5} style={{fontSize:13,padding:"4px 2px"}}/>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
+
+          {/* BOTTOM VALUE BAR - Crangle style */}
+          {selObjData?(
+            /* Object selected mode */
+            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"6px 4px"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr auto",gap:3,alignItems:"center"}}>
+                <div style={{textAlign:"center"}}>
+                  <div style={{fontSize:10,color:"#888"}}>Yükseklik</div>
+                  <MobNum value={selObjData.h} onChange={v=>updObj(selObj,{h:v})} step={0.1} style={{fontSize:13,padding:"3px 1px"}}/>
+                </div>
+                <div style={{textAlign:"center"}}>
+                  <div style={{fontSize:10,color:"#888"}}>Genişlik</div>
+                  <MobNum value={selObjData.w} onChange={v=>updObj(selObj,{w:v})} step={0.1} style={{fontSize:13,padding:"3px 1px"}}/>
+                </div>
+                <div style={{textAlign:"center"}}>
+                  <div style={{fontSize:10,color:"#888"}}>Mesafe</div>
+                  <MobNum value={selObjData.x} onChange={v=>updObj(selObj,{x:v})} step={0.5} style={{fontSize:13,padding:"3px 1px"}}/>
+                </div>
+                <div style={{textAlign:"center"}}>
+                  <div style={{fontSize:10,color:"#888"}}>Yükselt</div>
+                  <MobNum value={selObjData.elevate||0} onChange={v=>updObj(selObj,{elevate:v})} step={0.5} style={{fontSize:13,padding:"3px 1px"}}/>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:3}}>
+                  <button onClick={()=>cpObj(selObj)} style={{width:36,height:32,borderRadius:6,border:"1px solid #ccc",background:"white",fontSize:13,cursor:"pointer"}}>📋</button>
+                  <button onClick={()=>delObj(selObj)} style={{width:36,height:32,borderRadius:6,border:"1px solid #ccc",background:"white",fontSize:13,cursor:"pointer",color:"#d00"}}>🗑</button>
+                </div>
+              </div>
+            </div>
+          ):(
+            /* Default: crane values — Crangle style 6-cell grid */
+            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"4px 3px"}}>
+              {(()=>{
+                const firstObj=objects[0];
+                return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:2}}>
+                {[
+                  {label:"Bom Uzunluğu",value:cfg.boomLength,unit:"m",key:"boomLength",min:5,max:cfg.maxBoom||crane?.defBoom||100,step:0.5},
+                  {label:"Yarıçap",value:realRadius,unit:"m",readonly:true},
+                  {label:firstObj?"Nesne Yüksekliği":"Uç Yüksekliği",value:firstObj?firstObj.h:realBoomTipH,unit:"m",readonly:true},
+                ].map((v,i)=>(
+                  <div key={i} style={{textAlign:"center"}}>
+                    <div style={{fontSize:10,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
+                    {v.readonly?
+                      <div style={{fontSize:15,fontWeight:700,color:"#333",fontFamily:F,padding:"3px 0"}}>{fmtTR(v.value,1)}{v.unit}</div>:
+                      <MobNum value={v.value} onChange={val=>up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
+                    }
+                  </div>
+                ))}
+                {[
+                  {label:"Bom Açısı",value:cfg.boomAngle,unit:"°",key:"boomAngle",min:0,max:85,step:1},
+                  {label:"Uç Yüksekliği",value:realBoomTipH,unit:"m",readonly:true},
+                  {label:firstObj?"Nesne Mesafesi":"Kapasite",value:firstObj?firstObj.x:(cap!==null?cap:null),unit:firstObj?"m":"t",readonly:true,color:!firstObj&&cap===null?"#999":undefined},
+                ].map((v,i)=>(
+                  <div key={i+3} style={{textAlign:"center"}}>
+                    <div style={{fontSize:10,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
+                    {v.readonly?
+                      <div style={{fontSize:15,fontWeight:700,color:v.color||"#333",fontFamily:F,padding:"3px 0"}}>{v.value!==null?fmtTR(v.value,v.unit==="°"?0:1):"—"}{v.value!==null?v.unit:""}</div>:
+                      <MobNum value={v.value} onChange={val=>up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
+                    }
+                  </div>
+                ))}
+              </div>})()}
+            </div>
+          )}
         </div>
         ):(
         /* ═══ DESKTOP LAYOUT ═══ */
         <div style={{display:"flex",height:"calc(100vh - 95px)"}}>
-          {/* LEFT PANEL */}
-          <div style={{width:280,overflow:"auto",padding:12,background:C.dark+"80",borderRight:`1px solid ${C.green}15`}}>
-            {/* Crane type */}
+          {/* LEFT PANEL — organized for field foremen & sales */}
+          <div style={{width:290,overflow:"auto",padding:12,background:C.dark+"80",borderRight:`1px solid ${C.green}15`}}>
+            {/* ── TEMEL: Her zaman görünür ── */}
+            
+            {/* Vinç + Tablo */}
             <Card>
-              <Title>Vinç Tipi</Title>
-              <Sel value={cfg.craneType} onChange={v=>up({craneType:v})}>{CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name} ({c2.maxCap}t)</option>)}</Sel>
-              <div style={{marginTop:8}}><Title color={capSource==="chart"?C.greenLight:C.orange}>Yük Tablosu</Title></div>
+              <Title>Vinç & Tablo</Title>
+              <Sel value={cfg.craneType} onChange={v=>up({craneType:v})}>{CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name}</option>)}</Sel>
+              <div style={{marginTop:8}}><Lbl>Yük Tablosu</Lbl></div>
               <Sel value={cfg.chartId} onChange={v=>up({chartId:v})}>
-                <option value="">Yaklaşık Formül</option>
-                {Object.entries(LOAD_CHARTS).map(([k,ch])=><option key={k} value={k}>{ch.name} ({ch.maxCap}t)</option>)}
+                <option value="">Tablo seçilmedi</option>
+                {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name} ({ch.maxCap}t)</option>)}
               </Sel>
-              {cfg.chartId&&<div style={{fontSize:8,color:C.greenLight,marginTop:4}}>✓ Gerçek yük tablosu aktif</div>}
+              {cfg.chartId&&<div style={{fontSize:10,color:C.greenLight,marginTop:4,fontWeight:600}}>✓ Gerçek yük tablosu aktif</div>}
+              {!cfg.chartId&&<div style={{fontSize:10,color:C.g400,marginTop:4}}>Kapasite elle girilecek ↓</div>}
+              <label style={{display:"inline-block",marginTop:8,cursor:"pointer"}}>
+                <Btn small color={C.g500}>📄 CSV Tablo Yükle</Btn>
+                <input type="file" accept=".csv,.txt" onChange={importChartCSV} style={{display:"none"}}/>
+              </label>
             </Card>
 
-            {/* Boom */}
+            {/* Boom — en çok kullanılan ayar */}
             <Card>
-              <Title>Boom</Title>
-              <Row><Lbl>Uzunluk</Lbl><Num value={cfg.boomLength} onChange={v=>up({boomLength:v})} min={5} max={crane?.maxBoom||100}/></Row>
-              <Sli value={cfg.boomLength} min={5} max={crane?.maxBoom||100} onChange={v=>up({boomLength:v})}/>
-              <Row><Lbl>Açı</Lbl><Num value={cfg.boomAngle} onChange={v=>up({boomAngle:v})} min={0} max={85}/></Row>
+              <Title>Boom Ayarları</Title>
+              <Row><Lbl>Uzunluk (m)</Lbl><Num value={cfg.boomLength} onChange={v=>up({boomLength:v})} min={5} max={cfg.maxBoom||crane?.defBoom||100}/></Row>
+              <Sli value={cfg.boomLength} min={5} max={cfg.maxBoom||crane?.defBoom||100} onChange={v=>up({boomLength:v})}/>
+              <Row><Lbl>Açı (°)</Lbl><Num value={cfg.boomAngle} onChange={v=>up({boomAngle:v})} min={0} max={85}/></Row>
               <Sli value={cfg.boomAngle} min={0} max={85} onChange={v=>up({boomAngle:v})} color={C.greenLight}/>
-              <Row><Lbl>Jib Aktif</Lbl><input type="checkbox" checked={cfg.jibEnabled} onChange={e=>up({jibEnabled:e.target.checked})}/></Row>
+              <Row><Lbl>Jib Aktif</Lbl><input type="checkbox" checked={cfg.jibEnabled} onChange={e=>up({jibEnabled:e.target.checked})} style={{width:18,height:18,cursor:"pointer"}}/></Row>
               {cfg.jibEnabled&&(<>
-                <Row><Lbl>Jib Uzunluk</Lbl><Num value={cfg.jibLength} onChange={v=>up({jibLength:v})} min={2} max={30}/></Row>
+                <Row><Lbl>Jib Uzunluk (m)</Lbl><Num value={cfg.jibLength} onChange={v=>up({jibLength:v})} min={2} max={30}/></Row>
                 <Sli value={cfg.jibLength} min={2} max={30} onChange={v=>up({jibLength:v})} color={C.orange}/>
-                <Row><Lbl>Jib Açı</Lbl><Num value={cfg.jibAngle} onChange={v=>up({jibAngle:v})} min={0} max={cfg.boomAngle}/></Row>
+                <Row><Lbl>Jib Açı (°)</Lbl><Num value={cfg.jibAngle} onChange={v=>up({jibAngle:v})} min={0} max={cfg.boomAngle}/></Row>
                 <Sli value={cfg.jibAngle} min={0} max={cfg.boomAngle} onChange={v=>up({jibAngle:v})} color={C.orange}/>
               </>)}
             </Card>
 
-            {/* Crane Geometry */}
+            {/* Yük — kritik bilgi */}
             <Card>
-              <Title>Vinç Geometrisi</Title>
+              <Title>Yük Bilgileri</Title>
+              <Row><Lbl>Yük Ağırlığı (t)</Lbl><Num value={cfg.loadWeight} onChange={v=>up({loadWeight:v})} min={0} max={999} step={0.5}/></Row>
+              <Row><Lbl>Rüzgar (km/h)</Lbl><Num value={cfg.windSpeed} onChange={v=>up({windSpeed:v})} min={0} max={100}/></Row>
+              {!activeChart&&<>
+                <div style={{marginTop:8,padding:8,background:C.cyan+"10",borderRadius:6,border:`1px solid ${C.cyan}25`}}>
+                  <div style={{fontSize:11,fontWeight:700,color:C.cyan,marginBottom:4}}>Elle Kapasite (t)</div>
+                  <Num value={cfg.manualCap} onChange={v=>up({manualCap:v})} min={0} max={9999} step={0.5} style={{width:"100%"}}/>
+                </div>
+              </>}
+            </Card>
+
+            {/* Outrigger/CW — bilgi */}
+            <Card>
+              <Row><Lbl>Outrigger</Lbl>
+                <Sel value={cfg.outriggerSpread||"full"} onChange={v=>up({outriggerSpread:v})} style={{width:140,padding:"6px 8px",fontSize:11}}>
+                  <option value="full">Tam Açık</option><option value="75">%75</option><option value="50">%50</option><option value="0">Kapalı</option>
+                </Sel>
+              </Row>
+              <Row><Lbl>Karşı Ağırlık</Lbl>
+                <Sel value={cfg.cwConfig||"full"} onChange={v=>up({cwConfig:v})} style={{width:140,padding:"6px 8px",fontSize:11}}>
+                  <option value="full">Tam</option><option value="half">Yarım</option><option value="none">Yok</option>
+                </Sel>
+              </Row>
+              <div style={{fontSize:9,color:C.g500,marginTop:2}}>Bilgi amaçlı — doğru tablo sayfasını seçin</div>
+            </Card>
+
+            {/* ── DETAY: Varsayılan kapalı ── */}
+            <Card title="Detaylı Ayarlar" collapsed={!detailOpen} onToggle={()=>setDetailOpen(!detailOpen)}>
+              {/* Max boom */}
+              <Row><Lbl>Max Boom (m)</Lbl><Num value={cfg.maxBoom} onChange={v=>up({maxBoom:v})} min={10} max={200}/></Row>
+              {/* Geometry */}
+              <div style={{marginTop:8,marginBottom:4,fontSize:10,fontWeight:700,color:C.g400}}>Vinç Geometrisi</div>
               <Row><Lbl>Pivot Yüksekliği</Lbl><Num value={cfg.pivotHeight} onChange={v=>up({pivotHeight:v})} min={0.5} max={50} step={0.1}/></Row>
               <Sli value={cfg.pivotHeight} min={0.5} max={crane?.cat==="tower"?50:5} step={0.1} onChange={v=>up({pivotHeight:v})} color={C.g400}/>
               <Row><Lbl>Pivot Mesafesi</Lbl><Num value={cfg.pivotDist} onChange={v=>up({pivotDist:v})} min={0} max={5} step={0.1}/></Row>
-              <Sli value={cfg.pivotDist} min={0} max={5} step={0.1} onChange={v=>up({pivotDist:v})} color={C.cyan}/>
               <Row><Lbl>Vinç Sonu</Lbl><Num value={cfg.craneEnd} onChange={v=>up({craneEnd:v})} min={0} max={15} step={0.5}/></Row>
-              <Sli value={cfg.craneEnd} min={0} max={15} step={0.5} onChange={v=>up({craneEnd:v})} color={C.red}/>
-            </Card>
-
-            {/* Crane Color Customization */}
-            <Card>
-              <Title>Vinç Renkleri</Title>
+              <Row><Lbl>Karşı Ağırlık (t)</Lbl><Num value={cfg.counterweight} onChange={v=>up({counterweight:v})} min={0} max={200}/></Row>
+              {/* Colors */}
+              <div style={{marginTop:8,marginBottom:4,fontSize:10,fontWeight:700,color:C.g400}}>Boom & Jib Renkleri</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
                 {Object.entries(craneColors).map(([part,color])=>(
                   <div key={part} onClick={()=>setColorEditPart(colorEditPart===part?null:part)} 
-                    style={{padding:"3px 8px",borderRadius:4,background:colorEditPart===part?C.yellow+"30":C.dark,border:`2px solid ${color}`,cursor:"pointer",fontSize:8,color:C.g300}}>
+                    style={{padding:"4px 8px",borderRadius:6,background:colorEditPart===part?C.yellow+"30":C.dark,border:`2px solid ${color}`,cursor:"pointer",fontSize:9,color:C.g300}}>
                     {part}
                   </div>
                 ))}
               </div>
-              {colorEditPart&&(
-                <div style={{marginTop:6}}>
-                  <input type="color" value={craneColors[colorEditPart]} onChange={e=>setCraneColors(p=>({...p,[colorEditPart]:e.target.value}))} style={{width:"100%",height:30,border:"none",borderRadius:4,cursor:"pointer"}}/>
-                  <Btn small onClick={()=>{setCraneColors({...DEFAULT_CRANE_COLORS});setColorEditPart(null);}} style={{marginTop:4,width:"100%"}} color={C.g500}>Sıfırla</Btn>
-                </div>
-              )}
-            </Card>
-
-            {/* Yük & Koşullar */}
-            <Card>
-              <Title>Yük & Koşullar</Title>
-              <Row><Lbl>Yük Ağırlığı (t)</Lbl><Num value={cfg.loadWeight} onChange={v=>up({loadWeight:v})} min={0} max={999} step={0.5}/></Row>
-              <Row><Lbl>Rüzgar (km/h)</Lbl><Num value={cfg.windSpeed} onChange={v=>up({windSpeed:v})} min={0} max={100}/></Row>
-              <Row><Lbl>Karşı Ağırlık (t)</Lbl><Num value={cfg.counterweight} onChange={v=>up({counterweight:v})} min={0} max={200}/></Row>
-            </Card>
-
-            {/* Tema */}
-            <Card>
-              <Title>Tema</Title>
+              {colorEditPart&&<input type="color" value={craneColors[colorEditPart]} onChange={e=>setCraneColors(p=>({...p,[colorEditPart]:e.target.value}))} style={{width:"100%",height:32,border:"none",borderRadius:6,cursor:"pointer",marginTop:6}}/>}
+              {/* Skin */}
+              <div style={{marginTop:8,marginBottom:4,fontSize:10,fontWeight:700,color:C.g400}}>Tema</div>
               <Sel value={cfg.skinId} onChange={v=>up({skinId:v})}>{SKINS.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</Sel>
             </Card>
           </div>
 
           {/* CENTER: CANVAS */}
           <div style={{flex:1,position:"relative"}}>
-            <RangeChart cfg={cfg} crane={crane} skin={skin} objects={objects} selObj={selObj} setSelObj={setSelObj} rulers={rulers} setRulers={setRulers} tool={tool} setTool={setTool} addObj={addObj} updObj={updObj} delObj={delObj} isMobile={isMobile} craneColors={craneColors} setDragTarget={setDragTarget}/>
+            <RangeChart cfg={cfg} crane={crane} skin={skin} objects={objects} selObj={selObj} setSelObj={setSelObj} rulers={rulers} setRulers={setRulers} tool={tool} setTool={setTool} addObj={addObj} updObj={updObj} delObj={delObj} isMobile={isMobile} craneColors={craneColors} setDragTarget={setDragTarget} onCfgUpdate={handleCfgUpdate} finalCap={cap} derating={combinedDerating} capSource={capSource} chartMismatch={chartMismatch}/>
             {/* Drag hint */}
             {dragTarget==="boomTip"&&<div style={{position:"absolute",top:10,left:"50%",transform:"translateX(-50%)",background:C.yellow+"DD",color:C.greenDark,padding:"4px 12px",borderRadius:20,fontSize:10,fontWeight:700,fontFamily:F,pointerEvents:"none"}}>Boom ucu sürükleniyor — bırak için bırak</div>}
             {/* Tool bar */}
@@ -1681,7 +1617,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               <Btn small onClick={()=>setTool("select")} color={tool==="select"?C.yellow:C.g500}>Seç</Btn>
               <Btn small onClick={()=>setTool("ruler")} color={tool==="ruler"?C.cyan:C.g500}>📏 Cetvel</Btn>
               <Btn small onClick={()=>setShowObjPanel(!showObjPanel)} color={showObjPanel?C.orange:C.g500}>📦 Nesne</Btn>
-              {rulers.length>0&&<Btn small onClick={()=>setRulers([])} color={C.red}>🗑 Cetvelleri Sil</Btn>}
+              {rulers.length>0&&<Btn small onClick={()=>{if(window.confirm("Tüm cetveller silinecek. Emin misiniz?"))setRulers([]);}} color={C.red}>🗑 Cetvelleri Sil</Btn>}
             </div>
             {/* Object panel overlay */}
             {showObjPanel&&<div style={{position:"absolute",bottom:70,left:"50%",transform:"translateX(-50%)",background:C.dark+"F0",borderRadius:10,padding:12,border:`1px solid ${C.green}30`,maxWidth:500}}>
@@ -1697,7 +1633,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
             <Card>
               <Title>Nesneler ({objects.length})</Title>
               <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                {OBJ_TYPES.slice(0,8).map(o=><button key={o.id} onClick={()=>addObj(o.id)} style={{padding:"3px 8px",background:C.green+"20",border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:8,cursor:"pointer"}}>+{o.name}</button>)}
+                {OBJ_TYPES.slice(0,8).map(o=><button key={o.id} onClick={()=>addObj(o.id)} style={{padding:"3px 8px",background:C.green+"20",border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:9,cursor:"pointer"}}>+{o.name}</button>)}
               </div>
               {/* Selected object controls */}
               {selObjData&&(
@@ -1710,12 +1646,12 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                   <Row><Lbl>Döndür</Lbl><Num value={selObjData.rotation||0} onChange={v=>updObj(selObj,{rotation:v})} min={-180} max={180} step={5}/></Row>
                   <Row><Lbl>Renk</Lbl><input type="color" value={selObjData.color||"#6B7E70"} onChange={e=>updObj(selObj,{color:e.target.value})} style={{width:30,height:20,border:"none",borderRadius:3}}/></Row>
                   <Row>
-                    <label style={{fontSize:8,color:C.g300,display:"flex",alignItems:"center",gap:3}}>
+                    <label style={{fontSize:9,color:C.g300,display:"flex",alignItems:"center",gap:3}}>
                       <input type="checkbox" checked={selObjData.showTop||false} onChange={e=>updObj(selObj,{showTop:e.target.checked})}/> Üst Çizgide Göster
                     </label>
                   </Row>
                   <Row>
-                    <label style={{fontSize:8,color:C.g300,display:"flex",alignItems:"center",gap:3}}>
+                    <label style={{fontSize:9,color:C.g300,display:"flex",alignItems:"center",gap:3}}>
                       <input type="checkbox" checked={selObjData.showSlew||false} onChange={e=>updObj(selObj,{showSlew:e.target.checked})}/> Mesafe Çizgisinde Göster
                     </label>
                   </Row>
@@ -1732,30 +1668,31 @@ export default function App({onSave,initialData,projectName:extProjectName}){
 
             {/* Capacity Table */}
             <Card>
-              <Title color={capSource==="chart"?C.greenLight:C.orange}>Kapasite Tablosu</Title>
-              {capSource==="formula"&&<div style={{fontSize:8,color:C.orange,marginBottom:6}}>⚠ YAKLAŞIK — Üretici tablosu ile doğrulayın</div>}
+              <Title color={capSource==="chart"?C.greenLight:C.g500}>Kapasite Tablosu</Title>
+              {capSource!=="chart"?<div style={{fontSize:9,color:C.g400,textAlign:"center",padding:12}}>Yük tablosu seçildiğinde burada kapasite verileri görünür</div>:(
               <div style={{maxHeight:200,overflow:"auto"}}>
-                <table style={{width:"100%",fontSize:8,borderCollapse:"collapse"}}>
+                <table style={{width:"100%",fontSize:9,borderCollapse:"collapse"}}>
                   <thead><tr><th style={{textAlign:"left",color:C.g400,padding:2}}>Menzil</th><th style={{textAlign:"right",color:C.g400,padding:2}}>Kapasite</th></tr></thead>
-                  <tbody>{[5,10,15,20,25,30,35,40,45,50].filter(r=>r<=cfg.boomLength*1.2).map(r=>{
-                    const c2=activeChart?(lookupChart(activeChart,cfg.boomLength,r)||calcCap(crane,cfg.boomLength,r)):calcCap(crane,cfg.boomLength,r);
+                  <tbody>{(()=>{const maxR=Math.ceil(cfg.boomLength*1.2);const step=maxR>60?10:maxR>30?5:2.5;const radii=[];for(let r=step;r<=maxR;r+=step)radii.push(Math.round(r*10)/10);return radii;})().map(r=>{
+                    const c2=lookupChart(activeChart,cfg.boomLength,r);
                     const isNear=Math.abs(r-realRadius)<2.5;
-                    return<tr key={r} style={{background:isNear?C.yellow+"15":"transparent"}}><td style={{padding:"2px 4px",color:isNear?C.yellow:C.g300}}>{r}m</td><td style={{padding:"2px 4px",textAlign:"right",color:c2<cfg.loadWeight?C.red:C.greenLight,fontWeight:isNear?700:400}}>{c2.toFixed(1)}t</td></tr>;
+                    return c2!==null?<tr key={r} style={{background:isNear?C.yellow+"15":"transparent"}}><td style={{padding:"2px 4px",color:isNear?C.yellow:C.g300}}>{r}m</td><td style={{padding:"2px 4px",textAlign:"right",color:c2<cfg.loadWeight?C.red:C.greenLight,fontWeight:isNear?700:400}}>{c2.toFixed(1)}t</td></tr>:null;
                   })}</tbody>
                 </table>
-              </div>
+              </div>)}
             </Card>
 
             {/* Safety */}
             <Card>
               <Title>Güvenlik</Title>
-              {[
-                ["Kapasite",cap>=cfg.loadWeight],
-                ["Rüzgar",cfg.windSpeed<50],
-                ["Sapan Açısı",calcSlingAngle(cfg.slingLength,cfg.loadW,cfg.slingLegs)<=45],
-              ].map(([name,ok])=>(
-                <Row key={name}><Lbl>{name}</Lbl><span style={{fontSize:9,color:ok?C.greenLight:C.red,fontWeight:700}}>{ok?"✅ GÜVENLİ":"❌ TEHLİKE"}</span></Row>
-              ))}
+              {cap!==null?
+                <Row><Lbl>Kapasite</Lbl><span style={{fontSize:10,color:cap>=cfg.loadWeight?C.greenLight:C.red,fontWeight:600}}>{cap>=cfg.loadWeight?"✅":"❌"} {cap.toFixed(1)}t {cap>=cfg.loadWeight?"≥":"<"} {cfg.loadWeight}t</span></Row>
+                :<Row><Lbl>Kapasite</Lbl><span style={{fontSize:10,color:C.orange,fontWeight:600}}>— Tablo veya elle giriş gerekli</span></Row>
+              }
+              <Row><Lbl>Rüzgar</Lbl><span style={{fontSize:10,color:cfg.windSpeed<50?C.greenLight:C.red,fontWeight:600}}>{cfg.windSpeed<50?"✅":"❌"} {cfg.windSpeed} km/h</span></Row>
+              <Row><Lbl>Sapan Açısı</Lbl><span style={{fontSize:10,color:calcSlingAngle(cfg.slingLength,cfg.loadW,cfg.slingLegs)<=45?C.greenLight:C.red,fontWeight:600}}>{calcSlingAngle(cfg.slingLength,cfg.loadW,cfg.slingLegs)<=45?"✅":"❌"} {calcSlingAngle(cfg.slingLength,cfg.loadW,cfg.slingLegs).toFixed(0)}°</span></Row>
+              <Row><Lbl>Outrigger</Lbl><span style={{fontSize:10,color:C.g300}}>{cfg.outriggerSpread==="full"?"Tam":cfg.outriggerSpread==="75"?"75%":cfg.outriggerSpread==="50"?"50%":"Kapalı"}</span></Row>
+              <Row><Lbl>Karşı Ağ.</Lbl><span style={{fontSize:10,color:C.g300}}>{cfg.cwConfig==="full"?"Tam":cfg.cwConfig==="half"?"Yarım":"Yok"}</span></Row>
             </Card>
 
             {/* Yük & Sapan Görseli */}
@@ -1784,102 +1721,220 @@ export default function App({onSave,initialData,projectName:extProjectName}){
       {/* ═══ LIFT PLAN TAB ═══ */}
       {tab==="liftplan"&&(
         <div style={{maxWidth:800,margin:"0 auto",padding:20}}>
-          <Card><Title>Tedarikçi Bilgileri</Title>
-            {[["supplier","Firma"],["supplierContact","İlgili Kişi"],["supplierPhone","Telefon"]].map(([k,l])=>(
-              <Row key={k}><Lbl>{l}</Lbl><input value={lp[k]} onChange={e=>upLP(k,e.target.value)} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
+          <Card><Title>Vinç Tedarikçisi</Title>
+            {[["supplier","Şirket Adı","Vinç firması adı"],["supplierAddr","Şirket Adresi","Adres"],["supplierContact","İletişim Adı","İlgili kişi"],["supplierPhone","Telefon","0xxx xxx xx xx"],["supplierEmail","E-posta","email@firma.com"]].map(([k,l,ph])=>(
+              <Row key={k}><Lbl>{l}</Lbl><input value={lp[k]} onChange={e=>upLP(k,e.target.value)} placeholder={ph} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
             ))}
           </Card>
-          <Card><Title>Müşteri Bilgileri</Title>
-            {[["client","Firma"],["clientContact","İlgili Kişi"],["clientPhone","Telefon"]].map(([k,l])=>(
-              <Row key={k}><Lbl>{l}</Lbl><input value={lp[k]} onChange={e=>upLP(k,e.target.value)} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
+          <Card><Title>Müşteri</Title>
+            {[["client","Şirket Adı","Müşteri firma adı"],["clientAddr","Şirket Adresi","Adres"],["clientContact","İletişim Adı","İlgili kişi"],["clientPhone","Telefon","0xxx xxx xx xx"],["clientEmail","E-posta","email@firma.com"]].map(([k,l,ph])=>(
+              <Row key={k}><Lbl>{l}</Lbl><input value={lp[k]} onChange={e=>upLP(k,e.target.value)} placeholder={ph} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
             ))}
           </Card>
-          <Card><Title>İş Bilgileri</Title>
-            {[["jobNumber","İş No"],["jobName","Proje Adı"],["jobAddress","Adres"],["jobDate","Tarih"]].map(([k,l])=>(
-              <Row key={k}><Lbl>{l}</Lbl><input value={lp[k]} onChange={e=>upLP(k,e.target.value)} type={k==="jobDate"?"date":"text"} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
+          <Card><Title>İş Detayları</Title>
+            {[["jobNumber","Referans Numarası","İş ref. no"],["jobName","Proje Adı","Proje adı"],["jobAddress","Proje Adresi","Proje adresi"],["jobDate","İş Tarihi",""]].map(([k,l,ph])=>(
+              <Row key={k}><Lbl>{l}</Lbl><input value={lp[k]} onChange={e=>upLP(k,e.target.value)} placeholder={ph} type={k==="jobDate"?"date":"text"} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
             ))}
-          </Card>
-          <Card><Title>Vinç Bilgileri</Title>
-            {[["craneMake","Marka"],["craneModel","Model"],["craneRego","Plaka/Seri No"]].map(([k,l])=>(
-              <Row key={k}><Lbl>{l}</Lbl><input value={lp[k]} onChange={e=>upLP(k,e.target.value)} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
+            <div style={{borderTop:`1px solid ${C.green}15`,marginTop:8,paddingTop:8}}>
+            {[["craneMake","Vinç","Marka model"],["craneModel","Kapasite","Vinç kapasitesi"],["craneRego","Plaka/Seri No","Plaka veya seri no"]].map(([k,l,ph])=>(
+              <Row key={k}><Lbl>{l}</Lbl><input value={lp[k]} onChange={e=>upLP(k,e.target.value)} placeholder={ph} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
             ))}
-            <Row><Lbl>Hat Çekme Kuvveti</Lbl><Num value={lp.linePull} onChange={v=>upLP("linePull",v)} min={0} max={100} step={0.1}/></Row>
-            <Row><Lbl>Parts of Line</Lbl><Num value={lp.partsOfLine} onChange={v=>upLP("partsOfLine",v)} min={1} max={16}/></Row>
-            <Row><Lbl>Karşı Ağ. Konfig</Lbl><input value={lp.cwConfig} onChange={e=>upLP("cwConfig",e.target.value)} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
-          </Card>
-          <Card><Title>Yük Detayları</Title>
-            <Row><Lbl>Yük Tanımı</Lbl></Row>
-            <input value={lp.loadDesc} onChange={e=>upLP("loadDesc",e.target.value)} style={{width:"100%",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"6px 8px",fontSize:10,fontFamily:F,marginBottom:8,boxSizing:"border-box"}}/>
-            <Row><Lbl>Yük Ağırlığı (t)</Lbl><Num value={lp.loadWeight} onChange={v=>upLP("loadWeight",v)} min={0} max={999} step={0.1}/></Row>
-            <Row><Lbl>Rigging Ağırlığı (t)</Lbl><Num value={lp.riggingWeight} onChange={v=>upLP("riggingWeight",v)} min={0} max={50} step={0.1}/></Row>
-            <Row><Lbl>Hook Block (t)</Lbl><Num value={lp.hookBlockWeight} onChange={v=>upLP("hookBlockWeight",v)} min={0} max={20} step={0.1}/></Row>
-            <Row><Lbl>Ek Yükler (t)</Lbl><Num value={lp.addWeight} onChange={v=>upLP("addWeight",v)} min={0} max={50} step={0.1}/></Row>
-            <div style={{padding:8,background:C.yellow+"15",borderRadius:6,marginTop:8}}>
-              <Row><span style={{fontSize:10,fontWeight:700,color:C.yellow}}>Toplam: {totalW.toFixed(1)}t</span><span style={{fontSize:10,fontWeight:700,color:cap>=totalW?C.greenLight:C.red}}>Kap: {cap.toFixed(1)}t ({(cap>0?(totalW/cap*100):0).toFixed(0)}%)</span></Row>
             </div>
           </Card>
+          <Card><Title>Halat ve Denge Ağırlığı</Title>
+            <Row><Lbl>Hat Çekme</Lbl><Num value={lp.linePull} onChange={v=>upLP("linePull",v)} min={0} max={100} step={0.1}/></Row>
+            <Row><Lbl>Hattın Parçaları</Lbl><Num value={lp.partsOfLine} onChange={v=>upLP("partsOfLine",v)} min={1} max={16}/></Row>
+            <Row><Lbl>Denge Ağırlığı Konfig.</Lbl><input value={lp.cwConfig} onChange={e=>upLP("cwConfig",e.target.value)} placeholder="ör: 40t tam" style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
+          </Card>
+          <Card><Title>Yük Detayları</Title>
+            <Row><Lbl>Açıklama</Lbl></Row>
+            <textarea value={lp.loadDesc} onChange={e=>upLP("loadDesc",e.target.value)} rows={2} placeholder="Yük tanımı (ör: çelik kolon, jeneratör...)" style={{width:"100%",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"6px 8px",fontSize:10,fontFamily:F,marginBottom:8,boxSizing:"border-box",resize:"vertical"}}/>
+            <Row><Lbl>Yük Ağırlığı (t)</Lbl><Num value={lp.loadWeight} onChange={v=>upLP("loadWeight",v)} min={0} max={999} step={0.1}/></Row>
+            <Row><Lbl>Donanım Ağırlığı (t)</Lbl><Num value={lp.riggingWeight} onChange={v=>upLP("riggingWeight",v)} min={0} max={50} step={0.1}/></Row>
+            <Row><Lbl>Kanca Ağırlığı (t)</Lbl><Num value={lp.hookBlockWeight} onChange={v=>upLP("hookBlockWeight",v)} min={0} max={20} step={0.1}/></Row>
+            <Row><Lbl>Ek Ağırlık (t)</Lbl><Num value={lp.addWeight} onChange={v=>upLP("addWeight",v)} min={0} max={50} step={0.1}/></Row>
+            <div style={{padding:8,background:C.yellow+"15",borderRadius:6,marginTop:8}}>
+              <Row><span style={{fontSize:11,fontWeight:700,color:C.yellow}}>Toplam Ağırlık</span><span style={{fontSize:11,fontWeight:700,color:C.yellow}}>{totalW.toFixed(1)}t</span></Row>
+            </div>
+          </Card>
+          <Card><Title>Çalışma Yükü Sınırı (WLL)</Title>
+            <Row><Lbl>Vinç Çalışma Yük Sınırı</Lbl><Num value={lp.wll} onChange={v=>upLP("wll",v)} min={0} max={999} step={0.1}/></Row>
+            {(()=>{
+              const wllPct=lp.wll>0?(totalW/lp.wll*100):0;
+              const barColor=wllPct>100?C.red:wllPct>90?C.yellow:C.greenLight;
+              return <>
+                <Row><Lbl>Vincin çalıştığı çizelge %'si</Lbl><span style={{fontSize:11,fontWeight:700,color:barColor}}>{wllPct.toFixed(0)}%</span></Row>
+                <div style={{position:"relative",height:18,background:C.dark,borderRadius:4,marginTop:6,overflow:"hidden",border:`1px solid ${C.green}20`}}>
+                  <div style={{position:"absolute",left:0,top:0,bottom:0,width:Math.min(wllPct/130*100,100)+"%",background:barColor,opacity:0.4,borderRadius:3,transition:"width 0.3s"}}/>
+                  {[0,90,100,130].map(v=>{
+                    const pos=v/130*100;
+                    return <div key={v} style={{position:"absolute",left:pos+"%",top:0,bottom:0,width:1,background:v===100?C.white+"60":C.g500+"40"}}/>
+                  })}
+                  <div style={{position:"absolute",bottom:0,left:0,right:0,display:"flex",justifyContent:"space-between",padding:"0 2px"}}>
+                    {[0,90,100,130].map(v=><span key={v} style={{fontSize:7,color:C.g400,fontFamily:F}}>{v}</span>)}
+                  </div>
+                </div>
+              </>
+            })()}
+          </Card>
+          <Card><Title>Vinç Konfigürasyonu</Title>
+            <div style={{opacity:0.85}}>
+            {[
+              ["Bom Uzunluğu",fmtTR(cfg.boomLength)+"m"],
+              ["Bom Açısı",fmtTR(cfg.boomAngle)+"°"],
+              ...(cfg.jibEnabled?[["Pergel Uzunluğu",fmtTR(cfg.jibLength)+"m"],["Pergel Ofseti",fmtTR(cfg.jibAngle)+"°"]]:[]),
+              ["Kaldırma Yüksekliği",fmtTR(realBoomTipH)+"m"],
+              ["Yarıçap",fmtTR(realRadius,1)+"m"],
+            ].map(([k,v])=>(
+              <Row key={k}><Lbl>{k}</Lbl><span style={{fontSize:11,fontWeight:600,color:C.cyan,fontFamily:F}}>{v}</span></Row>
+            ))}
+            </div>
+          </Card>
+          <Card><Title>Tekil Yük</Title>
+            <Row><Lbl>Ped Şekli</Lbl>
+              <div style={{display:"flex",gap:8}}>
+                {["square","round"].map(s=>(
+                  <label key={s} style={{display:"flex",alignItems:"center",gap:4,cursor:"pointer",fontSize:10,color:lp.padShape===s?C.cyan:C.g400}}>
+                    <input type="radio" name="padShape" checked={lp.padShape===s} onChange={()=>upLP("padShape",s)} style={{accentColor:C.cyan}}/>
+                    {s==="square"?"Kare":"Yuvarlak"}
+                  </label>
+                ))}
+              </div>
+            </Row>
+            <Row><Lbl>Uskundra Gücü (t)</Lbl><Num value={lp.outForce} onChange={v=>upLP("outForce",v)} min={0} max={500} step={0.1}/></Row>
+            <Row><Lbl>Uskundra Ped Boyutu</Lbl>
+              <div style={{display:"flex",alignItems:"center",gap:4}}>
+                <Num value={lp.padW} onChange={v=>upLP("padW",v)} min={0.1} max={10} step={0.1}/>
+                <span style={{fontSize:10,color:C.g400}}>×</span>
+                <Num value={lp.padL} onChange={v=>upLP("padL",v)} min={0.1} max={10} step={0.1}/>
+              </div>
+            </Row>
+            {(()=>{
+              const padArea=lp.padShape==="round"?Math.PI*(lp.padW/2)*(lp.padL/2):lp.padW*lp.padL;
+              const tpm2=padArea>0?lp.outForce/padArea:0;
+              const kpa=tpm2*9.81;
+              return <>
+                <Row><Lbl>Uskundra Ped Alanı</Lbl><span style={{fontSize:10,color:C.cyan,fontWeight:600}}>{padArea.toFixed(2)}m²</span></Row>
+                <Row><Lbl>Tekil Yük</Lbl><span style={{fontSize:10,fontWeight:600}}><span style={{color:C.cyan}}>{tpm2.toFixed(1)}Tpm²</span> <span style={{color:C.g400,marginLeft:8}}>{kpa.toFixed(1)}Kpa</span></span></Row>
+              </>
+            })()}
+          </Card>
           <Card><Title>Notlar</Title>
-            <textarea value={lp.notes} onChange={e=>upLP("notes",e.target.value)} rows={3} style={{width:"100%",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.white,padding:"8px",fontSize:10,fontFamily:F,resize:"vertical",boxSizing:"border-box"}}/>
+            <textarea value={lp.notes} onChange={e=>upLP("notes",e.target.value)} rows={3} placeholder="Ek notlar, özel koşullar..." style={{width:"100%",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.white,padding:"8px",fontSize:10,fontFamily:F,resize:"vertical",boxSizing:"border-box"}}/>
           </Card>
           <Btn onClick={()=>setShowPDF(true)} color={C.yellow} style={{width:"100%",padding:12,fontSize:12}}>📋 Kaldırma Planı Önizle</Btn>
         </div>
       )}
 
-      {/* ═══ CALCULATIONS TAB ═══ */}
+      {/* ═══ CALCULATIONS TAB (Crangle style — all on one page) ═══ */}
       {tab==="calc"&&(
         <div style={{maxWidth:600,margin:"0 auto",padding:20}}>
-          <div style={{display:"flex",gap:4,marginBottom:16}}>
-            {[["pct","% Tablosu"],["maxload","Max Yük"],["minwll","Min WLL"],["ptload","Zemin Basıncı"]].map(([id,label])=>(
-              <Btn key={id} onClick={()=>setCalcTab(id)} color={calcTab===id?C.yellow:C.g500} small>{label}</Btn>
-            ))}
+
+          {/* ─── Çizelge Yüzdesi ─── */}
+          <div style={{borderTop:`2px solid ${C.cyan}`,paddingTop:16,marginBottom:24}}>
+            <div style={{textAlign:"center",marginBottom:16,position:"relative"}}>
+              <span style={{fontSize:16,fontWeight:700,color:C.cyan}}>Çizelge Yüzdesi</span>
+              <div style={{position:"absolute",right:0,top:-2,width:24,height:24,borderRadius:12,background:"#e67e22",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}} title="Yüzde kaçı: Toplam yükün (yük + donanım) çalışma yükü sınırına (WLL) oranını hesaplar."><span style={{color:"#fff",fontWeight:700,fontSize:13}}>?</span></div>
+            </div>
+            <div style={{textAlign:"center",fontSize:10,color:C.g400,marginBottom:10}}>Yüzde kaçı</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:12}}>
+              <div style={{textAlign:"center"}}><Num value={ci.load} onChange={v=>upCI("load",v)} min={0} max={999} step={0.1}/><div style={{fontSize:9,color:C.g500,marginTop:3}}>Yük + Donanım</div></div>
+              <div style={{textAlign:"center"}}><Num value={ci.wll} onChange={v=>upCI("wll",v)} min={0} max={999} step={0.1}/><div style={{fontSize:9,color:C.g500,marginTop:3}}>Çalışma Yükü Sınırı (WLL)</div></div>
+            </div>
+            <div style={{position:"relative",height:24,background:C.dark,borderRadius:4,overflow:"hidden",border:`1px solid ${C.green}20`,marginBottom:12}}>
+              <div style={{position:"absolute",left:0,top:0,bottom:0,width:Math.min(pctCalc/130*100,100)+"%",background:pctCalc>100?"#e74c3c":pctCalc>90?"#f39c12":"#27ae60",opacity:0.5,borderRadius:3,transition:"width 0.3s"}}/>
+              {[0,90,100,130].map(v=><div key={v} style={{position:"absolute",left:(v/130*100)+"%",top:0,bottom:0,width:v===100?2:1,background:v===100?C.white+"50":C.g500+"30"}}/>)}
+              <div style={{position:"absolute",bottom:1,left:0,right:0,display:"flex",justifyContent:"space-between",padding:"0 4px"}}>
+                {[0,90,100,130].map(v=><span key={v} style={{fontSize:8,color:C.g400}}>{v}</span>)}
+              </div>
+            </div>
+            <div style={{textAlign:"center",padding:12,background:"#27ae60",borderRadius:8}}>
+              <span style={{fontSize:32,fontWeight:900,color:"#fff",fontFamily:F}}>{pctCalc.toFixed(0)}</span>
+            </div>
+            <div style={{textAlign:"center",fontSize:10,color:C.g400,marginTop:4}}>Çizelgenin %'si</div>
           </div>
-          {calcTab==="pct"&&(
-            <Card>
-              <Title>Tablonun Yüzde Kaçında Çalışıyorsunuz?</Title>
-              <Row><Lbl>Yük + Rigging (t)</Lbl><Num value={ci.load} onChange={v=>upCI("load",v)} min={0} max={999} step={0.1}/></Row>
-              <Row><Lbl>Rigging (t)</Lbl><Num value={ci.rigging} onChange={v=>upCI("rigging",v)} min={0} max={100} step={0.1}/></Row>
-              <Row><Lbl>WLL (t)</Lbl><Num value={ci.wll} onChange={v=>upCI("wll",v)} min={0} max={999} step={0.1}/></Row>
-              <div style={{padding:12,background:pctCalc>100?C.red+"20":pctCalc>75?C.yellow+"20":C.greenLight+"20",borderRadius:8,marginTop:12,textAlign:"center"}}>
-                <span style={{fontSize:24,fontWeight:900,color:pctCalc>100?C.red:pctCalc>75?C.yellow:C.greenLight,fontFamily:F}}>{pctCalc.toFixed(1)}%</span>
+
+          {/* ─── Maksimum Yük ─── */}
+          <div style={{borderTop:`2px solid ${C.cyan}`,paddingTop:16,marginBottom:24}}>
+            <div style={{textAlign:"center",marginBottom:16,position:"relative"}}>
+              <span style={{fontSize:16,fontWeight:700,color:C.cyan}}>Maksimum Yük</span>
+              <div style={{position:"absolute",right:0,top:-2,width:24,height:24,borderRadius:12,background:"#e67e22",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}} title="Belirli bir WLL ve yüzde sınırı için taşınabilecek maksimum yükü hesaplar."><span style={{color:"#fff",fontWeight:700,fontSize:13}}>?</span></div>
+            </div>
+            <Row><Lbl>Aşılmamalıdır %</Lbl><Num value={ci.pct} onChange={v=>upCI("pct",v)} min={1} max={130}/></Row>
+            <Row><Lbl>Çalışma Yükü Sınırı (WLL)</Lbl><Num value={ci.wll} onChange={v=>upCI("wll",v)} min={0} max={999} step={0.1}/></Row>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:12}}>
+              <span style={{fontSize:11,color:C.g300}}>Maksimum Yük + Donanım</span>
+              <div style={{padding:"8px 20px",background:"#27ae60",borderRadius:8}}>
+                <span style={{fontSize:24,fontWeight:900,color:"#fff",fontFamily:F}}>{maxLoadCalc.toFixed(1)}</span>
               </div>
-            </Card>
-          )}
-          {calcTab==="maxload"&&(
-            <Card>
-              <Title>Max Yük @ Derating (%)</Title>
-              <Row><Lbl>WLL (t)</Lbl><Num value={ci.wll} onChange={v=>upCI("wll",v)} min={0} max={999} step={0.1}/></Row>
-              <Row><Lbl>Tablo Yüzdesi (%)</Lbl><Num value={ci.pct} onChange={v=>upCI("pct",v)} min={1} max={100}/></Row>
-              <div style={{padding:12,background:C.yellow+"20",borderRadius:8,marginTop:12,textAlign:"center"}}>
-                <span style={{fontSize:10,color:C.g300}}>Max Yük =</span><br/>
-                <span style={{fontSize:24,fontWeight:900,color:C.yellow,fontFamily:F}}>{maxLoadCalc.toFixed(1)}t</span>
+            </div>
+          </div>
+
+          {/* ─── Min Çalışma Yükü Sınırı (WLL) ─── */}
+          <div style={{borderTop:`2px solid ${C.cyan}`,paddingTop:16,marginBottom:24}}>
+            <div style={{textAlign:"center",marginBottom:16,position:"relative"}}>
+              <span style={{fontSize:16,fontWeight:700,color:C.cyan}}>Min Çalışma Yükü Sınırı (WLL)</span>
+              <div style={{position:"absolute",right:0,top:-2,width:24,height:24,borderRadius:12,background:"#e67e22",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}} title="Belirli bir yük ve yüzde sınırı için gerekli minimum WLL'yi hesaplar."><span style={{color:"#fff",fontWeight:700,fontSize:13}}>?</span></div>
+            </div>
+            <Row><Lbl>Aşılmamalıdır %</Lbl><Num value={ci.pct} onChange={v=>upCI("pct",v)} min={1} max={130}/></Row>
+            <Row><Lbl>Yük + Donanım</Lbl><Num value={ci.load} onChange={v=>upCI("load",v)} min={0} max={999} step={0.1}/></Row>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:12}}>
+              <span style={{fontSize:11,color:C.g300}}>Minimum Çalışma Yükü Sınırı (WLL)</span>
+              <div style={{padding:"8px 20px",background:"#27ae60",borderRadius:8}}>
+                <span style={{fontSize:24,fontWeight:900,color:"#fff",fontFamily:F}}>{minWllCalc.toFixed(1)}</span>
               </div>
-            </Card>
-          )}
-          {calcTab==="minwll"&&(
-            <Card>
-              <Title>Min WLL @ Derating (%)</Title>
-              <Row><Lbl>Yük + Rigging (t)</Lbl><Num value={ci.load} onChange={v=>upCI("load",v)} min={0} max={999} step={0.1}/></Row>
-              <Row><Lbl>Rigging (t)</Lbl><Num value={ci.rigging} onChange={v=>upCI("rigging",v)} min={0} max={100} step={0.1}/></Row>
-              <Row><Lbl>Tablo Yüzdesi (%)</Lbl><Num value={ci.pct} onChange={v=>upCI("pct",v)} min={1} max={100}/></Row>
-              <div style={{padding:12,background:C.orange+"20",borderRadius:8,marginTop:12,textAlign:"center"}}>
-                <span style={{fontSize:10,color:C.g300}}>Min WLL =</span><br/>
-                <span style={{fontSize:24,fontWeight:900,color:C.orange,fontFamily:F}}>{minWllCalc.toFixed(1)}t</span>
+            </div>
+          </div>
+
+          {/* ─── Tekil Yük ─── */}
+          <div style={{borderTop:`2px solid ${C.cyan}`,paddingTop:16,marginBottom:24}}>
+            <div style={{textAlign:"center",marginBottom:16,position:"relative"}}>
+              <span style={{fontSize:16,fontWeight:700,color:C.cyan}}>Tekil Yük</span>
+              <div style={{position:"absolute",right:0,top:-2,width:24,height:24,borderRadius:12,background:"#e67e22",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}} title="Uskundra (outrigger) ped boyutuna göre zemin basıncını Tpm² ve Kpa olarak hesaplar."><span style={{color:"#fff",fontWeight:700,fontSize:13}}>?</span></div>
+            </div>
+            <Row><Lbl>Ped Şekli</Lbl>
+              <div style={{display:"flex",gap:12}}>
+                {[["square","Kare"],["round","Yuvarlak"]].map(([v,l])=>(
+                  <label key={v} style={{display:"flex",alignItems:"center",gap:5,cursor:"pointer",fontSize:11,color:ci.padShape===v?C.cyan:C.g400}} onClick={()=>upCI("padShape",v)}>
+                    <div style={{width:22,height:22,borderRadius:4,border:`2px solid ${ci.padShape===v?C.cyan:C.g500}`,display:"flex",alignItems:"center",justifyContent:"center",background:ci.padShape===v?C.cyan+"20":"transparent"}}>
+                      {ci.padShape===v&&<span style={{color:C.cyan,fontSize:14}}>✓</span>}
+                    </div>
+                    {l}
+                  </label>
+                ))}
               </div>
-            </Card>
-          )}
-          {calcTab==="ptload"&&(
-            <Card>
-              <Title>Zemin Basıncı (Point Load)</Title>
-              <Row><Lbl>Outrigger Kuvveti (t)</Lbl><Num value={ci.outF} onChange={v=>upCI("outF",v)} min={0} max={500} step={0.5}/></Row>
-              <Row><Lbl>Pad Genişliği (m)</Lbl><Num value={ci.padW} onChange={v=>upCI("padW",v)} min={0.1} max={5} step={0.1}/></Row>
-              <Row><Lbl>Pad Uzunluğu (m)</Lbl><Num value={ci.padL} onChange={v=>upCI("padL",v)} min={0.1} max={5} step={0.1}/></Row>
-              <div style={{padding:12,background:C.cyan+"20",borderRadius:8,marginTop:12,textAlign:"center"}}>
-                <span style={{fontSize:10,color:C.g300}}>Zemin Basıncı =</span><br/>
-                <span style={{fontSize:24,fontWeight:900,color:C.cyan,fontFamily:F}}>{pl.toFixed(1)} t/m²</span>
-                <br/><span style={{fontSize:10,color:C.g400}}>{(pl*9.81).toFixed(1)} kPa</span>
+            </Row>
+            <Row><Lbl>Uskundra Gücü</Lbl><div style={{display:"flex",alignItems:"center",gap:4}}><Num value={ci.outF} onChange={v=>upCI("outF",v)} min={0} max={500} step={0.5}/><span style={{fontSize:9,color:C.g500}}>T</span></div></Row>
+            <Row><Lbl>Uskundra Ped Boyutu</Lbl>
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                <Num value={ci.padW} onChange={v=>upCI("padW",v)} min={0.1} max={10} step={0.1}/>
+                <span style={{fontSize:11,color:C.g400}}>×</span>
+                <Num value={ci.padL} onChange={v=>upCI("padL",v)} min={0.1} max={10} step={0.1}/>
               </div>
-            </Card>
-          )}
+            </Row>
+            {(()=>{
+              const area=(ci.padShape||"square")==="round"?Math.PI*(ci.padW/2)*(ci.padL/2):ci.padW*ci.padL;
+              const tpm2=area>0?ci.outF/area:0;
+              const kpa=tpm2*9.81;
+              return <>
+                <Row><Lbl>Uskundra Ped Alanı</Lbl><div style={{padding:"4px 14px",border:`1px solid ${C.cyan}40`,borderRadius:6}}><span style={{fontSize:12,color:C.cyan,fontWeight:600,fontFamily:F}}>{area.toFixed(2)}m²</span></div></Row>
+                <div style={{marginTop:12}}>
+                  <div style={{fontSize:11,color:C.g400,marginBottom:8}}>Tekil Yük</div>
+                  <div style={{display:"flex",gap:10,justifyContent:"center"}}>
+                    <div style={{padding:"10px 20px",background:"#27ae60",borderRadius:8,textAlign:"center",flex:1}}>
+                      <span style={{fontSize:22,fontWeight:900,color:"#fff",fontFamily:F}}>{tpm2.toFixed(1)}</span>
+                      <span style={{fontSize:10,color:"rgba(255,255,255,0.75)",marginLeft:3}}>Tpm²</span>
+                    </div>
+                    <div style={{padding:"10px 20px",background:"#2980b9",borderRadius:8,textAlign:"center",flex:1}}>
+                      <span style={{fontSize:22,fontWeight:900,color:"#fff",fontFamily:F}}>{kpa.toFixed(1)}</span>
+                      <span style={{fontSize:10,color:"rgba(255,255,255,0.75)",marginLeft:3}}>Kpa</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            })()}
+          </div>
+
         </div>
       )}
 
@@ -1903,9 +1958,40 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               const data=JSON.stringify({config:cfg,objects,rulers,lift_plan:lp},null,2);
               const blob=new Blob([data],{type:"application/json"});
               const url=URL.createObjectURL(blob);
-              const a=document.createElement("a");a.href=url;a.download=`Hangel-${new Date().toISOString().split("T")[0]}.json`;a.click();
+              const a=document.createElement("a");a.href=url;a.download=`Hangle-${new Date().toISOString().split("T")[0]}.json`;a.click();
               URL.revokeObjectURL(url);
             }} color={C.cyan} style={{width:"100%",padding:12,color:"white"}}>💾 Proje JSON İndir</Btn>
+          </Card>
+          <Card>
+            <Title>Proje Yükle (JSON)</Title>
+            <p style={{fontSize:10,color:C.g400,marginBottom:12}}>Daha önce indirdiğiniz JSON dosyasını yükleyerek projeyi geri açın.</p>
+            <label style={{display:"block",width:"100%",padding:12,background:C.orange+"20",border:`2px dashed ${C.orange}50`,borderRadius:8,textAlign:"center",cursor:"pointer",fontSize:11,fontWeight:700,color:C.orange,fontFamily:F}}>
+              📂 JSON Dosyası Seç
+              <input type="file" accept=".json" style={{display:"none"}} onChange={e=>{
+                const file=e.target.files?.[0];if(!file)return;
+                const reader=new FileReader();
+                reader.onload=(ev)=>{
+                  try{
+                    const data=JSON.parse(ev.target.result);
+                    if(data.config)setCfg(p=>({...p,...data.config}));
+                    if(data.objects)setObjects(data.objects);
+                    if(data.rulers)setRulers(data.rulers);
+                    if(data.lift_plan)setLp(p=>({...p,...data.lift_plan}));
+                    setTab("chart");
+                  }catch(err){alert("JSON dosyası okunamadı: "+err.message);}
+                };
+                reader.readAsText(file);
+                e.target.value="";
+              }}/>
+            </label>
+          </Card>
+          <Card>
+            <Title>CSV Yük Tablosu Yükle</Title>
+            <p style={{fontSize:10,color:C.g400,marginBottom:12}}>Üretici yük tablosunu CSV olarak yükleyin. Biçim: Satır 1=İsim, Satır 2=,boom1,boom2..., Satır 3+=menzil,kap1,kap2...</p>
+            <label style={{display:"block",width:"100%",padding:12,background:C.orange,borderRadius:6,color:"white",fontWeight:700,fontSize:10,textAlign:"center",cursor:"pointer",fontFamily:F}}>
+              📄 CSV Tablo Yükle
+              <input type="file" accept=".csv,.txt" onChange={importChartCSV} style={{display:"none"}}/>
+            </label>
           </Card>
         </div>
       )}
