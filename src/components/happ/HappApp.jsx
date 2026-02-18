@@ -197,14 +197,15 @@ const SKINS=[
   {id:"blueprint",name:"Teknik",boom:"#4FC3F7",jib:"#29B6F6",wire:"#4FC3F720",hook:"#90CAF9",ground:"#0D47A1",sky1:"#0D47A1",sky2:"#1565C0"},
 ];
 
+// Tabs: mobile shows fewer tabs
 const TABS=[
-  {id:"find",label:"Vinç Bul",icon:"🔍"},
-  {id:"chart",label:"Menzil Şeması",icon:"📐"},
-  {id:"cranes",label:"Vinç Yönetimi",icon:"🏗️"},
-  {id:"liftplan",label:"Kaldırma Planı",icon:"📋"},
-  {id:"calc",label:"Hesaplamalar",icon:"🧮"},
-  {id:"mobilization",label:"Mobilizasyon",icon:"🚛"},
-  {id:"export",label:"Dışa Aktar",icon:"📤"},
+  {id:"find",label:"Vinç Bul",icon:"🔍",mobile:true},
+  {id:"chart",label:"Menzil Şeması",icon:"📐",mobile:true},
+  {id:"cranes",label:"Vinç Yönetimi",icon:"🏗️",mobile:false},
+  {id:"liftplan",label:"Kaldırma Planı",icon:"📋",mobile:true},
+  {id:"calc",label:"Hesaplamalar",icon:"🧮",mobile:true},
+  {id:"mobilization",label:"Mobilizasyon",icon:"🚛",mobile:false},
+  {id:"export",label:"Dışa Aktar",icon:"📤",mobile:false},
 ];
 
 // ─── HELPERS ───
@@ -1621,33 +1622,34 @@ export default function App({onSave,initialData,projectName:extProjectName}){
     <div style={{fontFamily:FB,background:`linear-gradient(135deg,${C.dark} 0%,${C.greenBg} 40%,${C.dark} 100%)`,color:C.white,...(isMobile&&tab==="chart"?{position:"fixed",inset:0,overflow:"hidden"}:{minHeight:"100vh"})}}>
       {showPDF&&<PDFPreview cfg={cfg} crane={crane} cap={cap} lp={lp} totalW={totalW} hookH={realHookH} radius={realRadius} realBoomTipH={realBoomTipH} onClose={()=>setShowPDF(false)}/>}
 
-      {/* HEADER — quick actions always visible */}
-      <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`2px solid ${C.yellow}`,padding:isMobile?"4px 8px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:isMobile?4:8,...(isMobile&&tab==="chart"?{position:"fixed",top:0,left:0,right:0,zIndex:50,height:44}:{})}}>
+      {/* HEADER */}
+      <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`2px solid ${C.yellow}`,padding:isMobile?"6px 10px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:isMobile?4:8,...(isMobile&&tab==="chart"?{position:"fixed",top:0,left:0,right:0,zIndex:50,height:44}:{})}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
           <img src={LOGO_DATA} alt="Hangle" style={{width:isMobile?28:42,height:isMobile?28:42,borderRadius:8,objectFit:"contain",flexShrink:0}}/>
           <div>
             <div style={{fontSize:isMobile?16:24,fontWeight:900,letterSpacing:isMobile?3:5,color:C.yellow,fontFamily:F}}>Hangle</div>
             {!isMobile&&<div style={{fontSize:9,color:C.greenLight,letterSpacing:2,fontFamily:F}}>VİNÇ PLANLAMA v5.3</div>}
           </div>
+          {/* Mobile: current tab indicator */}
+          {isMobile&&tab!=="chart"&&<div style={{marginLeft:4,padding:"3px 10px",background:C.yellow+"20",borderRadius:12,fontSize:11,fontWeight:700,color:C.yellow,fontFamily:F}}>{TABS.find(t=>t.id===tab)?.icon} {TABS.find(t=>t.id===tab)?.label}</div>}
         </div>
-        {/* Quick actions — always visible */}
+        {/* Quick actions */}
         <div style={{display:"flex",alignItems:"center",gap:isMobile?4:6}}>
-          {isMobile&&tab!=="chart"&&tab!=="find"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>← Şema</button>}
-          {isMobile&&tab==="find"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>📐 Şema</button>}
-          <button onClick={()=>setShowPDF(true)} style={{padding:isMobile?"6px 10px":"6px 14px",background:C.yellow,border:"none",borderRadius:8,color:C.greenDark,fontWeight:700,fontSize:isMobile?10:12,cursor:"pointer",fontFamily:F}}>📋 {isMobile?"PDF":"Kaldırma Planı"}</button>
+          {isMobile&&tab!=="chart"&&<button onClick={()=>setTab("chart")} style={{padding:"7px 12px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:F}}>📐 Şema</button>}
+          <button onClick={()=>setShowPDF(true)} style={{padding:isMobile?"7px 12px":"6px 14px",background:C.yellow,border:"none",borderRadius:8,color:C.greenDark,fontWeight:700,fontSize:isMobile?11:12,cursor:"pointer",fontFamily:F}}>📋 {isMobile?"PDF":"Kaldırma Planı"}</button>
           {!isMobile&&<button onClick={exportScreenshot} style={{padding:"6px 14px",background:C.g500+"80",border:`1px solid ${C.g400}40`,borderRadius:8,color:C.g200,fontWeight:600,fontSize:11,cursor:"pointer",fontFamily:F}}>📷 Ekran Görüntüsü</button>}
-          {onSave&&<button onClick={handleSave} style={{padding:isMobile?"6px 10px":"6px 14px",background:saveStatus==="saved"?C.greenLight+"30":C.g500+"80",border:`1px solid ${saveStatus==="saved"?C.greenLight:C.g400}40`,borderRadius:8,color:saveStatus==="saved"?C.greenLight:C.g200,fontWeight:600,fontSize:isMobile?10:11,cursor:"pointer",fontFamily:F}}>
+          {onSave&&<button onClick={handleSave} style={{padding:isMobile?"7px 12px":"6px 14px",background:saveStatus==="saved"?C.greenLight+"30":C.g500+"80",border:`1px solid ${saveStatus==="saved"?C.greenLight:C.g400}40`,borderRadius:8,color:saveStatus==="saved"?C.greenLight:C.g200,fontWeight:600,fontSize:isMobile?10:11,cursor:"pointer",fontFamily:F}}>
             {saveStatus==="saved"?"✅ Kaydedildi":saveStatus==="saving"?"⏳":"💾 Kaydet"}
           </button>}
         </div>
-        {!isMobile&&<nav style={{display:"flex",gap:3,background:C.greenDark,borderRadius:8,padding:3,width:"100%"}}>
-          {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:"transparent",color:tab===t.id?C.greenDark:C.g300,fontWeight:tab===t.id?700:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>{t.icon} {t.label}</button>))}
+        {!isMobile&&<nav style={{display:"flex",gap:2,background:C.greenDark,borderRadius:8,padding:3,width:"100%"}}>
+          {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"8px 12px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:"transparent",color:tab===t.id?C.greenDark:C.g300,fontWeight:tab===t.id?700:500,fontSize:11,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap",transition:"all 0.15s"}}>{t.icon} {t.label}</button>))}
         </nav>}
       </header>
 
       {/* ═══ FIND TAB ═══ */}
       {tab==="find"&&(
-        <div style={{maxWidth:800,margin:"0 auto",padding:isMobile?"12px 8px":"24px 16px"}}>
+        <div style={{maxWidth:800,margin:"0 auto",padding:isMobile?"12px 8px":"24px 16px",paddingBottom:isMobile?72:16}}>
           {/* Search inputs */}
           <div style={{background:C.darkSurf,borderRadius:12,padding:isMobile?12:20,border:`1px solid ${C.green}20`,marginBottom:12}}>
             <div style={{fontSize:isMobile?16:20,fontWeight:900,color:C.yellow,fontFamily:F,marginBottom:12,display:"flex",alignItems:"center",gap:8}}>🔍 Vinç Bul</div>
@@ -1770,16 +1772,13 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               <div style={{position:"absolute",top:46,right:6,width:220,maxHeight:"calc(100% - 56px)",overflow:"auto",background:"rgba(10,31,18,0.96)",border:`1px solid ${C.green}40`,borderRadius:12,padding:6,zIndex:30,backdropFilter:"blur(12px)",touchAction:"auto",overscrollBehavior:"contain"}}>
                 {[
                   {label:"Vinç Bul",icon:"🔍",action:()=>{setTab("find");setShowMobMenu(false);}},
-                  {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
-                  {label:"Vinç Yönetimi",icon:"🏗️",action:()=>{setTab("cranes");setShowMobMenu(false);}},
                   {label:"Kaldırma Planı",icon:"📋",action:()=>{setTab("liftplan");setShowMobMenu(false);}},
-                  {label:"Hesaplamalar",icon:"🔢",action:()=>{setTab("calc");setShowMobMenu(false);}},
-                  {label:"Mobilizasyon",icon:"🚛",action:()=>{setTab("mobilization");setShowMobMenu(false);}},
-                  {label:"Dışa Aktar",icon:"📤",action:()=>{setTab("export");setShowMobMenu(false);}},
+                  {label:"Hesaplamalar",icon:"🧮",action:()=>{setTab("calc");setShowMobMenu(false);}},
+                  {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
                   {label:"Grafik Sıfırla",icon:"🗑️",action:()=>{if(window.confirm("Tüm nesneler ve cetveller silinecek. Emin misiniz?")){setObjects([]);setRulers([]);}setShowMobMenu(false);}},
                 ].map((item,i)=>(
-                  <button key={i} onClick={item.action} style={{width:"100%",padding:"10px 12px",background:"transparent",border:"none",borderBottom:i<5?`1px solid ${C.green}15`:"none",color:C.g200,fontSize:13,textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:8,fontFamily:FB}}>
-                    <span style={{fontSize:15}}>{item.icon}</span>{item.label}
+                  <button key={i} onClick={item.action} style={{width:"100%",padding:"12px 14px",background:"transparent",border:"none",borderBottom:i<3?`1px solid ${C.green}15`:"none",color:C.g200,fontSize:14,textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:10,fontFamily:FB}}>
+                    <span style={{fontSize:17}}>{item.icon}</span>{item.label}
                   </button>
                 ))}
                 {/* Crane type selector */}
@@ -1877,42 +1876,42 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           {/* BOTTOM VALUE BAR - Crangle style */}
           {selObjData?(
             /* Object selected mode */
-            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"4px 4px",paddingBottom:"max(4px, env(safe-area-inset-bottom, 0px))",flexShrink:0}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr auto",gap:3,alignItems:"center"}}>
+            <div style={{background:"#f5f5f5",borderTop:`2px solid ${C.orange}60`,padding:"6px 6px",paddingBottom:"max(6px, env(safe-area-inset-bottom, 0px))",flexShrink:0}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr auto",gap:4,alignItems:"center"}}>
                 <div style={{textAlign:"center"}}>
-                  <div style={{fontSize:10,color:"#888"}}>Yükseklik</div>
-                  <MobNum value={selObjData.h} onChange={v=>updObj(selObj,{h:v})} step={0.1} style={{fontSize:13,padding:"3px 1px"}}/>
+                  <div style={{fontSize:10,color:"#777",fontWeight:600}}>Yükseklik</div>
+                  <MobNum value={selObjData.h} onChange={v=>updObj(selObj,{h:v})} step={0.1} style={{fontSize:14,padding:"4px 2px"}}/>
                 </div>
                 <div style={{textAlign:"center"}}>
-                  <div style={{fontSize:10,color:"#888"}}>Genişlik</div>
-                  <MobNum value={selObjData.w} onChange={v=>updObj(selObj,{w:v})} step={0.1} style={{fontSize:13,padding:"3px 1px"}}/>
+                  <div style={{fontSize:10,color:"#777",fontWeight:600}}>Genişlik</div>
+                  <MobNum value={selObjData.w} onChange={v=>updObj(selObj,{w:v})} step={0.1} style={{fontSize:14,padding:"4px 2px"}}/>
                 </div>
                 <div style={{textAlign:"center"}}>
-                  <div style={{fontSize:10,color:"#888"}}>Mesafe</div>
-                  <MobNum value={selObjData.x} onChange={v=>updObj(selObj,{x:v})} step={0.5} style={{fontSize:13,padding:"3px 1px"}}/>
+                  <div style={{fontSize:10,color:"#777",fontWeight:600}}>Mesafe</div>
+                  <MobNum value={selObjData.x} onChange={v=>updObj(selObj,{x:v})} step={0.5} style={{fontSize:14,padding:"4px 2px"}}/>
                 </div>
                 <div style={{textAlign:"center"}}>
-                  <div style={{fontSize:10,color:"#888"}}>Yükselt</div>
-                  <MobNum value={selObjData.elevate||0} onChange={v=>updObj(selObj,{elevate:v})} step={0.5} style={{fontSize:13,padding:"3px 1px"}}/>
+                  <div style={{fontSize:10,color:"#777",fontWeight:600}}>Yükselt</div>
+                  <MobNum value={selObjData.elevate||0} onChange={v=>updObj(selObj,{elevate:v})} step={0.5} style={{fontSize:14,padding:"4px 2px"}}/>
                 </div>
-                <div style={{display:"flex",flexDirection:"column",gap:3}}>
-                  <button onClick={()=>cpObj(selObj)} style={{width:36,height:32,borderRadius:6,border:"1px solid #ccc",background:"white",fontSize:13,cursor:"pointer"}}>📋</button>
-                  <button onClick={()=>delObj(selObj)} style={{width:36,height:32,borderRadius:6,border:"1px solid #ccc",background:"white",fontSize:13,cursor:"pointer",color:"#d00"}}>🗑</button>
+                <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                  <button onClick={()=>cpObj(selObj)} style={{width:38,height:34,borderRadius:8,border:"1px solid #ddd",background:"white",fontSize:14,cursor:"pointer"}}>📋</button>
+                  <button onClick={()=>delObj(selObj)} style={{width:38,height:34,borderRadius:8,border:"1px solid #ddd",background:"#fff0f0",fontSize:14,cursor:"pointer",color:"#d00"}}>🗑</button>
                 </div>
               </div>
             </div>
           ):(
             /* Default: crane values — with boom calc mode */
-            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"3px 3px",paddingBottom:"max(3px, env(safe-area-inset-bottom, 0px))",flexShrink:0}}>
+            <div style={{background:"#f5f5f5",borderTop:`2px solid ${C.yellow}40`,padding:"4px 4px",paddingBottom:"max(4px, env(safe-area-inset-bottom, 0px))",flexShrink:0}}>
               {/* Boom calc mode selector */}
-              <div style={{display:"flex",gap:1,marginBottom:2,padding:"0 2px"}}>
+              <div style={{display:"flex",gap:2,marginBottom:3,padding:"0 2px"}}>
                 {[{id:"angle",label:"Uz+Açı"},{id:"radius",label:"Uz+Mesafe"},{id:"length",label:"Açı+Mesafe"}].map(m=>(
-                  <button key={m.id} onClick={()=>handleBoomCalcMode(m.id)} style={{flex:1,padding:"3px 2px",border:boomCalcMode===m.id?"2px solid #36b5c0":"1px solid #ccc",borderRadius:4,background:boomCalcMode===m.id?"#e0f7fa":"#fff",color:boomCalcMode===m.id?"#00838f":"#666",fontSize:8,fontWeight:boomCalcMode===m.id?700:500,cursor:"pointer",fontFamily:F}}>{m.label}</button>
+                  <button key={m.id} onClick={()=>handleBoomCalcMode(m.id)} style={{flex:1,padding:"5px 2px",border:boomCalcMode===m.id?`2px solid ${C.green}`:"1px solid #ccc",borderRadius:6,background:boomCalcMode===m.id?"#e0f7fa":"#fff",color:boomCalcMode===m.id?"#00695c":"#888",fontSize:10,fontWeight:boomCalcMode===m.id?700:500,cursor:"pointer",fontFamily:F}}>{m.label}</button>
                 ))}
               </div>
               {(()=>{
                 const firstObj=objects[0];
-                return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:1}}>
+                return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:2}}>
                 {[
                   {label:"Bom Uz.",value:cfg.boomLength,unit:"m",key:"boomLength",min:5,max:cfg.maxBoom||crane?.defBoom||100,step:0.5,readonly:boomCalcMode==="length",handler:handleBoomLength},
                   boomCalcMode!=="angle"?
@@ -1921,22 +1920,22 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                   {label:firstObj?"Nesne Y.":"Uç Yük.",value:firstObj?firstObj.h:realBoomTipH,unit:"m",readonly:true},
                 ].map((v,i)=>(
                   <div key={i} style={{textAlign:"center"}}>
-                    <div style={{fontSize:9,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
+                    <div style={{fontSize:10,color:"#777",lineHeight:1,marginBottom:2,fontWeight:600}}>{v.label}</div>
                     {v.readonly?
-                      <div style={{fontSize:14,fontWeight:700,color:"#333",fontFamily:F,padding:"2px 0"}}>{fmtTR(v.value,1)}{v.unit}</div>:
+                      <div style={{fontSize:16,fontWeight:700,color:"#333",fontFamily:F,padding:"2px 0"}}>{fmtTR(v.value,1)}<span style={{fontSize:11,color:"#999"}}>{v.unit}</span></div>:
                       <MobNum value={v.value} onChange={val=>v.handler?v.handler(clamp(val,v.min,v.max)):up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
                     }
                   </div>
                 ))}
                 {[
                   {label:"Bom Açı",value:cfg.boomAngle,unit:"°",key:"boomAngle",min:0,max:85,step:1,readonly:boomCalcMode==="radius",handler:handleBoomAngle},
-                  {label:"Uç Yük.",value:realBoomTipH,unit:"m",readonly:true},
-                  {label:firstObj?"Nesne M.":"Kapasite",value:firstObj?firstObj.x:(cap!==null?cap:null),unit:firstObj?"m":"t",readonly:true,color:!firstObj&&cap===null?"#999":undefined},
+                  {label:"Yükseklik",value:realBoomTipH,unit:"m",readonly:true},
+                  {label:firstObj?"Nesne M.":"Kapasite",value:firstObj?firstObj.x:(cap!==null?cap:null),unit:firstObj?"m":"t",readonly:true,isCap:!firstObj,color:!firstObj&&cap===null?"#999":undefined},
                 ].map((v,i)=>(
                   <div key={i+3} style={{textAlign:"center"}}>
-                    <div style={{fontSize:9,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
+                    <div style={{fontSize:10,color:"#777",lineHeight:1,marginBottom:2,fontWeight:600}}>{v.label}</div>
                     {v.readonly?
-                      <div style={{fontSize:14,fontWeight:700,color:v.color||"#333",fontFamily:F,padding:"2px 0"}}>{v.value!==null?fmtTR(v.value,v.unit==="°"?0:1):"—"}{v.value!==null?v.unit:""}</div>:
+                      <div style={{fontSize:16,fontWeight:700,color:v.isCap&&cap!==null?(cap>=cfg.loadWeight?"#00796b":"#d32f2f"):(v.color||"#333"),fontFamily:F,padding:"2px 0"}}>{v.value!==null?fmtTR(v.value,v.unit==="°"?0:1):"—"}{v.value!==null?<span style={{fontSize:11,color:"#999"}}>{v.unit}</span>:""}</div>:
                       <MobNum value={v.value} onChange={val=>v.handler?v.handler(clamp(val,v.min,v.max)):up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
                     }
                   </div>
@@ -1948,8 +1947,8 @@ export default function App({onSave,initialData,projectName:extProjectName}){
         ):(
         /* ═══ DESKTOP LAYOUT ═══ */
         <div style={{display:"flex",height:"calc(100vh - 95px)"}}>
-          {/* LEFT PANEL — organized for field foremen & sales */}
-          <div style={{width:290,overflow:"auto",padding:12,background:C.dark+"80",borderRight:`1px solid ${C.green}15`}}>
+          {/* LEFT PANEL */}
+          <div style={{width:290,overflow:"auto",padding:"8px 10px",background:C.dark+"90",borderRight:`1px solid ${C.green}20`}}>
             {/* ── TEMEL: Her zaman görünür ── */}
             
             {/* Vinç + Tablo */}
@@ -1989,11 +1988,16 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                 <Sli value={targetRadius} min={0} max={cfg.boomLength*1.2} step={0.5} onChange={v=>handleTargetRadius(v)} color={C.cyan}/>
               </>}
               {/* Otomatik hesaplanan değerler */}
-              <div style={{marginTop:6,padding:6,background:C.dark,borderRadius:6,border:`1px solid ${C.green}20`}}>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4,fontSize:10}}>
-                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:8}}>Uzunluk</div><div style={{color:C.yellow,fontWeight:700}}>{cfg.boomLength.toFixed(1)}m</div></div>
-                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:8}}>Açı</div><div style={{color:C.greenLight,fontWeight:700}}>{cfg.boomAngle.toFixed(1)}°</div></div>
-                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:8}}>Uzaklık</div><div style={{color:C.cyan,fontWeight:700}}>{realRadius.toFixed(1)}m</div></div>
+              <div style={{marginTop:8,padding:8,background:C.dark,borderRadius:8,border:`1px solid ${C.green}25`}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,fontSize:10}}>
+                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:9,fontWeight:600,marginBottom:2}}>Uzunluk</div><div style={{color:C.yellow,fontWeight:800,fontSize:13}}>{cfg.boomLength.toFixed(1)}<span style={{fontSize:9,color:C.g400}}>m</span></div></div>
+                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:9,fontWeight:600,marginBottom:2}}>Açı</div><div style={{color:C.greenLight,fontWeight:800,fontSize:13}}>{cfg.boomAngle.toFixed(1)}<span style={{fontSize:9,color:C.g400}}>°</span></div></div>
+                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:9,fontWeight:600,marginBottom:2}}>Uzaklık</div><div style={{color:C.cyan,fontWeight:800,fontSize:13}}>{realRadius.toFixed(1)}<span style={{fontSize:9,color:C.g400}}>m</span></div></div>
+                </div>
+                {/* Capacity quick-view */}
+                <div style={{marginTop:6,paddingTop:6,borderTop:`1px solid ${C.green}15`,display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:9,fontWeight:600,marginBottom:2}}>Yükseklik</div><div style={{color:C.g200,fontWeight:800,fontSize:13}}>{realBoomTipH.toFixed(1)}<span style={{fontSize:9,color:C.g400}}>m</span></div></div>
+                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:9,fontWeight:600,marginBottom:2}}>Kapasite</div><div style={{color:cap!==null?(cap>=cfg.loadWeight?C.greenLight:C.red):C.g500,fontWeight:800,fontSize:13}}>{cap!==null?cap.toFixed(1):"—"}{cap!==null?<span style={{fontSize:9,color:C.g400}}>t</span>:""}</div></div>
                 </div>
               </div>
               <Row style={{marginTop:8}}><Lbl>Jib Aktif</Lbl><input type="checkbox" checked={cfg.jibEnabled} onChange={e=>up({jibEnabled:e.target.checked})} style={{width:18,height:18,cursor:"pointer"}}/></Row>
@@ -2083,7 +2087,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           </div>
 
           {/* RIGHT PANEL */}
-          <div style={{width:280,overflow:"auto",padding:12,background:C.dark+"80",borderLeft:`1px solid ${C.green}15`}}>
+          <div style={{width:280,overflow:"auto",padding:"8px 10px",background:C.dark+"90",borderLeft:`1px solid ${C.green}20`}}>
             {/* Objects list */}
             <Card>
               <Title>Nesneler ({objects.length})</Title>
@@ -2175,7 +2179,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
 
       {/* ═══ LIFT PLAN TAB ═══ */}
       {tab==="liftplan"&&(
-        <div style={{maxWidth:800,margin:"0 auto",padding:20}}>
+        <div style={{maxWidth:800,margin:"0 auto",padding:isMobile?"12px 10px":"20px",paddingBottom:isMobile?72:20}}>
           <Card><Title>Vinç Tedarikçisi</Title>
             {[["supplier","Şirket Adı","Vinç firması adı"],["supplierAddr","Şirket Adresi","Adres"],["supplierContact","İletişim Adı","İlgili kişi"],["supplierPhone","Telefon","0xxx xxx xx xx"],["supplierEmail","E-posta","email@firma.com"]].map(([k,l,ph])=>(
               <Row key={k}><Lbl>{l}</Lbl><input value={lp[k]} onChange={e=>upLP(k,e.target.value)} placeholder={ph} style={{flex:1,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.white,padding:"4px 8px",fontSize:10,fontFamily:F}}/></Row>
@@ -2283,7 +2287,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
 
       {/* ═══ CALCULATIONS TAB (Crangle style — all on one page) ═══ */}
       {tab==="calc"&&(
-        <div style={{maxWidth:600,margin:"0 auto",padding:20}}>
+        <div style={{maxWidth:600,margin:"0 auto",padding:isMobile?"12px 10px":"20px",paddingBottom:isMobile?72:20}}>
 
           {/* ─── Çizelge Yüzdesi ─── */}
           <div style={{borderTop:`2px solid ${C.cyan}`,paddingTop:16,marginBottom:24}}>
@@ -2748,6 +2752,19 @@ export default function App({onSave,initialData,projectName:extProjectName}){
             </label>
           </Card>
         </div>
+      )}
+
+      {/* ═══ MOBILE BOTTOM TAB BAR ═══ */}
+      {isMobile&&tab!=="chart"&&(
+        <nav style={{position:"fixed",bottom:0,left:0,right:0,background:`linear-gradient(0deg,${C.dark} 0%,${C.greenDark} 100%)`,borderTop:`2px solid ${C.yellow}40`,display:"flex",justifyContent:"space-around",alignItems:"center",paddingBottom:"max(4px, env(safe-area-inset-bottom, 0px))",paddingTop:4,zIndex:100}}>
+          {TABS.filter(t=>t.mobile).map(t=>(
+            <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:1,padding:"6px 2px",background:"transparent",border:"none",cursor:"pointer",color:tab===t.id?C.yellow:C.g400,transition:"color 0.15s"}}>
+              <span style={{fontSize:18}}>{t.icon}</span>
+              <span style={{fontSize:9,fontWeight:tab===t.id?700:500,fontFamily:F}}>{t.label}</span>
+              {tab===t.id&&<div style={{width:20,height:2,borderRadius:1,background:C.yellow,marginTop:1}}/>}
+            </button>
+          ))}
+        </nav>
       )}
     </div>
   );
