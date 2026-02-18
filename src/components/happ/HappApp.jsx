@@ -613,7 +613,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
   const realRadius=useMemo(()=>calcRadius(cfg),[cfg]);
   const realBoomTipH=useMemo(()=>calcBoomTipHeight(cfg),[cfg]);
   const realHookH=useMemo(()=>calcHookHeight(cfg),[cfg]);
-  const effectiveJibAngle=cfg.jibEnabled?Math.max(0,cfg.boomAngle-cfg.jibAngle):0;
+  const effectiveJibAngle=useMemo(()=>cfg.jibEnabled?Math.max(0,cfg.boomAngle-cfg.jibAngle):0,[cfg.jibEnabled,cfg.boomAngle,cfg.jibAngle]);
 
   const canvasSizeRef=useRef({w:0,h:0});
   const draw=useCallback(()=>{

@@ -12,7 +12,7 @@ export default function CranesPage() {
   const loadCharts = async () => {
     const { data } = await supabase
       .from('load_charts')
-      .select('*')
+      .select('id, name, manufacturer, model, max_capacity, max_boom, boom_lengths, chart_data, is_preset, is_public')
       .order('is_preset', { ascending: false })
       .order('name')
     setCharts(data || [])
