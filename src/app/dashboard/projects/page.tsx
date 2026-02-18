@@ -15,7 +15,7 @@ export default function ProjectsPage() {
   const loadProjects = async () => {
     const { data } = await supabase
       .from('projects')
-      .select('*')
+      .select('id, name, status, updated_at, config')
       .order('updated_at', { ascending: false })
     setProjects(data || [])
     setLoading(false)
