@@ -1087,12 +1087,12 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       const r=rulers[ri];
       const rx1=pivotX+r.x1*SC;const ry1=groundY-r.y1*VS;
       const rx2=pivotX+r.x2*SC;const ry2=groundY-r.y2*VS;
-      if(Math.hypot(pos.x-rx1,pos.y-ry1)<12){
+      if(Math.hypot(pos.x-rx1,pos.y-ry1)<18){
         setDrag({type:"rulerEnd",rulerId:r.id,end:1,pivotX,groundY,SC,VS});
         setMagnifier(pos);
         return;
       }
-      if(Math.hypot(pos.x-rx2,pos.y-ry2)<12){
+      if(Math.hypot(pos.x-rx2,pos.y-ry2)<18){
         setDrag({type:"rulerEnd",rulerId:r.id,end:2,pivotX,groundY,SC,VS});
         setMagnifier(pos);
         return;
@@ -1113,15 +1113,15 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       const ox=pivotX+obj.x*SC;const oy=groundY-(obj.elevate||0)*VS;
       const ow=obj.w*SC;const oh=obj.h*VS;
       
-      // Check rotation handle
+      // Check rotation handle (20px radius for mobile touch targets)
       if(selObj===obj.id){
         const rhX=ox+ow/2;const rhY=oy-oh-15;
-        if(Math.hypot(pos.x-rhX,pos.y-rhY)<8){
+        if(Math.hypot(pos.x-rhX,pos.y-rhY)<20){
           setDrag({type:"rotate",objId:obj.id,cx:ox+ow/2,cy:oy-oh/2});
           return;
         }
-        // Check resize handles
-        if(Math.hypot(pos.x-(ox+ow),pos.y-(oy-oh))<8){
+        // Check resize handles (20px radius for mobile touch targets)
+        if(Math.hypot(pos.x-(ox+ow),pos.y-(oy-oh))<20){
           setDrag({type:"resize",objId:obj.id,corner:"tr",startX:pos.x,startY:pos.y,origW:obj.w,origH:obj.h,SC,VS});
           return;
         }

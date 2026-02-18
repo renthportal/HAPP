@@ -10,12 +10,19 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
+  themeColor: '#006838',
 }
 
 export const metadata: Metadata = {
   title: 'Hangle — Vinç Kaldırma Planlama',
   description: 'Vinç kaldırma planı ve menzil diyagramı sistemi',
-  icons: { icon: '/logo-hareket.png' },
+  icons: { icon: '/logo-hareket.png', apple: '/logo-hareket.png' },
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Hangel',
+  },
 }
 
 export default function RootLayout({

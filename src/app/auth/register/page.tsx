@@ -64,15 +64,19 @@ export default function RegisterPage() {
         <form onSubmit={handleRegister} className="space-y-4">
           <input type="text" placeholder="Ad Soyad" value={fullName}
             onChange={e => setFullName(e.target.value)} required
+            autoComplete="name"
             className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50" />
           <input type="text" placeholder="Firma (opsiyonel)" value={company}
             onChange={e => setCompany(e.target.value)}
+            autoComplete="organization"
             className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50" />
           <input type="email" placeholder="E-posta" value={email}
             onChange={e => setEmail(e.target.value)} required
+            autoComplete="email" inputMode="email"
             className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50" />
           <input type="password" placeholder="Şifre (min 6 karakter)" value={password}
             onChange={e => setPassword(e.target.value)} required minLength={6}
+            autoComplete="new-password"
             className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50" />
           <button type="submit" disabled={loading}
             className="w-full py-3 bg-happ-yellow text-happ-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors disabled:opacity-50">

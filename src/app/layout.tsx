@@ -10,13 +10,24 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Hangel — Crane Lift Planning',
   description: 'Profesyonel vinç kaldırma planı oluşturma ve menzil diyagramı çizim aracı',
-  icons: { icon: '/logo-hareket.png' },
+  icons: { icon: '/logo-hareket.png', apple: '/logo-hareket.png' },
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Hangel',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#006838',
 }
 
 export default function RootLayout({

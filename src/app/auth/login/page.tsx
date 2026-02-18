@@ -48,9 +48,11 @@ export default function LoginPage() {
         <form onSubmit={handleLogin} className="space-y-4">
           <input type="email" placeholder="E-posta" value={email}
             onChange={e => setEmail(e.target.value)} required
+            autoComplete="email" inputMode="email"
             className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50 transition-colors" />
           <input type="password" placeholder="Şifre" value={password}
             onChange={e => setPassword(e.target.value)} required
+            autoComplete="current-password"
             className="w-full px-4 py-3 bg-happ-dark border border-happ-green/20 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-happ-yellow/50 transition-colors" />
           <button type="submit" disabled={loading}
             className="w-full py-3 bg-happ-yellow text-happ-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors disabled:opacity-50">
