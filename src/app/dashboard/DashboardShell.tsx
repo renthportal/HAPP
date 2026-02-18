@@ -89,11 +89,11 @@ export default function DashboardShell({ user, profile, teams, children }: Props
         </div>
       </aside>
 
-      {/* Mobile Header - just logo, no text */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-happ-surface border-b border-happ-green/15 z-50 flex items-center justify-between px-4 h-14">
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white text-xl">☰</button>
+      {/* Mobile Header - safe area + larger touch targets */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-happ-surface border-b border-happ-green/15 z-50 flex items-center justify-between px-4 h-14 safe-top">
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white text-xl p-2 -ml-2" aria-label="Menü">☰</button>
         <img src="/logo-hareket.png" alt="Hangel" className="w-8 h-8 rounded" />
-        <button onClick={handleLogout} className="text-xs text-gray-500">Çıkış</button>
+        <button onClick={handleLogout} className="text-xs text-gray-500 p-2 -mr-2">Çıkış</button>
       </div>
 
       {/* Mobile Sidebar Overlay */}

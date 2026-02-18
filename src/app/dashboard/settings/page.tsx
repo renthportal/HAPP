@@ -49,6 +49,7 @@ export default function SettingsPage() {
           <input
             type="text" value={profile?.full_name || ''}
             onChange={e => setProfile({ ...profile, full_name: e.target.value })}
+            autoComplete="name"
             className="w-full px-4 py-2.5 bg-happ-dark border border-happ-green/20 rounded-lg text-white text-sm focus:outline-none focus:border-happ-yellow/50"
           />
         </div>
@@ -56,6 +57,7 @@ export default function SettingsPage() {
           <label className="text-xs text-gray-400 block mb-1">E-posta</label>
           <input
             type="email" value={profile?.email || ''} disabled
+            autoComplete="email"
             className="w-full px-4 py-2.5 bg-happ-dark/50 border border-happ-green/10 rounded-lg text-gray-500 text-sm"
           />
         </div>
@@ -64,6 +66,7 @@ export default function SettingsPage() {
           <input
             type="text" value={profile?.company || ''}
             onChange={e => setProfile({ ...profile, company: e.target.value })}
+            autoComplete="organization"
             className="w-full px-4 py-2.5 bg-happ-dark border border-happ-green/20 rounded-lg text-white text-sm focus:outline-none focus:border-happ-yellow/50"
           />
         </div>
@@ -72,6 +75,7 @@ export default function SettingsPage() {
           <input
             type="tel" value={profile?.phone || ''}
             onChange={e => setProfile({ ...profile, phone: e.target.value })}
+            autoComplete="tel" inputMode="tel"
             className="w-full px-4 py-2.5 bg-happ-dark border border-happ-green/20 rounded-lg text-white text-sm focus:outline-none focus:border-happ-yellow/50"
           />
         </div>

@@ -74,7 +74,7 @@ export default function ProjectsPage() {
           {projects.map(project => (
             <div
               key={project.id}
-              className="bg-happ-surface border border-happ-green/15 rounded-xl p-5 flex items-center justify-between hover:border-happ-green/30 transition-colors"
+              className="bg-happ-surface border border-happ-green/15 rounded-xl p-5 flex items-center justify-between hover:border-happ-green/30 active:border-happ-green/30 transition-colors"
             >
               <div className="flex-1">
                 <h3 className="text-white font-medium">{project.name}</h3>
