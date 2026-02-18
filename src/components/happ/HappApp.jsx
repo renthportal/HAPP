@@ -200,8 +200,10 @@ const SKINS=[
 const TABS=[
   {id:"find",label:"Vinç Bul",icon:"🔍"},
   {id:"chart",label:"Menzil Şeması",icon:"📐"},
+  {id:"cranes",label:"Vinç Yönetimi",icon:"🏗️"},
   {id:"liftplan",label:"Kaldırma Planı",icon:"📋"},
   {id:"calc",label:"Hesaplamalar",icon:"🧮"},
+  {id:"mobilization",label:"Mobilizasyon",icon:"🚛"},
   {id:"export",label:"Dışa Aktar",icon:"📤"},
 ];
 
@@ -345,23 +347,46 @@ const LOAD_SHAPES=[{id:"box",name:"Kutu/Konteyner"},{id:"cylinder",name:"Silindi
 function lookupChart(chart,boomLen,radius){
   if(!chart||!chart.rows||chart.rows.length===0)return null;
   const bls=chart.boomLengths;
+  if(!bls||bls.length===0)return null;
+
+  // Find exact or nearest boom length index
   let bi0=0,bi1=0;
   if(boomLen<=bls[0]){bi0=0;bi1=0;}
   else if(boomLen>=bls[bls.length-1]){bi0=bls.length-1;bi1=bls.length-1;}
   else{for(let i=0;i<bls.length-1;i++){if(boomLen>=bls[i]&&boomLen<=bls[i+1]){bi0=i;bi1=i+1;break;}}}
+
   const rows=chart.rows;
   let ri0=0,ri1=0;
   if(radius<=rows[0].r){ri0=0;ri1=0;}
   else if(radius>=rows[rows.length-1].r){ri0=rows.length-1;ri1=rows.length-1;}
   else{for(let i=0;i<rows.length-1;i++){if(radius>=rows[i].r&&radius<=rows[i+1].r){ri0=i;ri1=i+1;break;}}}
+
   const c00=rows[ri0].caps[bi0],c01=rows[ri0].caps[bi1],c10=rows[ri1].caps[bi0],c11=rows[ri1].caps[bi1];
-  const valid=[c00,c01,c10,c11].filter(v=>v!==null);
+  const valid=[c00,c01,c10,c11].filter(v=>v!==null&&v!==undefined);
   if(valid.length===0)return null;
-  if(valid.length<4)return Math.min(...valid);
+
+  // Improved interpolation: handle null cells more intelligently
   const bt=bi0===bi1?0:(boomLen-bls[bi0])/(bls[bi1]-bls[bi0]);
   const rt=ri0===ri1?0:(radius-rows[ri0].r)/(rows[ri1].r-rows[ri0].r);
-  const top=c00+(c01-c00)*bt;const bot=c10+(c11-c10)*bt;
-  return Math.max(0,top+(bot-top)*rt);
+
+  if(valid.length===4){
+    // Full bilinear interpolation
+    const top=c00+(c01-c00)*bt;const bot=c10+(c11-c10)*bt;
+    return Math.max(0,top+(bot-top)*rt);
+  }
+
+  // Partial data — use available values with linear interpolation where possible
+  // Try boom-axis interpolation first (same radius row)
+  const topRow=(c00!==null&&c01!==null)?c00+(c01-c00)*bt:(c00!==null?c00:c01);
+  const botRow=(c10!==null&&c11!==null)?c10+(c11-c10)*bt:(c10!==null?c10:c11);
+
+  if(topRow!==null&&botRow!==null){
+    return Math.max(0,topRow+(botRow-topRow)*rt);
+  }
+  if(topRow!==null)return Math.max(0,topRow);
+  if(botRow!==null)return Math.max(0,botRow);
+  // Fallback: conservative min of whatever is available
+  return Math.max(0,Math.min(...valid));
 }
 
 function calcRadius(cfg){
@@ -389,6 +414,21 @@ function calcHookHeight(cfg){
   // Net hook height = boom tip - hook block - sling length
   const tipH=calcBoomTipHeight(cfg);
   return Math.max(0, tipH - (cfg.hookBlockH||1.2) - (cfg.slingLength||4)*0.3);
+}
+
+// ═══ REVERSE CALCULATION: Angle from boom length + radius ═══
+function calcAngleFromRadius(boomLength, targetRadius, pivotDist=0){
+  const netR=targetRadius-pivotDist;
+  if(netR<=0||boomLength<=0)return 85;
+  if(netR>=boomLength)return 0;
+  return toDeg(Math.acos(clamp(netR/boomLength,-1,1)));
+}
+
+// ═══ REVERSE CALCULATION: Boom length from angle + radius ═══
+function calcBoomFromRadius(targetRadius, boomAngle, pivotDist=0){
+  const cosA=Math.cos(toRad(boomAngle));
+  if(cosA<=0.01)return 5;
+  return Math.max(5,(targetRadius-pivotDist)/cosA);
 }
 
 // ═══ CRANE SEARCH ENGINE ═══
@@ -1263,6 +1303,15 @@ export default function App({onSave,initialData,projectName:extProjectName}){
     loadW:3,loadH:2,loadShape:"box",slingType:"2leg",slingLength:4,slingLegs:2,hookBlockH:1.2,
     chartId:"",outriggerSpread:"full",cwConfig:"full",manualCap:0,maxBoom:60
   });
+  // Boom calculation mode: "angle" (len+angle→radius), "radius" (len+radius→angle), "length" (angle+radius→length)
+  const [boomCalcMode,setBoomCalcMode]=useState("angle");
+  const [targetRadius,setTargetRadius]=useState(15);
+  // Crane management state
+  const [savedCranesList,setSavedCranesList]=useState([]);
+  const [craneForm,setCraneForm]=useState({name:"",manufacturer:"",model:"",craneType:"mobile",maxCapacity:0,totalWeight:0,boomWeight:0,counterweightWeight:0,superstructureWeight:0,carbodyWeight:0,maxBoomLength:0,pivotHeight:2.5,dimensions:"",notes:""});
+  // Mobilization state
+  const [mobCraneConfigs,setMobCraneConfigs]=useState([]);
+  const [mobForm,setMobForm]=useState({configName:"Ana Boom",totalWeight:87,truckCapacity:40,truckType:"Lowbed (3+3 aks)",trucksNeeded:0});
   const [objects,setObjects]=useState(initialData?.objects||[]);
   const [selObj,setSelObj]=useState(null);
   const [rulers,setRulers]=useState(initialData?.rulers||[]);
@@ -1308,6 +1357,11 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           });
           setCustomCharts(charts);
         }
+      // Load saved cranes
+      try{
+        const{data:cranes}=await sb.from("saved_cranes").select("*");
+        if(cranes)setSavedCranesList(cranes);
+      }catch(e2){console.warn("Crane load error:",e2);}
       }catch(e){console.warn("Chart load error:",e);}
       setChartsLoading(false);
     };
@@ -1367,6 +1421,36 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const selObjData=objects.find(o=>o.id===selObj);
 
   const up=(u)=>{setCfg(p=>({...p,...u}));if(u.loadWeight!==undefined)setLp(p=>({...p,loadWeight:u.loadWeight}));};
+
+  // Auto-calculate based on boom calc mode
+  const handleBoomCalcMode=(mode)=>{
+    setBoomCalcMode(mode);
+    if(mode==="radius")setTargetRadius(Math.round(realRadius*10)/10);
+  };
+  const handleTargetRadius=(r)=>{
+    setTargetRadius(r);
+    if(boomCalcMode==="radius"){
+      const angle=calcAngleFromRadius(cfg.boomLength,r,cfg.pivotDist);
+      up({boomAngle:Math.round(angle*10)/10});
+    }else if(boomCalcMode==="length"){
+      const len=calcBoomFromRadius(r,cfg.boomAngle,cfg.pivotDist);
+      up({boomLength:Math.round(len*10)/10});
+    }
+  };
+  const handleBoomLength=(v)=>{
+    up({boomLength:v});
+    if(boomCalcMode==="radius"){
+      const angle=calcAngleFromRadius(v,targetRadius,cfg.pivotDist);
+      up({boomLength:v,boomAngle:Math.round(angle*10)/10});
+    }
+  };
+  const handleBoomAngle=(v)=>{
+    up({boomAngle:v});
+    if(boomCalcMode==="length"){
+      const len=calcBoomFromRadius(targetRadius,v,cfg.pivotDist);
+      up({boomAngle:v,boomLength:Math.round(len*10)/10});
+    }
+  };
   const upLP=(k,v)=>{setLp(p=>({...p,[k]:v}));if(k==="loadWeight")setCfg(p=>({...p,loadWeight:v}));};
   const upCI=(k,v)=>setCi(p=>({...p,[k]:v}));
 
@@ -1647,8 +1731,10 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                 {[
                   {label:"Vinç Bul",icon:"🔍",action:()=>{setTab("find");setShowMobMenu(false);}},
                   {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
+                  {label:"Vinç Yönetimi",icon:"🏗️",action:()=>{setTab("cranes");setShowMobMenu(false);}},
                   {label:"Kaldırma Planı",icon:"📋",action:()=>{setTab("liftplan");setShowMobMenu(false);}},
                   {label:"Hesaplamalar",icon:"🔢",action:()=>{setTab("calc");setShowMobMenu(false);}},
+                  {label:"Mobilizasyon",icon:"🚛",action:()=>{setTab("mobilization");setShowMobMenu(false);}},
                   {label:"Dışa Aktar",icon:"📤",action:()=>{setTab("export");setShowMobMenu(false);}},
                   {label:"Grafik Sıfırla",icon:"🗑️",action:()=>{if(window.confirm("Tüm nesneler ve cetveller silinecek. Emin misiniz?")){setObjects([]);setRulers([]);}setShowMobMenu(false);}},
                 ].map((item,i)=>(
@@ -1776,26 +1862,34 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               </div>
             </div>
           ):(
-            /* Default: crane values — Crangle style 6-cell grid */
+            /* Default: crane values — with boom calc mode */
             <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"3px 3px",paddingBottom:"max(3px, env(safe-area-inset-bottom, 0px))",flexShrink:0}}>
+              {/* Boom calc mode selector */}
+              <div style={{display:"flex",gap:1,marginBottom:2,padding:"0 2px"}}>
+                {[{id:"angle",label:"Uz+Açı"},{id:"radius",label:"Uz+Mesafe"},{id:"length",label:"Açı+Mesafe"}].map(m=>(
+                  <button key={m.id} onClick={()=>handleBoomCalcMode(m.id)} style={{flex:1,padding:"3px 2px",border:boomCalcMode===m.id?"2px solid #36b5c0":"1px solid #ccc",borderRadius:4,background:boomCalcMode===m.id?"#e0f7fa":"#fff",color:boomCalcMode===m.id?"#00838f":"#666",fontSize:8,fontWeight:boomCalcMode===m.id?700:500,cursor:"pointer",fontFamily:F}}>{m.label}</button>
+                ))}
+              </div>
               {(()=>{
                 const firstObj=objects[0];
                 return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:1}}>
                 {[
-                  {label:"Bom Uz.",value:cfg.boomLength,unit:"m",key:"boomLength",min:5,max:cfg.maxBoom||crane?.defBoom||100,step:0.5},
-                  {label:"Yarıçap",value:realRadius,unit:"m",readonly:true},
+                  {label:"Bom Uz.",value:cfg.boomLength,unit:"m",key:"boomLength",min:5,max:cfg.maxBoom||crane?.defBoom||100,step:0.5,readonly:boomCalcMode==="length",handler:handleBoomLength},
+                  boomCalcMode!=="angle"?
+                    {label:"Uzaklık",value:targetRadius,unit:"m",key:"targetRadius",min:0,max:200,step:0.5,handler:handleTargetRadius}:
+                    {label:"Yarıçap",value:realRadius,unit:"m",readonly:true},
                   {label:firstObj?"Nesne Y.":"Uç Yük.",value:firstObj?firstObj.h:realBoomTipH,unit:"m",readonly:true},
                 ].map((v,i)=>(
                   <div key={i} style={{textAlign:"center"}}>
                     <div style={{fontSize:9,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
                     {v.readonly?
                       <div style={{fontSize:14,fontWeight:700,color:"#333",fontFamily:F,padding:"2px 0"}}>{fmtTR(v.value,1)}{v.unit}</div>:
-                      <MobNum value={v.value} onChange={val=>up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
+                      <MobNum value={v.value} onChange={val=>v.handler?v.handler(clamp(val,v.min,v.max)):up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
                     }
                   </div>
                 ))}
                 {[
-                  {label:"Bom Açı",value:cfg.boomAngle,unit:"°",key:"boomAngle",min:0,max:85,step:1},
+                  {label:"Bom Açı",value:cfg.boomAngle,unit:"°",key:"boomAngle",min:0,max:85,step:1,readonly:boomCalcMode==="radius",handler:handleBoomAngle},
                   {label:"Uç Yük.",value:realBoomTipH,unit:"m",readonly:true},
                   {label:firstObj?"Nesne M.":"Kapasite",value:firstObj?firstObj.x:(cap!==null?cap:null),unit:firstObj?"m":"t",readonly:true,color:!firstObj&&cap===null?"#999":undefined},
                 ].map((v,i)=>(
@@ -1803,7 +1897,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                     <div style={{fontSize:9,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
                     {v.readonly?
                       <div style={{fontSize:14,fontWeight:700,color:v.color||"#333",fontFamily:F,padding:"2px 0"}}>{v.value!==null?fmtTR(v.value,v.unit==="°"?0:1):"—"}{v.value!==null?v.unit:""}</div>:
-                      <MobNum value={v.value} onChange={val=>up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
+                      <MobNum value={v.value} onChange={val=>v.handler?v.handler(clamp(val,v.min,v.max)):up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
                     }
                   </div>
                 ))}
@@ -1834,14 +1928,35 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               <input ref={csvInputRef} type="file" accept=".csv,.txt" onChange={importChartCSV} style={{display:"none"}}/>
             </Card>
 
-            {/* Boom — en çok kullanılan ayar */}
+            {/* Boom — hesaplama modu seçimi */}
             <Card>
               <Title>Boom Ayarları</Title>
-              <Row><Lbl>Uzunluk (m)</Lbl><Num value={cfg.boomLength} onChange={v=>up({boomLength:v})} min={5} max={cfg.maxBoom||crane?.defBoom||100}/></Row>
-              <Sli value={cfg.boomLength} min={5} max={cfg.maxBoom||crane?.defBoom||100} onChange={v=>up({boomLength:v})}/>
-              <Row><Lbl>Açı (°)</Lbl><Num value={cfg.boomAngle} onChange={v=>up({boomAngle:v})} min={0} max={85}/></Row>
-              <Sli value={cfg.boomAngle} min={0} max={85} onChange={v=>up({boomAngle:v})} color={C.greenLight}/>
-              <Row><Lbl>Jib Aktif</Lbl><input type="checkbox" checked={cfg.jibEnabled} onChange={e=>up({jibEnabled:e.target.checked})} style={{width:18,height:18,cursor:"pointer"}}/></Row>
+              {/* Hesaplama modu seçici */}
+              <div style={{display:"flex",gap:2,marginBottom:8,background:C.dark,borderRadius:6,padding:2}}>
+                {[{id:"angle",label:"Uz+Açı"},{id:"radius",label:"Uz+Mesafe"},{id:"length",label:"Açı+Mesafe"}].map(m=>(
+                  <button key={m.id} onClick={()=>handleBoomCalcMode(m.id)} style={{flex:1,padding:"5px 4px",border:"none",borderRadius:4,background:boomCalcMode===m.id?C.yellow:"transparent",color:boomCalcMode===m.id?C.greenDark:C.g400,fontSize:9,fontWeight:boomCalcMode===m.id?700:500,cursor:"pointer",fontFamily:F}}>{m.label}</button>
+                ))}
+              </div>
+              {/* Uzunluk — disabled when mode is "length" */}
+              <Row><Lbl>Uzunluk (m) {boomCalcMode==="length"?"(oto)":""}</Lbl><Num value={cfg.boomLength} onChange={v=>handleBoomLength(v)} min={5} max={cfg.maxBoom||crane?.defBoom||100}/></Row>
+              {boomCalcMode!=="length"&&<Sli value={cfg.boomLength} min={5} max={cfg.maxBoom||crane?.defBoom||100} onChange={v=>handleBoomLength(v)}/>}
+              {/* Açı — disabled when mode is "radius" */}
+              <Row><Lbl>Açı (°) {boomCalcMode==="radius"?"(oto)":""}</Lbl><Num value={cfg.boomAngle} onChange={v=>handleBoomAngle(v)} min={0} max={85}/></Row>
+              {boomCalcMode!=="radius"&&<Sli value={cfg.boomAngle} min={0} max={85} onChange={v=>handleBoomAngle(v)} color={C.greenLight}/>}
+              {/* Uzaklık (mesafe) — active when mode is "radius" or "length" */}
+              {boomCalcMode!=="angle"&&<>
+                <Row><Lbl>Uzaklık/Mesafe (m)</Lbl><Num value={targetRadius} onChange={v=>handleTargetRadius(v)} min={0} max={200} step={0.5}/></Row>
+                <Sli value={targetRadius} min={0} max={cfg.boomLength*1.2} step={0.5} onChange={v=>handleTargetRadius(v)} color={C.cyan}/>
+              </>}
+              {/* Otomatik hesaplanan değerler */}
+              <div style={{marginTop:6,padding:6,background:C.dark,borderRadius:6,border:`1px solid ${C.green}20`}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4,fontSize:10}}>
+                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:8}}>Uzunluk</div><div style={{color:C.yellow,fontWeight:700}}>{cfg.boomLength.toFixed(1)}m</div></div>
+                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:8}}>Açı</div><div style={{color:C.greenLight,fontWeight:700}}>{cfg.boomAngle.toFixed(1)}°</div></div>
+                  <div style={{textAlign:"center"}}><div style={{color:C.g500,fontSize:8}}>Uzaklık</div><div style={{color:C.cyan,fontWeight:700}}>{realRadius.toFixed(1)}m</div></div>
+                </div>
+              </div>
+              <Row style={{marginTop:8}}><Lbl>Jib Aktif</Lbl><input type="checkbox" checked={cfg.jibEnabled} onChange={e=>up({jibEnabled:e.target.checked})} style={{width:18,height:18,cursor:"pointer"}}/></Row>
               {cfg.jibEnabled&&(<>
                 <Row><Lbl>Jib Uzunluk (m)</Lbl><Num value={cfg.jibLength} onChange={v=>up({jibLength:v})} min={2} max={30}/></Row>
                 <Sli value={cfg.jibLength} min={2} max={30} onChange={v=>up({jibLength:v})} color={C.orange}/>
@@ -2235,6 +2350,305 @@ export default function App({onSave,initialData,projectName:extProjectName}){
             })()}
           </div>
 
+        </div>
+      )}
+
+      {/* ═══ CRANE MANAGEMENT TAB ═══ */}
+      {tab==="cranes"&&(
+        <div style={{maxWidth:900,margin:"0 auto",padding:isMobile?12:20}}>
+          {/* Add Crane Form */}
+          <Card>
+            <Title>Vinç Ekle / Düzenle</Title>
+            <div style={{fontSize:10,color:C.g400,marginBottom:12}}>Vincin ölçülerini, ağırlıklarını ve teknik bilgilerini girin.</div>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:8}}>
+              {[["name","Vinç Adı","ör: LTM 1300-6.2"],["manufacturer","Üretici","ör: Liebherr"],["model","Model","ör: LTM 1300-6.2"]].map(([k,l,ph])=>(
+                <div key={k}><div style={{fontSize:10,color:C.g300,marginBottom:2}}>{l}</div>
+                <input value={craneForm[k]} onChange={e=>setCraneForm(p=>({...p,[k]:e.target.value}))} placeholder={ph} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.white,fontSize:11,fontFamily:F,boxSizing:"border-box"}}/></div>
+              ))}
+              <div><div style={{fontSize:10,color:C.g300,marginBottom:2}}>Vinç Tipi</div>
+                <Sel value={craneForm.craneType} onChange={v=>setCraneForm(p=>({...p,craneType:v}))}>{CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name}</option>)}</Sel>
+              </div>
+            </div>
+            <div style={{marginTop:12,fontSize:11,fontWeight:700,color:C.yellow,marginBottom:6}}>Ağırlıklar (ton)</div>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr 1fr",gap:8}}>
+              {[["maxCapacity","Max Kapasite"],["totalWeight","Toplam Ağırlık"],["boomWeight","Boom Ağırlığı"],["counterweightWeight","Karşı Ağırlık"],["superstructureWeight","Üst Yapı"],["carbodyWeight","Alt Şase"]].map(([k,l])=>(
+                <div key={k}><div style={{fontSize:9,color:C.g400}}>{l}</div>
+                <Num value={craneForm[k]||0} onChange={v=>setCraneForm(p=>({...p,[k]:v}))} min={0} max={9999} step={0.5} style={{width:"100%"}}/></div>
+              ))}
+            </div>
+            <div style={{marginTop:12,fontSize:11,fontWeight:700,color:C.yellow,marginBottom:6}}>Boyutlar</div>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:8}}>
+              {[["maxBoomLength","Max Boom Uz. (m)"],["pivotHeight","Pivot Yüksekliği (m)"]].map(([k,l])=>(
+                <div key={k}><div style={{fontSize:9,color:C.g400}}>{l}</div>
+                <Num value={craneForm[k]||0} onChange={v=>setCraneForm(p=>({...p,[k]:v}))} min={0} max={999} step={0.1} style={{width:"100%"}}/></div>
+              ))}
+              <div><div style={{fontSize:9,color:C.g400}}>Boyutlar (UxGxY)</div>
+                <input value={craneForm.dimensions||""} onChange={e=>setCraneForm(p=>({...p,dimensions:e.target.value}))} placeholder="ör: 18.2x3.0x4.0m" style={{width:"100%",padding:"5px 6px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.white,fontSize:11,fontFamily:F,boxSizing:"border-box"}}/>
+              </div>
+            </div>
+            <div style={{marginTop:8}}><div style={{fontSize:9,color:C.g400}}>Notlar</div>
+              <textarea value={craneForm.notes||""} onChange={e=>setCraneForm(p=>({...p,notes:e.target.value}))} rows={2} placeholder="Ek bilgiler..." style={{width:"100%",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.white,padding:"6px 8px",fontSize:10,fontFamily:F,resize:"vertical",boxSizing:"border-box"}}/>
+            </div>
+            <div style={{display:"flex",gap:8,marginTop:12}}>
+              <Btn onClick={async()=>{
+                if(!craneForm.name){alert("Vinç adı gerekli");return;}
+                const row={
+                  user_id:userIdRef.current,name:craneForm.name,crane_type:craneForm.craneType,
+                  manufacturer:craneForm.manufacturer,model:craneForm.model,
+                  config:{maxCapacity:craneForm.maxCapacity,totalWeight:craneForm.totalWeight,boomWeight:craneForm.boomWeight,counterweightWeight:craneForm.counterweightWeight,superstructureWeight:craneForm.superstructureWeight,carbodyWeight:craneForm.carbodyWeight,maxBoomLength:craneForm.maxBoomLength,pivotHeight:craneForm.pivotHeight,dimensions:craneForm.dimensions},
+                  notes:craneForm.notes
+                };
+                if(supabaseRef.current){
+                  const{data,error}=await supabaseRef.current.from("saved_cranes").insert(row).select();
+                  if(error){alert("Kayıt hatası: "+error.message);return;}
+                  if(data)setSavedCranesList(p=>[...p,...data]);
+                }else{
+                  setSavedCranesList(p=>[...p,{...row,id:uid(),created_at:new Date().toISOString()}]);
+                }
+                setCraneForm({name:"",manufacturer:"",model:"",craneType:"mobile",maxCapacity:0,totalWeight:0,boomWeight:0,counterweightWeight:0,superstructureWeight:0,carbodyWeight:0,maxBoomLength:0,pivotHeight:2.5,dimensions:"",notes:""});
+                alert("Vinç kaydedildi!");
+              }} color={C.yellow}>Vinç Kaydet</Btn>
+            </div>
+          </Card>
+
+          {/* Saved Cranes List */}
+          <Card>
+            <Title>Kayıtlı Vinçler ({savedCranesList.length})</Title>
+            {savedCranesList.length===0?<div style={{textAlign:"center",padding:20,color:C.g500,fontSize:11}}>Henüz vinç eklenmedi</div>:
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {savedCranesList.map((sc,i)=>(
+                <div key={sc.id||i} style={{padding:10,background:C.dark,borderRadius:8,border:`1px solid ${C.green}20`}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div>
+                      <div style={{fontSize:13,fontWeight:700,color:C.white}}>{sc.name}</div>
+                      <div style={{fontSize:10,color:C.g400}}>{sc.manufacturer} {sc.model} — {CRANES.find(c2=>c2.id===sc.crane_type)?.name||sc.crane_type}</div>
+                      {sc.config&&<div style={{fontSize:9,color:C.g500,marginTop:2}}>
+                        {sc.config.maxCapacity?`Max: ${sc.config.maxCapacity}t`:""}{sc.config.totalWeight?` · Ağırlık: ${sc.config.totalWeight}t`:""}{sc.config.maxBoomLength?` · Boom: ${sc.config.maxBoomLength}m`:""}
+                      </div>}
+                    </div>
+                    <div style={{display:"flex",gap:4}}>
+                      <Btn small onClick={()=>{
+                        const conf=sc.config||{};
+                        up({craneType:sc.crane_type,maxBoom:conf.maxBoomLength||60,pivotHeight:conf.pivotHeight||2.5,counterweight:conf.counterweightWeight||20});
+                      }} color={C.greenLight} style={{color:"white"}}>Seç</Btn>
+                      <Btn small onClick={async()=>{
+                        if(!window.confirm("Bu vinç silinecek. Emin misiniz?"))return;
+                        if(supabaseRef.current&&sc.id){
+                          await supabaseRef.current.from("saved_cranes").delete().eq("id",sc.id);
+                        }
+                        setSavedCranesList(p=>p.filter(x=>x.id!==sc.id));
+                      }} color={C.red} style={{color:"white"}}>Sil</Btn>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>}
+          </Card>
+
+          {/* Load Chart Management */}
+          <Card>
+            <Title>Yük Tabloları ({Object.keys(allCharts).length})</Title>
+            <div style={{fontSize:10,color:C.g400,marginBottom:8}}>CSV veya Excel ile yük tablosu yükleyin.</div>
+            <div style={{display:"flex",gap:8,marginBottom:12}}>
+              <label style={{flex:1,display:"block",padding:"10px",background:C.orange,borderRadius:8,color:"white",fontWeight:700,fontSize:11,textAlign:"center",cursor:"pointer",fontFamily:F}}>
+                📄 CSV Yükle
+                <input type="file" accept=".csv,.txt" onChange={importChartCSV} style={{display:"none"}}/>
+              </label>
+              <label style={{flex:1,display:"block",padding:"10px",background:C.cyan,borderRadius:8,color:"white",fontWeight:700,fontSize:11,textAlign:"center",cursor:"pointer",fontFamily:F}}>
+                📊 Excel Yükle
+                <input type="file" accept=".xlsx,.xls" onChange={async(e)=>{
+                  const file=e.target.files?.[0];if(!file)return;
+                  try{
+                    const XLSX=await import("xlsx");
+                    const data=await file.arrayBuffer();
+                    const wb=XLSX.read(data);
+                    const newCharts={};
+                    let firstName="",firstId="";
+                    for(const sheetName of wb.SheetNames){
+                      const ws=wb.Sheets[sheetName];
+                      const json=XLSX.utils.sheet_to_json(ws,{header:1});
+                      if(json.length<3)continue;
+                      // Row 0: name or boom lengths header
+                      // Detect format: if first cell of row 0 is text → name
+                      const name=typeof json[0][0]==="string"&&isNaN(parseFloat(json[0][0]))?json[0][0]:sheetName;
+                      let dataStart=typeof json[0][0]==="string"&&isNaN(parseFloat(json[0][0]))?1:0;
+                      // Check for config line
+                      if(json[dataStart]&&typeof json[dataStart][0]==="string"&&json[dataStart][0].toLowerCase().startsWith("config:")){dataStart++;}
+                      // Boom lengths from header row
+                      const boomLengths=[];
+                      for(let c=1;c<(json[dataStart]||[]).length;c++){
+                        const v=parseFloat(json[dataStart][c]);
+                        if(!isNaN(v)&&v>0)boomLengths.push(v);
+                      }
+                      if(boomLengths.length===0)continue;
+                      // Rows
+                      const rows=[];
+                      for(let r=dataStart+1;r<json.length;r++){
+                        const row=json[r];if(!row||row.length===0)continue;
+                        const radius=parseFloat(row[0]);if(isNaN(radius))continue;
+                        const caps=[];
+                        for(let c=1;c<=boomLengths.length;c++){
+                          const v=parseFloat(row[c]);
+                          caps.push(!isNaN(v)&&v>0?v:null);
+                        }
+                        rows.push({r:radius,caps});
+                      }
+                      if(rows.length===0)continue;
+                      const maxCap=Math.max(...rows.flatMap(r=>r.caps.filter(v=>v!==null)));
+                      const maxBoom=Math.max(...boomLengths);
+                      const id="xlsx_"+Date.now()+"_"+Math.random().toString(36).slice(2,6);
+                      newCharts[id]={name,maxCap,maxBoom,pivotH:3,boomLengths,rows,config:{},isPreset:false};
+                      if(!firstName){firstName=name;firstId=id;}
+                    }
+                    const count=Object.keys(newCharts).length;
+                    if(count===0){alert("Excel dosyasında geçerli yük tablosu bulunamadı.\n\nBeklenen format:\nSatır 1: Tablo adı (opsiyonel)\nSatır 2: Boş | boom1 | boom2 | ...\nSatır 3+: menzil | kap1 | kap2 | ...");return;}
+                    setCustomCharts(p=>({...p,...newCharts}));
+                    up({chartId:firstId});
+                    // Save to Supabase
+                    if(supabaseRef.current){
+                      for(const[tmpId,ch] of Object.entries(newCharts)){
+                        const row={user_id:userIdRef.current||null,name:ch.name,max_capacity:Number(ch.maxCap),max_boom:Number(ch.maxBoom),pivot_height:3,boom_lengths:ch.boomLengths,chart_data:ch.rows,source:"xlsx_import"};
+                        const{data:saved,error}=await supabaseRef.current.from("load_charts").insert(row).select();
+                        if(error){console.error("Chart save error:",error);continue;}
+                        if(saved&&saved[0]){
+                          const r=saved[0];
+                          setCustomCharts(p=>{const n={...p};delete n[tmpId];n[r.id]={name:r.name,maxCap:r.max_capacity,maxBoom:r.max_boom,pivotH:r.pivot_height||3,boomLengths:r.boom_lengths||[],rows:r.chart_data||[],config:{},isPreset:false};return n;});
+                          up({chartId:r.id});
+                        }
+                      }
+                    }
+                    alert(count===1?`Yük tablosu yüklendi: ${firstName}`:`${count} yük tablosu yüklendi!`);
+                  }catch(err){alert("Excel okuma hatası: "+err.message);}
+                  e.target.value="";
+                }} style={{display:"none"}}/>
+              </label>
+            </div>
+            {/* Chart list */}
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              {Object.entries(allCharts).map(([id,ch])=>(
+                <div key={id} style={{padding:8,background:C.dark,borderRadius:6,border:`1px solid ${cfg.chartId===id?C.yellow:C.green}20`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div>
+                    <div style={{fontSize:11,fontWeight:600,color:cfg.chartId===id?C.yellow:C.white}}>{ch.isPreset?"📋 ":"📊 "}{ch.name}</div>
+                    <div style={{fontSize:9,color:C.g500}}>Max: {ch.maxCap}t · Boom: {ch.maxBoom}m · {ch.boomLengths?.length||0} uzunluk · {ch.rows?.length||0} menzil</div>
+                  </div>
+                  <div style={{display:"flex",gap:3}}>
+                    <Btn small onClick={()=>up({chartId:id})} color={cfg.chartId===id?C.yellow:C.g500}>{cfg.chartId===id?"Aktif":"Seç"}</Btn>
+                    {!ch.isPreset&&!LOAD_CHARTS[id]&&<Btn small onClick={()=>deleteChart(id)} color={C.red} style={{color:"white"}}>Sil</Btn>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* ═══ MOBILIZATION TAB ═══ */}
+      {tab==="mobilization"&&(
+        <div style={{maxWidth:800,margin:"0 auto",padding:isMobile?12:20}}>
+          <Card>
+            <Title>Mobilizasyon Hesaplama</Title>
+            <div style={{fontSize:10,color:C.g400,marginBottom:12}}>Vincin nakliyesi için kaç araç gerektiğini hesaplayın. Farklı konfigürasyonlar için kombinasyonlar ekleyin.</div>
+
+            {/* Add configuration */}
+            <div style={{padding:12,background:C.dark,borderRadius:8,border:`1px solid ${C.green}20`,marginBottom:12}}>
+              <div style={{fontSize:11,fontWeight:700,color:C.yellow,marginBottom:8}}>Yeni Nakliye Konfigürasyonu</div>
+              <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:8}}>
+                <div><div style={{fontSize:9,color:C.g400}}>Konfigürasyon Adı</div>
+                  <input value={mobForm.configName} onChange={e=>setMobForm(p=>({...p,configName:e.target.value}))} placeholder="ör: Ana Boom" style={{width:"100%",padding:"8px",background:C.greenDark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.white,fontSize:11,fontFamily:F,boxSizing:"border-box"}}/>
+                </div>
+                <div><div style={{fontSize:9,color:C.g400}}>Toplam Ağırlık (ton)</div>
+                  <Num value={mobForm.totalWeight} onChange={v=>setMobForm(p=>({...p,totalWeight:v}))} min={0} max={9999} step={0.5} style={{width:"100%"}}/>
+                </div>
+                <div><div style={{fontSize:9,color:C.g400}}>Araç Kapasitesi (ton)</div>
+                  <Num value={mobForm.truckCapacity} onChange={v=>setMobForm(p=>({...p,truckCapacity:v}))} min={1} max={200} step={1} style={{width:"100%"}}/>
+                </div>
+                <div><div style={{fontSize:9,color:C.g400}}>Nakliye Aracı Türü</div>
+                  <Sel value={mobForm.truckType} onChange={v=>setMobForm(p=>({...p,truckType:v}))}>
+                    <option value="Lowbed (3+3 aks)">Lowbed (3+3 aks)</option>
+                    <option value="Lowbed (3+4 aks)">Lowbed (3+4 aks)</option>
+                    <option value="Lowbed (4+4 aks)">Lowbed (4+4 aks)</option>
+                    <option value="Açık TIR">Açık TIR</option>
+                    <option value="Kapalı TIR">Kapalı TIR</option>
+                    <option value="Kamyon">Kamyon</option>
+                    <option value="Özel Nakliye">Özel Nakliye</option>
+                  </Sel>
+                </div>
+              </div>
+              <div style={{marginTop:8,padding:8,background:C.greenDark,borderRadius:6,textAlign:"center"}}>
+                <div style={{fontSize:9,color:C.g400}}>Gereken Araç Sayısı</div>
+                <div style={{fontSize:28,fontWeight:900,color:C.yellow,fontFamily:F}}>{Math.ceil(mobForm.totalWeight/mobForm.truckCapacity)}</div>
+                <div style={{fontSize:10,color:C.g300}}>{mobForm.truckType}</div>
+              </div>
+              <Btn onClick={()=>{
+                const trucks=Math.ceil(mobForm.totalWeight/mobForm.truckCapacity);
+                setMobCraneConfigs(p=>[...p,{id:uid(),configName:mobForm.configName,totalWeight:mobForm.totalWeight,truckCapacity:mobForm.truckCapacity,truckType:mobForm.truckType,trucksNeeded:trucks}]);
+                setMobForm(p=>({...p,configName:""}));
+              }} color={C.yellow} style={{marginTop:8,width:"100%"}}>Konfigürasyon Ekle</Btn>
+            </div>
+
+            {/* Saved configurations */}
+            {mobCraneConfigs.length>0&&<>
+              <div style={{fontSize:12,fontWeight:700,color:C.white,marginBottom:8}}>Nakliye Konfigürasyonları</div>
+              <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:12}}>
+                {mobCraneConfigs.map((mc,i)=>(
+                  <div key={mc.id} style={{padding:10,background:C.dark,borderRadius:8,border:`1px solid ${C.green}20`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div>
+                      <div style={{fontSize:12,fontWeight:700,color:C.white}}>🚛 {mc.configName}</div>
+                      <div style={{fontSize:10,color:C.g400}}>{mc.totalWeight}t · {mc.truckType} · {mc.truckCapacity}t/araç</div>
+                    </div>
+                    <div style={{display:"flex",alignItems:"center",gap:8}}>
+                      <div style={{padding:"6px 14px",background:C.yellow,borderRadius:8}}>
+                        <span style={{fontSize:20,fontWeight:900,color:C.greenDark,fontFamily:F}}>{mc.trucksNeeded}</span>
+                        <span style={{fontSize:10,color:C.greenDark,marginLeft:3}}>araç</span>
+                      </div>
+                      <Btn small onClick={()=>setMobCraneConfigs(p=>p.filter(x=>x.id!==mc.id))} color={C.red} style={{color:"white"}}>Sil</Btn>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Summary */}
+              <div style={{padding:12,background:C.greenDark,borderRadius:8,border:`2px solid ${C.yellow}40`,textAlign:"center"}}>
+                <div style={{fontSize:11,color:C.g300,marginBottom:4}}>Toplam Nakliye</div>
+                <div style={{fontSize:36,fontWeight:900,color:C.yellow,fontFamily:F}}>
+                  {mobCraneConfigs.reduce((s,mc)=>s+mc.trucksNeeded,0)}
+                </div>
+                <div style={{fontSize:12,color:C.g300}}>araç gerekli</div>
+                <div style={{fontSize:10,color:C.g400,marginTop:4}}>Toplam ağırlık: {mobCraneConfigs.reduce((s,mc)=>s+mc.totalWeight,0).toFixed(1)}t</div>
+              </div>
+            </>}
+
+            {/* Excel Import for mobilization */}
+            <div style={{marginTop:16}}>
+              <div style={{fontSize:11,fontWeight:700,color:C.cyan,marginBottom:6}}>Excel ile Nakliye Kombinasyonları Yükle</div>
+              <div style={{fontSize:9,color:C.g400,marginBottom:8}}>Format: Her satırda KonfigürasyonAdı | ToplamAğırlık | AraçKapasitesi | AraçTürü</div>
+              <label style={{display:"block",padding:10,background:C.cyan+"20",border:`2px dashed ${C.cyan}50`,borderRadius:8,textAlign:"center",cursor:"pointer",fontSize:11,fontWeight:700,color:C.cyan,fontFamily:F}}>
+                📊 Excel Nakliye Tablosu Yükle
+                <input type="file" accept=".xlsx,.xls,.csv" onChange={async(e)=>{
+                  const file=e.target.files?.[0];if(!file)return;
+                  try{
+                    const XLSX=await import("xlsx");
+                    const data=await file.arrayBuffer();
+                    const wb=XLSX.read(data);
+                    const ws=wb.Sheets[wb.SheetNames[0]];
+                    const json=XLSX.utils.sheet_to_json(ws,{header:1});
+                    const configs=[];
+                    for(let i=1;i<json.length;i++){
+                      const row=json[i];if(!row||!row[0])continue;
+                      const name=String(row[0]);
+                      const weight=parseFloat(row[1])||0;
+                      const cap=parseFloat(row[2])||40;
+                      const type=String(row[3]||"Lowbed (3+3 aks)");
+                      if(weight>0)configs.push({id:uid(),configName:name,totalWeight:weight,truckCapacity:cap,truckType:type,trucksNeeded:Math.ceil(weight/cap)});
+                    }
+                    if(configs.length===0){alert("Geçerli nakliye konfigürasyonu bulunamadı.");return;}
+                    setMobCraneConfigs(p=>[...p,...configs]);
+                    alert(`${configs.length} nakliye konfigürasyonu yüklendi!`);
+                  }catch(err){alert("Dosya okuma hatası: "+err.message);}
+                  e.target.value="";
+                }} style={{display:"none"}}/>
+              </label>
+            </div>
+          </Card>
         </div>
       )}
 

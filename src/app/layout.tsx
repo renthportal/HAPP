@@ -1,11 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
-
-const inter = Inter({
-  subsets: ['latin', 'latin-ext'],
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   title: 'Hangel — Crane Lift Planning',
@@ -37,7 +31,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className={inter.className}>{children}</body>
+      <body style={{fontFamily:"'Inter','SF Pro',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"}}>{children}</body>
     </html>
   )
 }
