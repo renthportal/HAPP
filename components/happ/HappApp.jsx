@@ -200,6 +200,7 @@ const SKINS=[
 const TABS=[
   {id:"find",label:"Vinç Bul",icon:"🔍"},
   {id:"chart",label:"Menzil Şeması",icon:"📐"},
+  {id:"cranes",label:"Vinç Yönetimi",icon:"🏗️"},
   {id:"liftplan",label:"Kaldırma Planı",icon:"📋"},
   {id:"calc",label:"Hesaplamalar",icon:"🧮"},
   {id:"export",label:"Dışa Aktar",icon:"📤"},
@@ -1322,6 +1323,13 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const [dragTarget,setDragTarget]=useState(null);
   const [showObjPanel,setShowObjPanel]=useState(false);
   const [detailOpen,setDetailOpen]=useState(false); // Detail sections collapsed by default
+  
+  // ═══ FLEET CRANES STATE ═══
+  const [fleetCranes,setFleetCranes]=useState([]);
+  const [fleetExpanded,setFleetExpanded]=useState(null);
+  const [fleetForm,setFleetForm]=useState(null); // null=closed, {}=new, {id:..}=edit
+  const [cfgForm,setCfgForm]=useState(null); // null=closed, {craneId:..}=new, {craneId:..,id:..}=edit
+  const [fleetLoading,setFleetLoading]=useState(false);
 
   useEffect(()=>{
     const onResize=()=>setIsMobile(window.innerWidth<768);
@@ -1341,6 +1349,42 @@ export default function App({onSave,initialData,projectName:extProjectName}){
       document.documentElement.style.overflow="";
     };
   },[isMobile,tab]);
+
+  // ═══ FLEET CRANES LOAD ═══
+  const loadFleet=useCallback(async()=>{
+    if(!supabaseRef.current)return;
+    setFleetLoading(true);
+    try{
+      const{data:cr}=await supabaseRef.current.from("fleet_cranes").select("*").order("created_at",{ascending:false});
+      const{data:cf}=await supabaseRef.current.from("crane_configs").select("*").order("sort_order");
+      const{data:lc}=await supabaseRef.current.from("load_charts").select("id,name,max_capacity,max_boom").order("name");
+      setFleetCranes((cr||[]).map(c=>({...c,configs:(cf||[]).filter(x=>x.crane_id===c.id),_charts:lc||[]})));
+    }catch(e){console.error(e);}
+    setFleetLoading(false);
+  },[]);
+  useEffect(()=>{if(tab==="cranes")loadFleet();},[tab]);
+
+  const fleetSaveCrane=async(data)=>{
+    if(!supabaseRef.current)return;
+    if(data.id){await supabaseRef.current.from("fleet_cranes").update(data).eq("id",data.id);}
+    else{await supabaseRef.current.from("fleet_cranes").insert({...data,user_id:userIdRef.current});}
+    setFleetForm(null);loadFleet();
+  };
+  const fleetDeleteCrane=async(id)=>{
+    if(!confirm("Bu vinç ve tüm konfigürasyonları silinecek?"))return;
+    await supabaseRef.current.from("fleet_cranes").delete().eq("id",id);loadFleet();
+  };
+  const fleetSaveConfig=async(data,craneId)=>{
+    if(!supabaseRef.current)return;
+    const payload={...data,crane_id:craneId};
+    if(data.id){await supabaseRef.current.from("crane_configs").update(payload).eq("id",data.id);}
+    else{await supabaseRef.current.from("crane_configs").insert(payload);}
+    setCfgForm(null);loadFleet();
+  };
+  const fleetDeleteConfig=async(id)=>{
+    if(!confirm("Bu konfigürasyon silinecek?"))return;
+    await supabaseRef.current.from("crane_configs").delete().eq("id",id);loadFleet();
+  };
 
   // Bridge for canvas to update config
   // Config update callback for RangeChart child
@@ -2235,6 +2279,216 @@ export default function App({onSave,initialData,projectName:extProjectName}){
             })()}
           </div>
 
+        </div>
+      )}
+
+      {/* ═══ CRANES MANAGEMENT TAB ═══ */}
+      {tab==="cranes"&&(
+        <div style={{maxWidth:800,margin:"0 auto",padding:isMobile?"12px 8px":"20px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+            <div>
+              <div style={{fontSize:18,fontWeight:800,color:C.yellow,letterSpacing:2}}>VİNÇ YÖNETİMİ</div>
+              <div style={{fontSize:10,color:C.g400}}>Filo vinçleri · konfigürasyonlar · yük tabloları · nakliye</div>
+            </div>
+            <Btn onClick={()=>setFleetForm({name:"",manufacturer:"",crane_type:"mobile",max_capacity:"",serial_number:"",year_of_manufacture:"",notes:""})} color={C.green}>+ Vinç Ekle</Btn>
+          </div>
+
+          {fleetLoading&&<div style={{textAlign:"center",color:C.g400,padding:40}}>Yükleniyor...</div>}
+
+          {!fleetLoading&&fleetCranes.length===0&&(
+            <Card><div style={{textAlign:"center",padding:"30px 0"}}>
+              <div style={{fontSize:40,marginBottom:8}}>🏗️</div>
+              <div style={{fontSize:14,fontWeight:700,color:C.white,marginBottom:6}}>Henüz vinç eklenmemiş</div>
+              <div style={{fontSize:11,color:C.g400,marginBottom:12}}>Filonuzdaki vinçleri ekleyin, her biri için konfigürasyon ve yük tablosu tanımlayın.</div>
+              <Btn onClick={()=>setFleetForm({name:"",manufacturer:"",crane_type:"mobile",max_capacity:"",serial_number:"",year_of_manufacture:"",notes:""})} color={C.yellow} style={{color:"#000"}}>İlk Vincini Ekle</Btn>
+            </div></Card>
+          )}
+
+          {/* Fleet crane list */}
+          {fleetCranes.map(fc=>{
+            const isExp=fleetExpanded===fc.id;
+            const cfgs=fc.configs||[];
+            const tl=({mobile:"Mobil",crawler:"Paletli",rough:"Arazi",truck:"Kamyon"})[fc.crane_type]||fc.crane_type;
+            return(
+              <div key={fc.id} style={{background:C.surface||"#132E1C",border:`1px solid ${isExp?C.green+"60":C.g500+"30"}`,borderRadius:12,marginBottom:10,overflow:"hidden"}}>
+                {/* Crane header row */}
+                <div onClick={()=>setFleetExpanded(isExp?null:fc.id)} style={{padding:"12px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:10,color:C.g400,transform:isExp?"rotate(90deg)":"none",transition:"transform 0.2s"}}>▶</span>
+                  <div style={{flex:1}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                      <span style={{fontSize:14,fontWeight:700,color:C.white}}>{fc.name}</span>
+                      <span style={{fontSize:9,padding:"2px 8px",borderRadius:10,background:C.green+"20",color:C.greenLight}}>{tl}</span>
+                      {fc.max_capacity&&<span style={{fontSize:12,fontWeight:800,color:C.yellow}}>{fc.max_capacity}t</span>}
+                    </div>
+                    <div style={{fontSize:10,color:C.g500,marginTop:2}}>
+                      {fc.manufacturer||""}{fc.year_of_manufacture?` · ${fc.year_of_manufacture}`:""} · {cfgs.length} konfigürasyon
+                    </div>
+                  </div>
+                  <div style={{display:"flex",gap:4}} onClick={e=>e.stopPropagation()}>
+                    <button onClick={()=>setFleetForm(fc)} style={{padding:"4px 10px",background:C.g500+"30",color:C.g400,border:"none",borderRadius:6,fontSize:10,cursor:"pointer"}}>✏️</button>
+                    <button onClick={()=>fleetDeleteCrane(fc.id)} style={{padding:"4px 10px",background:"#EF444415",color:"#EF4444",border:"none",borderRadius:6,fontSize:10,cursor:"pointer"}}>🗑️</button>
+                  </div>
+                </div>
+
+                {/* Expanded: configs */}
+                {isExp&&(
+                  <div style={{borderTop:`1px solid ${C.g500}25`,padding:"10px 14px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                      <span style={{fontSize:12,fontWeight:700,color:C.greenLight}}>Konfigürasyonlar</span>
+                      <button onClick={()=>setCfgForm({craneId:fc.id,name:"",description:"",counterweight:"",boom_type:"telescopic",max_boom:"",max_capacity_at_config:"",outrigger_config:"full",load_chart_id:"",transport_vehicles:[]})} style={{padding:"4px 12px",background:C.yellow+"15",color:C.yellow,border:`1px solid ${C.yellow}30`,borderRadius:6,fontSize:10,fontWeight:600,cursor:"pointer"}}>+ Konfigürasyon Ekle</button>
+                    </div>
+
+                    {cfgs.length===0&&<div style={{textAlign:"center",padding:"16px 0",color:C.g500,fontSize:10}}>Henüz konfigürasyon yok.</div>}
+
+                    {cfgs.map((cf,ci2)=>{
+                      const veh=cf.transport_vehicles||[];
+                      const totV=veh.reduce((s,v)=>s+(v.count||0),0);
+                      const bLbl=({telescopic:"Teleskopik",lattice:"Kafes",luffing:"Luffing",fixed:"Sabit"})[cf.boom_type]||cf.boom_type;
+                      const oLbl=({full:"100%","75":"75%","50":"50%","0":"Kapalı",on_tracks:"Palet üzeri"})[cf.outrigger_config]||cf.outrigger_config;
+                      const lc=(fc._charts||[]).find(x=>x.id===cf.load_chart_id);
+                      return(
+                        <div key={cf.id} style={{padding:"10px 12px",background:C.dark+"AA",borderRadius:10,marginBottom:ci2<cfgs.length-1?8:0,border:`1px solid ${C.g500}20`}}>
+                          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
+                            <div>
+                              <div style={{fontSize:12,fontWeight:700,color:C.yellow}}>{cf.name}</div>
+                              {cf.description&&<div style={{fontSize:9,color:C.g400,marginTop:1}}>{cf.description}</div>}
+                            </div>
+                            <div style={{display:"flex",gap:4}}>
+                              <button onClick={()=>setCfgForm({...cf,craneId:fc.id})} style={{padding:"3px 7px",background:C.g500+"25",color:C.g400,border:"none",borderRadius:5,fontSize:9,cursor:"pointer"}}>✏️</button>
+                              <button onClick={()=>fleetDeleteConfig(cf.id)} style={{padding:"3px 7px",background:"#EF444412",color:"#EF4444",border:"none",borderRadius:5,fontSize:9,cursor:"pointer"}}>🗑️</button>
+                            </div>
+                          </div>
+                          {/* Tags */}
+                          <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:6}}>
+                            {cf.counterweight&&<span style={{fontSize:8,padding:"2px 7px",borderRadius:7,background:"#FF6B3515",color:"#FF6B35",fontWeight:600}}>CW: {cf.counterweight}</span>}
+                            <span style={{fontSize:8,padding:"2px 7px",borderRadius:7,background:C.greenLight+"15",color:C.greenLight,fontWeight:600}}>{bLbl}</span>
+                            {cf.max_boom&&<span style={{fontSize:8,padding:"2px 7px",borderRadius:7,background:"#4FC3F715",color:"#4FC3F7",fontWeight:600}}>Boom: {cf.max_boom}m</span>}
+                            {cf.max_capacity_at_config&&<span style={{fontSize:8,padding:"2px 7px",borderRadius:7,background:C.yellow+"15",color:C.yellow,fontWeight:600}}>Kap: {cf.max_capacity_at_config}t</span>}
+                            <span style={{fontSize:8,padding:"2px 7px",borderRadius:7,background:"#AB47BC15",color:"#AB47BC",fontWeight:600}}>Ayak: {oLbl}</span>
+                          </div>
+                          {/* Load chart */}
+                          <div style={{fontSize:9,color:C.g500,marginBottom:veh.length>0?4:0}}>
+                            📊 Yük Tablosu: {lc?<span style={{color:C.greenLight,fontWeight:600}}>{lc.name} ({lc.max_capacity}t / {lc.max_boom}m)</span>:<span style={{fontStyle:"italic"}}>Bağlı değil</span>}
+                          </div>
+                          {/* Transport */}
+                          {veh.length>0&&(
+                            <div style={{marginTop:4,padding:"6px 8px",background:(C.surface||"#132E1C"),borderRadius:7,border:`1px solid ${C.g500}15`}}>
+                              <div style={{fontSize:8,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase",letterSpacing:1}}>Nakliye — {totV} araç</div>
+                              {veh.map((v,vi)=>{
+                                const ic=({lowbed:"🚛",truck:"🚚",open_trailer:"🚜",tractor:"🔧",spmt:"⚙️"})[v.type]||"📦";
+                                const nl=({lowbed:"Lowbed",truck:"Kamyon",open_trailer:"Açık Dorse",tractor:"Çekici",spmt:"SPMT",other:"Diğer"})[v.type]||v.type;
+                                return <div key={vi} style={{display:"flex",alignItems:"center",gap:5,fontSize:10,color:C.white,marginBottom:1}}>
+                                  <span>{ic}</span><span style={{fontWeight:600,color:C.yellow,minWidth:20,textAlign:"center"}}>{v.count}×</span><span>{nl}</span>
+                                  {v.notes&&<span style={{color:C.g500,fontSize:8}}>— {v.notes}</span>}
+                                </div>;
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* ═══ CRANE FORM MODAL ═══ */}
+          {fleetForm&&(
+            <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:16}} onClick={e=>{if(e.target===e.currentTarget)setFleetForm(null)}}>
+              <div style={{background:C.surface||"#132E1C",borderRadius:16,padding:20,width:"100%",maxWidth:480,maxHeight:"90vh",overflowY:"auto",border:`1px solid ${C.green}30`}} onClick={e=>e.stopPropagation()}>
+                <div style={{fontSize:16,fontWeight:800,color:C.yellow,marginBottom:14}}>{fleetForm.id?"✏️ Vinç Düzenle":"🏗️ Yeni Vinç Ekle"}</div>
+                {[{k:"name",l:"Vinç Adı *",p:"LTM 1300-6.2"},{k:"manufacturer",l:"Üretici",p:"Liebherr"}].map(f=>
+                  <div key={f.k} style={{marginBottom:10}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>{f.l}</label>
+                  <input value={fleetForm[f.k]||""} onChange={e=>setFleetForm(p=>({...p,[f.k]:e.target.value}))} placeholder={f.p} style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,boxSizing:"border-box"}}/></div>
+                )}
+                <div style={{marginBottom:10}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>Vinç Tipi</label>
+                  <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                    {[["mobile","Mobil"],["crawler","Paletli"],["rough","Arazi"],["truck","Kamyon"]].map(([id,lb])=>
+                      <button key={id} onClick={()=>setFleetForm(p=>({...p,crane_type:id}))} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${fleetForm.crane_type===id?C.yellow:C.g500}40`,background:fleetForm.crane_type===id?C.yellow+"15":"transparent",color:fleetForm.crane_type===id?C.yellow:C.g400,fontSize:11,cursor:"pointer",fontWeight:fleetForm.crane_type===id?700:400}}>{lb}</button>
+                    )}
+                  </div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+                  {[{k:"max_capacity",l:"Maks Kapasite (t)",p:"300"},{k:"serial_number",l:"Seri No",p:"ABC-1234"},{k:"year_of_manufacture",l:"Üretim Yılı",p:"2019"}].map(f=>
+                    <div key={f.k} style={{marginBottom:10}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>{f.l}</label>
+                    <input value={fleetForm[f.k]||""} onChange={e=>setFleetForm(p=>({...p,[f.k]:e.target.value}))} placeholder={f.p} style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,boxSizing:"border-box"}}/></div>
+                  )}
+                </div>
+                <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:14}}>
+                  <button onClick={()=>setFleetForm(null)} style={{padding:"7px 18px",background:"transparent",color:C.g400,border:`1px solid ${C.g500}40`,borderRadius:8,fontSize:11,cursor:"pointer"}}>İptal</button>
+                  <Btn onClick={()=>{if(!fleetForm.name?.trim())return alert("Vinç adı gerekli");fleetSaveCrane({...fleetForm,max_capacity:fleetForm.max_capacity?Number(fleetForm.max_capacity):null,year_of_manufacture:fleetForm.year_of_manufacture?Number(fleetForm.year_of_manufacture):null});}} color={C.green}>Kaydet</Btn>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══ CONFIG FORM MODAL ═══ */}
+          {cfgForm&&(
+            <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:16}} onClick={e=>{if(e.target===e.currentTarget)setCfgForm(null)}}>
+              <div style={{background:C.surface||"#132E1C",borderRadius:16,padding:20,width:"100%",maxWidth:540,maxHeight:"90vh",overflowY:"auto",border:`1px solid ${C.green}30`}} onClick={e=>e.stopPropagation()}>
+                <div style={{fontSize:16,fontWeight:800,color:C.yellow,marginBottom:14}}>{cfgForm.id?"✏️ Konfigürasyon Düzenle":"⚙️ Yeni Konfigürasyon"}</div>
+                {/* Name + desc */}
+                {[{k:"name",l:"Konfigürasyon Adı *",p:"Teleskopik 87.5t CW — 84m boom"},{k:"description",l:"Açıklama",p:"Notlar..."}].map(f=>
+                  <div key={f.k} style={{marginBottom:10}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>{f.l}</label>
+                  <input value={cfgForm[f.k]||""} onChange={e=>setCfgForm(p=>({...p,[f.k]:e.target.value}))} placeholder={f.p} style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,boxSizing:"border-box"}}/></div>
+                )}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                  <div style={{marginBottom:10}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>Counterweight</label>
+                    <input value={cfgForm.counterweight||""} onChange={e=>setCfgForm(p=>({...p,counterweight:e.target.value}))} placeholder="87.5t" style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,boxSizing:"border-box"}}/></div>
+                  <div style={{marginBottom:10}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>Boom Tipi</label>
+                    <select value={cfgForm.boom_type||"telescopic"} onChange={e=>setCfgForm(p=>({...p,boom_type:e.target.value}))} style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,cursor:"pointer",boxSizing:"border-box"}}>
+                      <option value="telescopic">Teleskopik</option><option value="lattice">Kafes (Lattice)</option><option value="luffing">Luffing Jib</option><option value="fixed">Sabit Jib</option>
+                    </select></div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+                  <div style={{marginBottom:10}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>Maks Boom (m)</label>
+                    <input value={cfgForm.max_boom||""} onChange={e=>setCfgForm(p=>({...p,max_boom:e.target.value}))} placeholder="84" style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,boxSizing:"border-box"}}/></div>
+                  <div style={{marginBottom:10}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>Maks Kapasite (t)</label>
+                    <input value={cfgForm.max_capacity_at_config||""} onChange={e=>setCfgForm(p=>({...p,max_capacity_at_config:e.target.value}))} placeholder="300" style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,boxSizing:"border-box"}}/></div>
+                  <div style={{marginBottom:10}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>Ayak Açıklığı</label>
+                    <select value={cfgForm.outrigger_config||"full"} onChange={e=>setCfgForm(p=>({...p,outrigger_config:e.target.value}))} style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,cursor:"pointer",boxSizing:"border-box"}}>
+                      <option value="full">100% Açık</option><option value="75">75%</option><option value="50">50%</option><option value="0">Kapalı</option><option value="on_tracks">Palet üzeri</option>
+                    </select></div>
+                </div>
+                {/* Load chart */}
+                <div style={{marginBottom:12}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>📊 Yük Tablosu Bağla</label>
+                  <select value={cfgForm.load_chart_id||""} onChange={e=>setCfgForm(p=>({...p,load_chart_id:e.target.value}))} style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,cursor:"pointer",boxSizing:"border-box"}}>
+                    <option value="">— Tablo seçin —</option>
+                    {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name||k} ({ch.maxCap}t / {ch.booms?.[ch.booms.length-1]}m)</option>)}
+                  </select>
+                  <div style={{fontSize:8,color:C.g500,marginTop:2}}>Menzil Şeması'ndan yüklenen CSV tabloları ve yerleşik tablolar.</div>
+                </div>
+                {/* Transport vehicles */}
+                <div style={{marginBottom:14,padding:12,background:C.dark,borderRadius:10,border:`1px solid ${C.g500}20`}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                    <span style={{fontSize:9,fontWeight:700,color:C.g400,textTransform:"uppercase",letterSpacing:1}}>🚛 Nakliye Araçları</span>
+                    <button onClick={()=>setCfgForm(p=>({...p,transport_vehicles:[...(p.transport_vehicles||[]),{type:"lowbed",count:1,notes:""}]}))} style={{padding:"3px 10px",background:C.yellow+"15",color:C.yellow,border:`1px solid ${C.yellow}30`,borderRadius:6,fontSize:9,cursor:"pointer",fontWeight:600}}>+ Araç Ekle</button>
+                  </div>
+                  {(!cfgForm.transport_vehicles||cfgForm.transport_vehicles.length===0)&&<div style={{textAlign:"center",padding:"10px 0",color:C.g500,fontSize:9}}>Nakliye için gerekli araçları ekleyin.</div>}
+                  {(cfgForm.transport_vehicles||[]).map((v,vi)=>(
+                    <div key={vi} style={{display:"flex",gap:5,alignItems:"center",marginBottom:5}}>
+                      <select value={v.type} onChange={e=>{const nv=[...(cfgForm.transport_vehicles||[])];nv[vi]={...nv[vi],type:e.target.value};setCfgForm(p=>({...p,transport_vehicles:nv}));}} style={{padding:"5px 6px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:6,color:C.white,fontSize:10,flex:"0 0 120px",boxSizing:"border-box"}}>
+                        {[["lowbed","🚛 Lowbed"],["truck","🚚 Kamyon"],["open_trailer","🚜 Açık Dorse"],["tractor","🔧 Çekici"],["spmt","⚙️ SPMT"],["other","📦 Diğer"]].map(([id,lb])=><option key={id} value={id}>{lb}</option>)}
+                      </select>
+                      <input type="number" value={v.count} min={1} onChange={e=>{const nv=[...(cfgForm.transport_vehicles||[])];nv[vi]={...nv[vi],count:Number(e.target.value)};setCfgForm(p=>({...p,transport_vehicles:nv}));}} style={{width:42,padding:"5px 4px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:6,color:C.yellow,fontSize:11,textAlign:"center",fontWeight:700,boxSizing:"border-box"}}/>
+                      <span style={{fontSize:9,color:C.g500}}>adet</span>
+                      <input value={v.notes||""} onChange={e=>{const nv=[...(cfgForm.transport_vehicles||[])];nv[vi]={...nv[vi],notes:e.target.value};setCfgForm(p=>({...p,transport_vehicles:nv}));}} placeholder="Not..." style={{flex:1,padding:"5px 6px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:6,color:C.white,fontSize:9,boxSizing:"border-box"}}/>
+                      <button onClick={()=>{const nv=[...(cfgForm.transport_vehicles||[])];nv.splice(vi,1);setCfgForm(p=>({...p,transport_vehicles:nv}));}} style={{padding:"3px 7px",background:"#EF444415",color:"#EF4444",border:"none",borderRadius:5,fontSize:9,cursor:"pointer"}}>✕</button>
+                    </div>
+                  ))}
+                  {(cfgForm.transport_vehicles||[]).length>0&&<div style={{textAlign:"right",fontSize:9,color:C.yellow,fontWeight:700,marginTop:4}}>Toplam: {(cfgForm.transport_vehicles||[]).reduce((s,v)=>s+(v.count||0),0)} araç</div>}
+                </div>
+                <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+                  <button onClick={()=>setCfgForm(null)} style={{padding:"7px 18px",background:"transparent",color:C.g400,border:`1px solid ${C.g500}40`,borderRadius:8,fontSize:11,cursor:"pointer"}}>İptal</button>
+                  <Btn onClick={()=>{
+                    if(!cfgForm.name?.trim())return alert("Konfigürasyon adı gerekli");
+                    fleetSaveConfig({...cfgForm,max_boom:cfgForm.max_boom?Number(cfgForm.max_boom):null,max_capacity_at_config:cfgForm.max_capacity_at_config?Number(cfgForm.max_capacity_at_config):null,load_chart_id:cfgForm.load_chart_id||null,transport_vehicles:(cfgForm.transport_vehicles||[]).filter(v=>v.count>0)},cfgForm.craneId);
+                  }} color={C.green}>Kaydet</Btn>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
