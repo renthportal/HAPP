@@ -1327,9 +1327,11 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   // ═══ FLEET CRANES STATE ═══
   const [fleetCranes,setFleetCranes]=useState([]);
   const [fleetExpanded,setFleetExpanded]=useState(null);
-  const [fleetForm,setFleetForm]=useState(null); // null=closed, {}=new, {id:..}=edit
-  const [cfgForm,setCfgForm]=useState(null); // null=closed, {craneId:..}=new, {craneId:..,id:..}=edit
+  const [fleetForm,setFleetForm]=useState(null);
+  const [cfgForm,setCfgForm]=useState(null);
   const [fleetLoading,setFleetLoading]=useState(false);
+  const [selFleetId,setSelFleetId]=useState("");   // seçili filo vinci
+  const [selCfgId,setSelCfgId]=useState("");       // seçili konfigürasyon
 
   useEffect(()=>{
     const onResize=()=>setIsMobile(window.innerWidth<768);
@@ -1363,23 +1365,64 @@ export default function App({onSave,initialData,projectName:extProjectName}){
     setFleetLoading(false);
   },[]);
   useEffect(()=>{if(tab==="cranes")loadFleet();},[tab]);
+  // Also load fleet on mount so chart tab can use it
+  useEffect(()=>{loadFleet();},[]);
+
+  // ═══ Auto-apply when config is selected ═══
+  useEffect(()=>{
+    if(!selCfgId)return;
+    const fc=fleetCranes.find(c=>c.id===selFleetId);
+    if(!fc)return;
+    const cf=fc.configs?.find(c=>c.id===selCfgId);
+    if(!cf)return;
+    // Map fleet crane type to CRANES id
+    const typeMap={mobile:"mobile",crawler:"crawler",rough:"rough",truck:"truck"};
+    const cType=typeMap[fc.crane_type]||"mobile";
+    const updates={craneType:cType};
+    if(cf.max_boom)updates.maxBoom=Number(cf.max_boom);
+    if(cf.outrigger_config)updates.outriggerSpread=cf.outrigger_config;
+    if(cf.counterweight)updates.cwConfig=cf.counterweight;
+    // Link load chart
+    if(cf.load_chart_id&&allCharts[cf.load_chart_id]){
+      updates.chartId=cf.load_chart_id;
+    }
+    up(updates);
+    // Update lift plan crane info
+    setLp(p=>({...p,craneMake:fc.manufacturer||"",craneModel:fc.name||"",cwConfig:cf.counterweight||""}));
+  },[selCfgId,selFleetId]);
+
+  // When fleet crane changes, reset config selection
+  useEffect(()=>{setSelCfgId("");},[selFleetId]);
 
   const fleetSaveCrane=async(data)=>{
     if(!supabaseRef.current)return;
-    if(data.id){await supabaseRef.current.from("fleet_cranes").update(data).eq("id",data.id);}
-    else{await supabaseRef.current.from("fleet_cranes").insert({...data,user_id:userIdRef.current});}
-    setFleetForm(null);loadFleet();
+    const clean={name:data.name,manufacturer:data.manufacturer||null,crane_type:data.crane_type||"mobile",
+      max_capacity:data.max_capacity?Number(data.max_capacity):null,serial_number:data.serial_number||null,
+      year_of_manufacture:data.year_of_manufacture?Number(data.year_of_manufacture):null,notes:data.notes||null};
+    try{
+      if(data.id){await supabaseRef.current.from("fleet_cranes").update(clean).eq("id",data.id);}
+      else{const{error}=await supabaseRef.current.from("fleet_cranes").insert({...clean,user_id:userIdRef.current});if(error)throw error;}
+      setFleetForm(null);loadFleet();
+    }catch(e){alert("Kayıt hatası: "+e.message);}
   };
   const fleetDeleteCrane=async(id)=>{
     if(!confirm("Bu vinç ve tüm konfigürasyonları silinecek?"))return;
-    await supabaseRef.current.from("fleet_cranes").delete().eq("id",id);loadFleet();
+    await supabaseRef.current.from("fleet_cranes").delete().eq("id",id);
+    if(selFleetId===id){setSelFleetId("");setSelCfgId("");}
+    loadFleet();
   };
   const fleetSaveConfig=async(data,craneId)=>{
     if(!supabaseRef.current)return;
-    const payload={...data,crane_id:craneId};
-    if(data.id){await supabaseRef.current.from("crane_configs").update(payload).eq("id",data.id);}
-    else{await supabaseRef.current.from("crane_configs").insert(payload);}
-    setCfgForm(null);loadFleet();
+    const clean={crane_id:craneId,name:data.name,description:data.description||null,
+      counterweight:data.counterweight||null,boom_type:data.boom_type||"telescopic",
+      max_boom:data.max_boom?Number(data.max_boom):null,max_capacity_at_config:data.max_capacity_at_config?Number(data.max_capacity_at_config):null,
+      outrigger_config:data.outrigger_config||"full",load_chart_id:data.load_chart_id||null,
+      transport_vehicles:(data.transport_vehicles||[]).filter(v=>v.count>0)};
+    try{
+      if(data.id){await supabaseRef.current.from("crane_configs").update(clean).eq("id",data.id);}
+      else{const{error}=await supabaseRef.current.from("crane_configs").insert(clean);if(error)throw error;}
+      setCfgForm(null);loadFleet();
+    }catch(e){alert("Kayıt hatası: "+e.message);}
   };
   const fleetDeleteConfig=async(id)=>{
     if(!confirm("Bu konfigürasyon silinecek?"))return;
@@ -1700,12 +1743,23 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                     <span style={{fontSize:15}}>{item.icon}</span>{item.label}
                   </button>
                 ))}
-                {/* Crane type selector */}
+                {/* Crane selector */}
                 <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
-                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Vinç Tipi</div>
-                  <select value={cfg.craneType} onChange={e=>{up({craneType:e.target.value});setShowMobMenu(false);}} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.yellow,fontSize:11,fontFamily:F}}>
-                    {CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name}</option>)}
-                  </select>
+                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Filo Vinci</div>
+                  {fleetCranes.length>0?(<>
+                    <select value={selFleetId} onChange={e=>{setSelFleetId(e.target.value);setSelCfgId("");}} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.yellow,fontSize:11,fontFamily:F}}>
+                      <option value="">— Vinç seçin —</option>
+                      {fleetCranes.map(fc=><option key={fc.id} value={fc.id}>{fc.name}</option>)}
+                    </select>
+                    {selFleetId&&(()=>{
+                      const fc=fleetCranes.find(c=>c.id===selFleetId);
+                      const cfgs=fc?.configs||[];
+                      return cfgs.length>0?<select value={selCfgId} onChange={e=>{setSelCfgId(e.target.value);setShowMobMenu(false);}} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.greenLight,fontSize:11,fontFamily:F,marginTop:4}}>
+                        <option value="">— Konfig —</option>
+                        {cfgs.map(cf=><option key={cf.id} value={cf.id}>{cf.name}</option>)}
+                      </select>:null;
+                    })()}
+                  </>):<button onClick={()=>{setTab("cranes");setShowMobMenu(false);}} style={{width:"100%",padding:"8px",background:C.yellow+"20",border:`1px solid ${C.yellow}40`,borderRadius:6,color:C.yellow,fontSize:11,fontFamily:F,cursor:"pointer"}}>Vinç Yönetimi'ne Git</button>}
                 </div>
                 {/* Load chart selector */}
                 <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
@@ -1862,20 +1916,49 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           <div style={{width:290,overflow:"auto",padding:12,background:C.dark+"80",borderRight:`1px solid ${C.green}15`}}>
             {/* ── TEMEL: Her zaman görünür ── */}
             
-            {/* Vinç + Tablo */}
+            {/* Vinç + Konfigürasyon */}
             <Card>
-              <Title>Vinç & Tablo</Title>
-              <Sel value={cfg.craneType} onChange={v=>up({craneType:v})}>{CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name}</option>)}</Sel>
-              <div style={{marginTop:8}}><Lbl>Yük Tablosu</Lbl></div>
-              <Sel value={cfg.chartId} onChange={v=>up({chartId:v})}>
-                <option value="">Tablo seçilmedi</option>
-                {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name} ({ch.maxCap}t)</option>)}
-              </Sel>
-              {cfg.chartId&&<div style={{fontSize:10,color:C.greenLight,marginTop:4,fontWeight:600}}>✓ Gerçek yük tablosu aktif</div>}
-              {!cfg.chartId&&<div style={{fontSize:10,color:C.g400,marginTop:4}}>Kapasite elle girilecek ↓</div>}
-              <Btn small color={C.g500} onClick={()=>csvInputRef.current?.click()} style={{marginTop:8}}>📄 CSV Tablo Yükle</Btn>
-              {cfg.chartId&&customCharts[cfg.chartId]&&!customCharts[cfg.chartId].isPreset&&!LOAD_CHARTS[cfg.chartId]&&<Btn small color="#c44" onClick={()=>deleteChart(cfg.chartId)} style={{marginTop:4,marginLeft:4}}>🗑 Sil</Btn>}
-              <input ref={csvInputRef} type="file" accept=".csv,.txt" onChange={importChartCSV} style={{display:"none"}}/>
+              <Title>Vinç Seçimi</Title>
+              {fleetCranes.length>0?(<>
+                <Lbl>Filo Vinci</Lbl>
+                <Sel value={selFleetId} onChange={v=>{setSelFleetId(v);setSelCfgId("");}}>
+                  <option value="">— Vinç seçin —</option>
+                  {fleetCranes.map(fc=><option key={fc.id} value={fc.id}>{fc.name}{fc.max_capacity?` (${fc.max_capacity}t)`:""}</option>)}
+                </Sel>
+                {selFleetId&&(()=>{
+                  const fc=fleetCranes.find(c=>c.id===selFleetId);
+                  const cfgs=fc?.configs||[];
+                  return cfgs.length>0?(<>
+                    <div style={{marginTop:6}}><Lbl>Konfigürasyon</Lbl></div>
+                    <Sel value={selCfgId} onChange={v=>setSelCfgId(v)}>
+                      <option value="">— Konfig seçin —</option>
+                      {cfgs.map(cf=><option key={cf.id} value={cf.id}>{cf.name}{cf.counterweight?` (CW: ${cf.counterweight})`:""}</option>)}
+                    </Sel>
+                    {selCfgId&&(()=>{
+                      const cf=cfgs.find(c=>c.id===selCfgId);
+                      return cf?<div style={{fontSize:10,color:C.greenLight,marginTop:4,fontWeight:600}}>
+                        ✓ {cf.name}{cf.load_chart_id&&allCharts[cf.load_chart_id]?" · Yük tablosu aktif":" · Yük tablosu yok"}
+                      </div>:null;
+                    })()}
+                  </>):<div style={{fontSize:10,color:C.orange,marginTop:6}}>⚠ Bu vinçte konfigürasyon yok. Vinç Yönetimi'nden ekleyin.</div>;
+                })()}
+              </>):(<>
+                <div style={{fontSize:10,color:C.g400,marginBottom:6}}>Henüz filo vinci eklenmemiş.</div>
+                <Btn small color={C.yellow} onClick={()=>setTab("cranes")} style={{color:"#000"}}>Vinç Yönetimi'ne Git</Btn>
+              </>)}
+              <div style={{marginTop:8,paddingTop:8,borderTop:`1px solid ${C.g500}20`}}>
+                <Lbl>Yük Tablosu</Lbl>
+                <Sel value={cfg.chartId} onChange={v=>up({chartId:v})}>
+                  <option value="">Tablo seçilmedi</option>
+                  {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name} ({ch.maxCap}t)</option>)}
+                </Sel>
+                {cfg.chartId&&<div style={{fontSize:10,color:C.greenLight,marginTop:4,fontWeight:600}}>✓ Gerçek yük tablosu aktif</div>}
+                {!cfg.chartId&&<div style={{fontSize:10,color:C.g400,marginTop:4}}>Kapasite elle girilecek ↓</div>}
+              </div>
+              <div style={{marginTop:6,paddingTop:6,borderTop:`1px solid ${C.g500}20`}}>
+                <Lbl>Vinç Tipi (SVG)</Lbl>
+                <Sel value={cfg.craneType} onChange={v=>up({craneType:v})}>{CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name}</option>)}</Sel>
+              </div>
             </Card>
 
             {/* Boom — en çok kullanılan ayar */}
@@ -2451,14 +2534,79 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                       <option value="full">100% Açık</option><option value="75">75%</option><option value="50">50%</option><option value="0">Kapalı</option><option value="on_tracks">Palet üzeri</option>
                     </select></div>
                 </div>
-                {/* Load chart */}
-                <div style={{marginBottom:12}}><label style={{display:"block",fontSize:9,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase"}}>📊 Yük Tablosu Bağla</label>
-                  <select value={cfgForm.load_chart_id||""} onChange={e=>setCfgForm(p=>({...p,load_chart_id:e.target.value}))} style={{width:"100%",padding:"7px 10px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:12,cursor:"pointer",boxSizing:"border-box"}}>
-                    <option value="">— Tablo seçin —</option>
-                    {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name||k} ({ch.maxCap}t / {ch.booms?.[ch.booms.length-1]}m)</option>)}
+
+                {/* ═══ YÜK TABLOSU — CSV YÜKLEME ═══ */}
+                <div style={{marginBottom:14,padding:12,background:C.dark,borderRadius:10,border:`1px solid ${C.greenLight}30`}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                    <span style={{fontSize:10,fontWeight:700,color:C.greenLight,textTransform:"uppercase",letterSpacing:1}}>📊 Yük Tablosu</span>
+                  </div>
+                  {/* Mevcut tablolardan seç */}
+                  <select value={cfgForm.load_chart_id||""} onChange={e=>setCfgForm(p=>({...p,load_chart_id:e.target.value}))} style={{width:"100%",padding:"7px 10px",background:C.surface||"#132E1C",border:`1px solid ${C.g500}40`,borderRadius:8,color:C.white,fontSize:11,cursor:"pointer",boxSizing:"border-box",marginBottom:8}}>
+                    <option value="">— Mevcut tablodan seç —</option>
+                    {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name} ({ch.maxCap}t)</option>)}
                   </select>
-                  <div style={{fontSize:8,color:C.g500,marginTop:2}}>Menzil Şeması'ndan yüklenen CSV tabloları ve yerleşik tablolar.</div>
+                  {cfgForm.load_chart_id&&allCharts[cfgForm.load_chart_id]&&<div style={{fontSize:10,color:C.greenLight,marginBottom:8,fontWeight:600}}>✓ Bağlı: {allCharts[cfgForm.load_chart_id].name}</div>}
+                  {/* VEYA CSV yükle */}
+                  <div style={{textAlign:"center",padding:"6px 0",fontSize:9,color:C.g500,fontWeight:700}}>— veya yeni CSV yükle —</div>
+                  <label style={{display:"block",padding:"10px 14px",background:C.green+"20",border:`2px dashed ${C.green}50`,borderRadius:8,color:C.greenLight,fontWeight:700,fontSize:11,textAlign:"center",cursor:"pointer",marginTop:4}}>
+                    📄 CSV Dosyası Seç ve Yükle
+                    <input type="file" accept=".csv,.txt" onChange={async(e)=>{
+                      const file=e.target.files?.[0];if(!file)return;
+                      const reader=new FileReader();
+                      reader.onload=async(ev)=>{
+                        try{
+                          const text=ev.target.result;
+                          const sections=text.trim().split(/\n---\s*\n|\n---$/);
+                          for(const section of sections){
+                            const lines=section.trim().split("\n").map(l=>l.split(",").map(s=>s.trim()));
+                            if(lines.length<3)continue;
+                            const tName=lines[0][0]||"Özel Tablo";
+                            let configLine={};let dataStart=1;
+                            if(lines[1]&&lines[1][0]&&lines[1][0].toLowerCase().startsWith("config:")){
+                              const cfgStr=lines[1].join(",").replace(/^config:\s*/i,"");
+                              cfgStr.split(",").forEach(p2=>{const[k,v]=p2.split("=").map(s=>s.trim());if(k&&v)configLine[k]=v;});
+                              dataStart=2;
+                            }
+                            const boomLengths=lines[dataStart].slice(1).map(v=>{const n=parseFloat(v.replace(",","."));return isNaN(n)?null:n;}).filter(v=>v!==null&&v>0);
+                            const rows=[];
+                            for(let i=dataStart+1;i<lines.length;i++){
+                              if(!lines[i]||!lines[i][0])continue;
+                              const r=parseFloat(lines[i][0].replace(",","."));if(isNaN(r))continue;
+                              const caps=lines[i].slice(1).map(v=>{const n=parseFloat((v||"").replace(",","."));return isNaN(n)||n<=0?null:n;});
+                              rows.push({r,caps});
+                            }
+                            if(boomLengths.length===0||rows.length===0){alert("CSV formatı hatalı");return;}
+                            const maxCap=Math.max(...rows.flatMap(r2=>r2.caps.filter(v=>v!==null)));
+                            const maxBoom=Math.max(...boomLengths);
+                            // Save to Supabase
+                            if(supabaseRef.current){
+                              const row={user_id:userIdRef.current||null,name:tName,max_capacity:Number(maxCap),max_boom:Number(maxBoom),
+                                pivot_height:parseFloat(configLine.pivotH)||3,boom_lengths:boomLengths,chart_data:rows,
+                                outrigger_config:String(configLine.outrigger||"full"),counterweight_config:configLine.cw?String(configLine.cw):null,source:"csv_import"};
+                              const{data:saved,error}=await supabaseRef.current.from("load_charts").insert(row).select();
+                              if(error){alert("Kayıt hatası: "+error.message);return;}
+                              if(saved&&saved[0]){
+                                const r2=saved[0];
+                                const dbChart={name:r2.name,maxCap:r2.max_capacity,maxBoom:r2.max_boom,pivotH:r2.pivot_height||3,
+                                  boomLengths:r2.boom_lengths||[],rows:Array.isArray(r2.chart_data)?r2.chart_data:r2.chart_data,
+                                  config:{outrigger:r2.outrigger_config,cw:r2.counterweight_config},isPreset:false};
+                                setCustomCharts(p2=>({...p2,[r2.id]:dbChart}));
+                                setCfgForm(p2=>({...p2,load_chart_id:r2.id}));
+                                alert("✅ Yük tablosu yüklendi: "+tName);
+                              }
+                            }
+                            break; // İlk tabloyu al
+                          }
+                        }catch(err){alert("CSV parse hatası: "+err.message);}
+                      };
+                      reader.readAsText(file);e.target.value="";
+                    }} style={{display:"none"}}/>
+                  </label>
+                  <div style={{fontSize:8,color:C.g500,marginTop:4,lineHeight:1.4}}>
+                    Format: Satır 1: Tablo adı | Satır 2: ,boom1,boom2,... | Satır 3+: menzil,kap1,kap2,...
+                  </div>
                 </div>
+
                 {/* Transport vehicles */}
                 <div style={{marginBottom:14,padding:12,background:C.dark,borderRadius:10,border:`1px solid ${C.g500}20`}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
@@ -2483,7 +2631,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                   <button onClick={()=>setCfgForm(null)} style={{padding:"7px 18px",background:"transparent",color:C.g400,border:`1px solid ${C.g500}40`,borderRadius:8,fontSize:11,cursor:"pointer"}}>İptal</button>
                   <Btn onClick={()=>{
                     if(!cfgForm.name?.trim())return alert("Konfigürasyon adı gerekli");
-                    fleetSaveConfig({...cfgForm,max_boom:cfgForm.max_boom?Number(cfgForm.max_boom):null,max_capacity_at_config:cfgForm.max_capacity_at_config?Number(cfgForm.max_capacity_at_config):null,load_chart_id:cfgForm.load_chart_id||null,transport_vehicles:(cfgForm.transport_vehicles||[]).filter(v=>v.count>0)},cfgForm.craneId);
+                    fleetSaveConfig(cfgForm,cfgForm.craneId);
                   }} color={C.green}>Kaydet</Btn>
                 </div>
               </div>
