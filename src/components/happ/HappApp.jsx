@@ -2247,8 +2247,8 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                             <div style={{marginTop:4,padding:"6px 8px",background:(C.surface||"#132E1C"),borderRadius:7,border:`1px solid ${C.g500}15`}}>
                               <div style={{fontSize:8,fontWeight:700,color:C.g400,marginBottom:3,textTransform:"uppercase",letterSpacing:1}}>Nakliye — {totV} araç</div>
                               {veh.map((v,vi)=>{
-                                const ic=({lowbed:"🚛",truck:"🚚",open_trailer:"🚜",tractor:"🔧",spmt:"⚙️"})[v.type]||"📦";
-                                const nl=({lowbed:"Lowbed",truck:"Kamyon",open_trailer:"Açık Dorse",tractor:"Çekici",spmt:"SPMT",other:"Diğer"})[v.type]||v.type;
+                                const ic=({lowbed:"🚛",salkasa:"🚚",other:"📦"})[v.type]||"📦";
+                                const nl=({lowbed:"Lowbed",salkasa:"Salkasa",other:"Diğer"})[v.type]||v.type;
                                 return <div key={vi} style={{display:"flex",alignItems:"center",gap:5,fontSize:10,color:C.white,marginBottom:1}}>
                                   <span>{ic}</span><span style={{fontWeight:600,color:C.yellow,minWidth:20,textAlign:"center"}}>{v.count}×</span><span>{nl}</span>
                                   {v.notes&&<span style={{color:C.g500,fontSize:8}}>— {v.notes}</span>}
@@ -2406,7 +2406,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                   {(cfgForm.transport_vehicles||[]).map((v,vi)=>(
                     <div key={vi} style={{display:"flex",gap:5,alignItems:"center",marginBottom:5}}>
                       <select value={v.type} onChange={e=>{const nv=[...(cfgForm.transport_vehicles||[])];nv[vi]={...nv[vi],type:e.target.value};setCfgForm(p=>({...p,transport_vehicles:nv}));}} style={{padding:"5px 6px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:6,color:C.white,fontSize:10,flex:"0 0 120px",boxSizing:"border-box"}}>
-                        {[["lowbed","🚛 Lowbed"],["truck","🚚 Kamyon"],["open_trailer","🚜 Açık Dorse"],["tractor","🔧 Çekici"],["spmt","⚙️ SPMT"],["other","📦 Diğer"]].map(([id,lb])=><option key={id} value={id}>{lb}</option>)}
+                        {[["lowbed","🚛 Lowbed"],["salkasa","🚚 Salkasa"],["other","📦 Diğer"]].map(([id,lb])=><option key={id} value={id}>{lb}</option>)}
                       </select>
                       <input type="number" value={v.count} min={1} onChange={e=>{const nv=[...(cfgForm.transport_vehicles||[])];nv[vi]={...nv[vi],count:Number(e.target.value)};setCfgForm(p=>({...p,transport_vehicles:nv}));}} style={{width:42,padding:"5px 4px",background:C.dark,border:`1px solid ${C.g500}40`,borderRadius:6,color:C.yellow,fontSize:11,textAlign:"center",fontWeight:700,boxSizing:"border-box"}}/>
                       <span style={{fontSize:9,color:C.g500}}>adet</span>
