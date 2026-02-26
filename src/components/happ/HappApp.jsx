@@ -1296,6 +1296,81 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const [selFleetId,setSelFleetId]=useState("");   // seçili filo vinci
   const [selCfgId,setSelCfgId]=useState("");       // seçili konfigürasyon
   const [finderExpandedCfg,setFinderExpandedCfg]=useState(null); // Vinç Bul accordion
+  const [showProjects,setShowProjects]=useState(false); // Projelerim paneli
+  const [savedProjects,setSavedProjects]=useState([]); // localStorage projeler
+  const [currentProjectId,setCurrentProjectId]=useState(null); // aktif proje
+  const [currentProjectName,setCurrentProjectName]=useState(extProjectName||"");
+
+  // ═══ LOCAL PROJECT MANAGEMENT ═══
+  const PROJ_KEY="happ_projects";
+  const loadProjectsList=useCallback(()=>{
+    try{const raw=localStorage.getItem(PROJ_KEY);return raw?JSON.parse(raw):[];}catch{return[];}
+  },[]);
+  const saveProjectsList=useCallback((list)=>{
+    try{localStorage.setItem(PROJ_KEY,JSON.stringify(list));}catch{}
+  },[]);
+
+  // Load projects on mount
+  useEffect(()=>{setSavedProjects(loadProjectsList());},[]);
+
+  const saveCurrentProject=()=>{
+    const projects=loadProjectsList();
+    const state={config:cfg,objects,rulers,lift_plan:lp};
+    if(currentProjectId){
+      // Update existing
+      const idx=projects.findIndex(p=>p.id===currentProjectId);
+      if(idx>=0){
+        projects[idx]={...projects[idx],state,updatedAt:new Date().toISOString()};
+        saveProjectsList(projects);
+        setSavedProjects(projects);
+        setSaveStatus("saved");setTimeout(()=>setSaveStatus("idle"),2000);
+        return;
+      }
+    }
+    // Create new
+    const name=prompt("Proje adı:","Yeni Proje");
+    if(!name)return;
+    const newP={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,state,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),craneType:cfg.craneType,boomLength:cfg.boomLength};
+    projects.unshift(newP);
+    saveProjectsList(projects);
+    setSavedProjects(projects);
+    setCurrentProjectId(newP.id);
+    setCurrentProjectName(name);
+    setSaveStatus("saved");setTimeout(()=>setSaveStatus("idle"),2000);
+  };
+
+  const openProject=(proj)=>{
+    if(proj.state){
+      if(proj.state.config)setCfg(prev=>({...prev,...proj.state.config}));
+      if(proj.state.objects)setObjects(proj.state.objects);
+      if(proj.state.rulers)setRulers(proj.state.rulers);
+      if(proj.state.lift_plan)setLp(prev=>({...prev,...proj.state.lift_plan}));
+    }
+    setCurrentProjectId(proj.id);
+    setCurrentProjectName(proj.name);
+    setShowProjects(false);
+    setTab("chart");
+  };
+
+  const deleteProject=(projId)=>{
+    if(!window.confirm("Bu projeyi silmek istediğinize emin misiniz?"))return;
+    const projects=loadProjectsList().filter(p=>p.id!==projId);
+    saveProjectsList(projects);
+    setSavedProjects(projects);
+    if(currentProjectId===projId){setCurrentProjectId(null);setCurrentProjectName("");}
+  };
+
+  const renameProject=(projId)=>{
+    const projects=loadProjectsList();
+    const proj=projects.find(p=>p.id===projId);
+    if(!proj)return;
+    const name=prompt("Yeni proje adı:",proj.name);
+    if(!name||name===proj.name)return;
+    proj.name=name;
+    saveProjectsList(projects);
+    setSavedProjects(projects);
+    if(currentProjectId===projId)setCurrentProjectName(name);
+  };
 
   useEffect(()=>{
     const onResize=()=>setIsMobile(window.innerWidth<768);
@@ -1427,12 +1502,15 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const cpObj=(id)=>{const o=objects.find(x2=>x2.id===id);if(o)setObjects(p=>[...p,{...o,id:uid(),x:o.x+3}]);};
   const moveLayer=(id,dir)=>{setObjects(p=>{const i=p.findIndex(o=>o.id===id);if(i<0)return p;const n=[...p];const ni=dir==="up"?Math.min(i+1,n.length-1):Math.max(i-1,0);[n[i],n[ni]]=[n[ni],n[i]];return n;});};
 
-  // Save handler
+  // Save handler — use onSave prop if available (Supabase), otherwise localStorage
   const handleSave=async()=>{
-    if(!onSave)return;
     setSaveStatus("saving");
-    try{await onSave({config:cfg,objects,rulers,lift_plan:lp});setSaveStatus("saved");setTimeout(()=>setSaveStatus("idle"),2000);}
-    catch(e){setSaveStatus("idle");}
+    if(onSave){
+      try{await onSave({config:cfg,objects,rulers,lift_plan:lp});setSaveStatus("saved");setTimeout(()=>setSaveStatus("idle"),2000);}
+      catch(e){setSaveStatus("idle");}
+    }else{
+      saveCurrentProject();
+    }
   };
 
   // Navigate to crane finder page
@@ -1563,6 +1641,75 @@ export default function App({onSave,initialData,projectName:extProjectName}){
     <div style={{fontFamily:FB,background:`linear-gradient(135deg,${C.dark} 0%,${C.greenBg} 40%,${C.dark} 100%)`,color:C.white,...(isMobile&&tab==="chart"?{position:"fixed",inset:0,overflow:"hidden"}:{minHeight:"100vh"})}}>
       {showPDF&&<PDFPreview cfg={cfg} crane={crane} cap={cap} lp={lp} totalW={totalW} hookH={realHookH} radius={realRadius} realBoomTipH={realBoomTipH} onClose={()=>setShowPDF(false)}/>}
 
+      {/* ═══ PROJECTS PANEL (OVERLAY) ═══ */}
+      {showProjects&&(
+        <div style={{position:"fixed",inset:0,zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div onClick={()=>setShowProjects(false)} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(4px)"}}/>
+          <div style={{position:"relative",width:"90%",maxWidth:500,maxHeight:"85vh",background:C.dark,border:`2px solid ${C.green}40`,borderRadius:16,overflow:"hidden",display:"flex",flexDirection:"column"}}>
+            {/* Header */}
+            <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.green}20`,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+              <div>
+                <div style={{fontSize:18,fontWeight:800,color:C.yellow,fontFamily:F}}>Projelerim</div>
+                <div style={{fontSize:11,color:C.g500}}>{savedProjects.length} kayıtlı proje</div>
+              </div>
+              <button onClick={()=>setShowProjects(false)} style={{width:36,height:36,borderRadius:8,border:`1px solid ${C.green}30`,background:"transparent",color:C.g300,fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+            </div>
+
+            {/* New project button */}
+            <div style={{padding:"12px 20px",flexShrink:0}}>
+              <button onClick={()=>{
+                const name=prompt("Proje adı:","Yeni Proje");
+                if(!name)return;
+                const projects=loadProjectsList();
+                const state={config:{...cfg},objects:[...objects],rulers:[...rulers],lift_plan:{...lp}};
+                const newP={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,state,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),craneType:cfg.craneType,boomLength:cfg.boomLength};
+                projects.unshift(newP);
+                saveProjectsList(projects);
+                setSavedProjects(projects);
+                setCurrentProjectId(newP.id);
+                setCurrentProjectName(name);
+                setShowProjects(false);
+              }} style={{width:"100%",padding:"12px",background:`linear-gradient(135deg,${C.green},${C.greenLight})`,border:"none",borderRadius:10,color:"white",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:F,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+                <span style={{fontSize:18}}>+</span> Yeni Proje Olarak Kaydet
+              </button>
+            </div>
+
+            {/* Projects list */}
+            <div style={{flex:1,overflow:"auto",padding:"0 20px 16px"}}>
+              {savedProjects.length===0?(
+                <div style={{textAlign:"center",padding:"32px 0"}}>
+                  <div style={{fontSize:40,marginBottom:8}}>📁</div>
+                  <div style={{color:C.g500,fontSize:13}}>Henüz kayıtlı proje yok</div>
+                  <div style={{color:C.g500,fontSize:11,marginTop:4}}>Kaydet butonuyla ilk projenizi oluşturun</div>
+                </div>
+              ):(
+                <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                  {savedProjects.map(proj=>(
+                    <div key={proj.id} style={{background:currentProjectId===proj.id?C.green+"20":C.greenDark+"60",border:`1px solid ${currentProjectId===proj.id?C.yellow+"40":C.green+"20"}`,borderRadius:10,padding:"12px 14px",cursor:"pointer",transition:"border-color 0.2s"}} onClick={()=>openProject(proj)}>
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+                        <div style={{color:"white",fontSize:14,fontWeight:600,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                          {currentProjectId===proj.id&&<span style={{color:C.yellow,marginRight:4}}>●</span>}
+                          {proj.name}
+                        </div>
+                        <div style={{display:"flex",gap:4,marginLeft:8,flexShrink:0}}>
+                          <button onClick={(e)=>{e.stopPropagation();renameProject(proj.id);}} style={{background:"transparent",border:"none",color:C.g500,fontSize:12,cursor:"pointer",padding:"2px 4px"}} title="Yeniden adlandır">✏️</button>
+                          <button onClick={(e)=>{e.stopPropagation();deleteProject(proj.id);}} style={{background:"transparent",border:"none",color:C.g500,fontSize:12,cursor:"pointer",padding:"2px 4px"}} title="Sil">🗑</button>
+                        </div>
+                      </div>
+                      <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                        {proj.craneType&&<span style={{fontSize:10,color:C.g500}}>{proj.craneType}</span>}
+                        {proj.boomLength&&<span style={{fontSize:10,color:C.g500}}>{proj.boomLength}m</span>}
+                        <span style={{fontSize:10,color:C.g500}}>{new Date(proj.updatedAt).toLocaleDateString("tr-TR",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* HEADER — quick actions always visible */}
       <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`2px solid ${C.yellow}`,padding:isMobile?"4px 8px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:isMobile?4:8,...(isMobile&&tab==="chart"?{position:"fixed",top:0,left:0,right:0,zIndex:50,height:44}:{})}}>
         <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
@@ -1570,7 +1717,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           <div style={{minWidth:0}}>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
               <span style={{fontSize:isMobile?16:24,fontWeight:900,letterSpacing:isMobile?3:5,color:C.yellow,fontFamily:F}}>Hangle</span>
-              {extProjectName&&<span style={{fontSize:isMobile?10:12,color:C.greenLight,fontFamily:F,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:isMobile?100:200}}>— {extProjectName}</span>}
+              {(currentProjectName||extProjectName)&&<span style={{fontSize:isMobile?10:12,color:C.greenLight,fontFamily:F,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:isMobile?100:200}}>— {currentProjectName||extProjectName}</span>}
             </div>
             {!isMobile&&<div style={{fontSize:9,color:C.greenLight,letterSpacing:2,fontFamily:F}}>VİNÇ PLANLAMA v5.3</div>}
           </div>
@@ -1580,14 +1727,14 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           {isMobile&&tab!=="chart"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>← Şema</button>}
           <button onClick={()=>setShowPDF(true)} style={{padding:isMobile?"6px 10px":"6px 14px",background:C.yellow,border:"none",borderRadius:8,color:C.greenDark,fontWeight:700,fontSize:isMobile?10:12,cursor:"pointer",fontFamily:F}}>📋 {isMobile?"PDF":"Kaldırma Planı"}</button>
           {!isMobile&&<button onClick={exportScreenshot} style={{padding:"6px 14px",background:C.g500+"80",border:`1px solid ${C.g400}40`,borderRadius:8,color:C.g200,fontWeight:600,fontSize:11,cursor:"pointer",fontFamily:F}}>📷 Ekran Görüntüsü</button>}
-          {onSave&&<button onClick={handleSave} style={{padding:isMobile?"6px 10px":"6px 14px",background:saveStatus==="saved"?C.greenLight+"30":C.g500+"80",border:`1px solid ${saveStatus==="saved"?C.greenLight:C.g400}40`,borderRadius:8,color:saveStatus==="saved"?C.greenLight:C.g200,fontWeight:600,fontSize:isMobile?10:11,cursor:"pointer",fontFamily:F}}>
+          <button onClick={handleSave} style={{padding:isMobile?"6px 10px":"6px 14px",background:saveStatus==="saved"?C.greenLight+"30":C.g500+"80",border:`1px solid ${saveStatus==="saved"?C.greenLight:C.g400}40`,borderRadius:8,color:saveStatus==="saved"?C.greenLight:C.g200,fontWeight:600,fontSize:isMobile?10:11,cursor:"pointer",fontFamily:F}}>
             {saveStatus==="saved"?"✅ Kaydedildi":saveStatus==="saving"?"⏳":"💾 Kaydet"}
-          </button>}
+          </button>
         </div>
         {!isMobile&&<nav style={{display:"flex",gap:3,background:C.greenDark,borderRadius:8,padding:3,width:"100%"}}>
           {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:t.id==="cranefinder"?`linear-gradient(135deg,${C.green},${C.greenLight})`:"transparent",color:tab===t.id?C.greenDark:t.id==="cranefinder"?"white":C.g300,fontWeight:tab===t.id||t.id==="cranefinder"?700:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>{t.icon} {t.label}</button>))}
           <div style={{flex:1}}/>
-          <button onClick={()=>{window.location.href="/dashboard";}} style={{padding:"8px 16px",border:"none",borderRadius:6,background:"transparent",color:C.g500,fontWeight:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>📁 Projelerim</button>
+          <button onClick={()=>setShowProjects(true)} style={{padding:"8px 16px",border:"none",borderRadius:6,background:showProjects?C.yellow:"transparent",color:showProjects?C.greenDark:C.g500,fontWeight:showProjects?700:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>📁 Projelerim</button>
         </nav>}
       </header>
 
@@ -1622,7 +1769,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               <div onClick={()=>setShowMobMenu(false)} style={{position:"absolute",inset:0,zIndex:25}}/>
               <div style={{position:"absolute",top:46,right:6,width:220,maxHeight:"calc(100% - 56px)",overflow:"auto",background:"rgba(10,31,18,0.96)",border:`1px solid ${C.green}40`,borderRadius:12,padding:6,zIndex:30,backdropFilter:"blur(12px)",touchAction:"auto",overscrollBehavior:"contain"}}>
                 {[
-                  {label:"Projelerim",icon:"📁",action:()=>{window.location.href="/dashboard";setShowMobMenu(false);}},
+                  {label:"Projelerim",icon:"📁",action:()=>{setShowProjects(true);setShowMobMenu(false);}},
                   {label:"Vinç Bul",icon:"🔍",action:()=>{setTab("cranefinder");setShowMobMenu(false);}},
                   {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
                   {label:"Kaldırma Planı",icon:"📋",action:()=>{setTab("liftplan");setShowMobMenu(false);}},
