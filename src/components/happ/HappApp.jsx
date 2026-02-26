@@ -964,14 +964,9 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       }
     }
 
-    // Info box (compact — no capacity display)
+    // Info box (desktop only — mobile uses full canvas)
     if(isMobile){
-      const mBoxH=32;
-      ctx.fillStyle=C.dark+"C0";ctx.fillRect(8,6,220,mBoxH);
-      ctx.strokeStyle=C.green+"30";ctx.lineWidth=1;ctx.strokeRect(8,6,220,mBoxH);
-      ctx.fillStyle=C.g200;ctx.font=`8px ${F}`;ctx.textAlign="left";
-      ctx.fillText(`${crane?.name||""} | ${cfg.boomLength}m @ ${cfg.boomAngle}°`,14,20);
-      ctx.fillText(`R: ${realRadius.toFixed(1)}m  Uç: ${realBoomTipH.toFixed(1)}m  Kanca: ${realHookH.toFixed(1)}m`,14,32);
+      // No info box on mobile — maximize canvas space
     } else {
     const boxH=68;
     ctx.fillStyle=C.dark+"D0";ctx.fillRect(10,10,260,boxH);
@@ -1570,10 +1565,13 @@ export default function App({onSave,initialData,projectName:extProjectName}){
 
       {/* HEADER — quick actions always visible */}
       <header style={{background:`linear-gradient(90deg,${C.greenDark},${C.green})`,borderBottom:`2px solid ${C.yellow}`,padding:isMobile?"4px 8px":"10px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:isMobile?4:8,...(isMobile&&tab==="chart"?{position:"fixed",top:0,left:0,right:0,zIndex:50,height:44}:{})}}>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
           <img src={LOGO_DATA} alt="Hangle" style={{width:isMobile?28:42,height:isMobile?28:42,borderRadius:8,objectFit:"contain",flexShrink:0}}/>
-          <div>
-            <div style={{fontSize:isMobile?16:24,fontWeight:900,letterSpacing:isMobile?3:5,color:C.yellow,fontFamily:F}}>Hangle</div>
+          <div style={{minWidth:0}}>
+            <div style={{display:"flex",alignItems:"center",gap:6}}>
+              <span style={{fontSize:isMobile?16:24,fontWeight:900,letterSpacing:isMobile?3:5,color:C.yellow,fontFamily:F}}>Hangle</span>
+              {extProjectName&&<span style={{fontSize:isMobile?10:12,color:C.greenLight,fontFamily:F,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:isMobile?100:200}}>— {extProjectName}</span>}
+            </div>
             {!isMobile&&<div style={{fontSize:9,color:C.greenLight,letterSpacing:2,fontFamily:F}}>VİNÇ PLANLAMA v5.3</div>}
           </div>
         </div>
@@ -1588,6 +1586,8 @@ export default function App({onSave,initialData,projectName:extProjectName}){
         </div>
         {!isMobile&&<nav style={{display:"flex",gap:3,background:C.greenDark,borderRadius:8,padding:3,width:"100%"}}>
           {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:t.id==="cranefinder"?`linear-gradient(135deg,${C.green},${C.greenLight})`:"transparent",color:tab===t.id?C.greenDark:t.id==="cranefinder"?"white":C.g300,fontWeight:tab===t.id||t.id==="cranefinder"?700:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>{t.icon} {t.label}</button>))}
+          <div style={{flex:1}}/>
+          <button onClick={()=>{window.location.href="/dashboard";}} style={{padding:"8px 16px",border:"none",borderRadius:6,background:"transparent",color:C.g500,fontWeight:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>📁 Projelerim</button>
         </nav>}
       </header>
 
@@ -1622,6 +1622,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               <div onClick={()=>setShowMobMenu(false)} style={{position:"absolute",inset:0,zIndex:25}}/>
               <div style={{position:"absolute",top:46,right:6,width:220,maxHeight:"calc(100% - 56px)",overflow:"auto",background:"rgba(10,31,18,0.96)",border:`1px solid ${C.green}40`,borderRadius:12,padding:6,zIndex:30,backdropFilter:"blur(12px)",touchAction:"auto",overscrollBehavior:"contain"}}>
                 {[
+                  {label:"Projelerim",icon:"📁",action:()=>{window.location.href="/dashboard";setShowMobMenu(false);}},
                   {label:"Vinç Bul",icon:"🔍",action:()=>{setTab("cranefinder");setShowMobMenu(false);}},
                   {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
                   {label:"Kaldırma Planı",icon:"📋",action:()=>{setTab("liftplan");setShowMobMenu(false);}},
@@ -1629,7 +1630,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                   {label:"Dışa Aktar",icon:"📤",action:()=>{setTab("export");setShowMobMenu(false);}},
                   {label:"Grafik Sıfırla",icon:"🗑️",action:()=>{if(window.confirm("Tüm nesneler ve cetveller silinecek. Emin misiniz?")){setObjects([]);setRulers([]);}setShowMobMenu(false);}},
                 ].map((item,i)=>(
-                  <button key={i} onClick={item.action} style={{width:"100%",padding:"10px 12px",background:"transparent",border:"none",borderBottom:i<5?`1px solid ${C.green}15`:"none",color:C.g200,fontSize:13,textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:8,fontFamily:FB}}>
+                  <button key={i} onClick={item.action} style={{width:"100%",padding:"10px 12px",background:"transparent",border:"none",borderBottom:i<6?`1px solid ${C.green}15`:"none",color:C.g200,fontSize:13,textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:8,fontFamily:FB}}>
                     <span style={{fontSize:15}}>{item.icon}</span>{item.label}
                   </button>
                 ))}
@@ -1658,9 +1659,8 @@ export default function App({onSave,initialData,projectName:extProjectName}){
             </>)}
           </div>
 
-          {/* BOTTOM VALUE BAR - Crangle style */}
-          {selObjData?(
-            /* Object selected mode */
+          {/* BOTTOM BAR — only when object selected */}
+          {selObjData&&(
             <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"4px 4px",paddingBottom:"max(4px, env(safe-area-inset-bottom, 0px))",flexShrink:0}}>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr auto",gap:3,alignItems:"center"}}>
                 <div style={{textAlign:"center"}}>
@@ -1684,40 +1684,6 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                   <button onClick={()=>delObj(selObj)} style={{width:36,height:32,borderRadius:6,border:"1px solid #ccc",background:"white",fontSize:13,cursor:"pointer",color:"#d00"}}>🗑</button>
                 </div>
               </div>
-            </div>
-          ):(
-            /* Default: crane values — Crangle style 6-cell grid */
-            <div style={{background:"#f5f5f5",borderTop:"2px solid #ddd",padding:"3px 3px",paddingBottom:"max(3px, env(safe-area-inset-bottom, 0px))",flexShrink:0}}>
-              {(()=>{
-                const firstObj=objects[0];
-                return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:1}}>
-                {[
-                  {label:"Bom Uz.",value:cfg.boomLength,unit:"m",key:"boomLength",min:5,max:cfg.maxBoom||crane?.defBoom||100,step:0.5},
-                  {label:"Yarıçap",value:realRadius,unit:"m",readonly:true},
-                  {label:firstObj?"Nesne Y.":"Uç Yük.",value:firstObj?firstObj.h:realBoomTipH,unit:"m",readonly:true},
-                ].map((v,i)=>(
-                  <div key={i} style={{textAlign:"center"}}>
-                    <div style={{fontSize:9,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
-                    {v.readonly?
-                      <div style={{fontSize:14,fontWeight:700,color:"#333",fontFamily:F,padding:"2px 0"}}>{fmtTR(v.value,1)}{v.unit}</div>:
-                      <MobNum value={v.value} onChange={val=>up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
-                    }
-                  </div>
-                ))}
-                {[
-                  {label:"Bom Açı",value:cfg.boomAngle,unit:"°",key:"boomAngle",min:0,max:85,step:1},
-                  {label:"Uç Yük.",value:realBoomTipH,unit:"m",readonly:true},
-                  {label:firstObj?"Nesne M.":"Kanca Y.",value:firstObj?firstObj.x:realHookH,unit:"m",readonly:true},
-                ].map((v,i)=>(
-                  <div key={i+3} style={{textAlign:"center"}}>
-                    <div style={{fontSize:9,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
-                    {v.readonly?
-                      <div style={{fontSize:14,fontWeight:700,color:v.color||"#333",fontFamily:F,padding:"2px 0"}}>{v.value!==null?fmtTR(v.value,v.unit==="°"?0:1):"—"}{v.value!==null?v.unit:""}</div>:
-                      <MobNum value={v.value} onChange={val=>up({[v.key]:clamp(val,v.min,v.max)})} step={v.step}/>
-                    }
-                  </div>
-                ))}
-              </div>})()}
             </div>
           )}
         </div>
