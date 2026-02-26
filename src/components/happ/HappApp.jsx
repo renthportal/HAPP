@@ -199,6 +199,7 @@ const SKINS=[
 
 const TABS=[
   {id:"chart",label:"Menzil Şeması",icon:"📐"},
+  {id:"cranefinder",label:"Vinç Bul",icon:"🔍"},
   {id:"cranes",label:"Vinç Yönetimi",icon:"🏗️"},
   {id:"liftplan",label:"Kaldırma Planı",icon:"📋"},
   {id:"calc",label:"Hesaplamalar",icon:"🧮"},
@@ -963,31 +964,16 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       }
     }
 
-    // Capacity from parent (chart or manual only — no formula)
-    const capVal=finalCap;
-    const capSource=extCapSource||"none";
-
-    // Info box
-    const hasCap=capVal!==null&&capVal!==undefined&&capVal>0;
+    // Info box (compact — no capacity display)
     if(isMobile){
-      // Compact mobile info box
-      const mBoxH=hasCap?48:56;
+      const mBoxH=32;
       ctx.fillStyle=C.dark+"C0";ctx.fillRect(8,6,220,mBoxH);
       ctx.strokeStyle=C.green+"30";ctx.lineWidth=1;ctx.strokeRect(8,6,220,mBoxH);
       ctx.fillStyle=C.g200;ctx.font=`8px ${F}`;ctx.textAlign="left";
       ctx.fillText(`${crane?.name||""} | ${cfg.boomLength}m @ ${cfg.boomAngle}°`,14,20);
-      if(hasCap){
-        ctx.fillStyle=capSource==="chart"?C.greenLight:C.cyan;
-        ctx.fillText(`Kap: ${capVal.toFixed(1)}t ${capSource==="chart"?"(tablodan)":"(elle)"}`,14,34);
-        if(derating!==undefined&&derating<1){ctx.fillStyle=C.orange;ctx.fillText(`Drt: ×${derating.toFixed(2)}`,14,46);}
-      } else {
-        ctx.fillStyle=C.orange;ctx.font=`bold 8px ${F}`;
-        ctx.fillText("Kapasite: — (Tablo seçin)",14,34);
-        ctx.fillStyle=C.g400;ctx.font=`7px ${F}`;
-        ctx.fillText("Menü (☰) → Yük Tablosu",14,46);
-      }
+      ctx.fillText(`R: ${realRadius.toFixed(1)}m  Uç: ${realBoomTipH.toFixed(1)}m  Kanca: ${realHookH.toFixed(1)}m`,14,32);
     } else {
-    const boxH=extChartMismatch?118:!hasCap?100:derating&&derating<1?108:90;
+    const boxH=68;
     ctx.fillStyle=C.dark+"D0";ctx.fillRect(10,10,260,boxH);
     ctx.strokeStyle=C.green+"40";ctx.lineWidth=1;ctx.strokeRect(10,10,260,boxH);
     ctx.fillStyle=C.yellow;ctx.font=`bold 11px ${F}`;ctx.textAlign="left";
@@ -996,34 +982,20 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
     ctx.fillText(`${crane?.name||""}`,70,28);
     ctx.fillText(`Boom: ${cfg.boomLength}m @ ${cfg.boomAngle}°`,18,44);
     ctx.fillText(`Menzil: ${realRadius.toFixed(1)}m  Uç: ${realBoomTipH.toFixed(1)}m  Kanca: ${realHookH.toFixed(1)}m`,18,58);
-    if(hasCap){
-      ctx.fillText(`Kapasite: ${capVal.toFixed(1)}t`,18,72);
-      if(derating!==undefined&&derating<1){
-        ctx.fillStyle=C.orange;ctx.fillText(`Derating: ×${derating.toFixed(2)} (outrigger/CW/rüzgar)`,18,86);
-      }
-      const srcY=derating&&derating<1?100:86;
-      if(capSource==="chart"){ctx.fillStyle=C.greenLight;ctx.fillText("✓ Yük Tablosundan",18,srcY);}
-      else if(capSource==="manual"){ctx.fillStyle=C.cyan;ctx.fillText("✎ Elle Girildi",18,srcY);}
-    } else {
-      ctx.fillStyle=C.orange;ctx.font=`bold 9px ${F}`;
-      ctx.fillText("Kapasite: — (Tablo seçin veya elle girin)",18,72);
-      ctx.fillStyle=C.g400;ctx.font=`8px ${F}`;
-      ctx.fillText("Sol panel → Yük Tablosu veya Elle Kapasite",18,86);
-    }
-    } // end desktop info box
+    if(cfg.jibEnabled){ctx.fillStyle=C.orange;ctx.fillText(`Jib: ${cfg.jibLength}m @ ${cfg.jibAngle}°`,18,72);}
+    } // end info box
 
     // Status bar (desktop only — mobile has bottom bar)
     if(!isMobile){
     const barY=h-22;
     ctx.fillStyle=C.dark+"E0";ctx.fillRect(0,barY,w,22);
     ctx.fillStyle=C.g300;ctx.font=`9px ${F}`;ctx.textAlign="left";
-    const items=[`${crane?.name}`,`Boom: ${cfg.boomLength}m @ ${cfg.boomAngle}°`,`R: ${realRadius.toFixed(1)}m`,`Uç: ${realBoomTipH.toFixed(1)}m`,`Kanca: ${realHookH.toFixed(1)}m`,hasCap?`Kap: ${capVal.toFixed(1)}t`:`Kap: —`];
+    const items=[`${crane?.name}`,`Boom: ${cfg.boomLength}m @ ${cfg.boomAngle}°`,`R: ${realRadius.toFixed(1)}m`,`Uç: ${realBoomTipH.toFixed(1)}m`,`Kanca: ${realHookH.toFixed(1)}m`];
     items.forEach((item,i)=>{
       const badge=i===1;
       ctx.fillStyle=badge?C.yellow:C.g300;
       ctx.fillText(item,10+i*140,barY+14);
     });
-    // Interaction hint
     ctx.textAlign="right";ctx.fillStyle=C.g500;
     ctx.fillText("Gövde=Açı | Uç=Uzunluk | Nesne=Taşı/Boyut/Döndür",w-10,barY+14);
     }
@@ -1614,8 +1586,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           </button>}
         </div>
         {!isMobile&&<nav style={{display:"flex",gap:3,background:C.greenDark,borderRadius:8,padding:3,width:"100%"}}>
-          {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:"transparent",color:tab===t.id?C.greenDark:C.g300,fontWeight:tab===t.id?700:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>{t.icon} {t.label}</button>))}
-          <button onClick={navigateToCraneFinder} style={{padding:"8px 16px",border:"none",borderRadius:6,background:`linear-gradient(135deg,${C.green},${C.greenLight})`,color:"white",fontWeight:800,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap",marginLeft:"auto"}}>🔍 Vinç Bul</button>
+          {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:t.id==="cranefinder"?`linear-gradient(135deg,${C.green},${C.greenLight})`:"transparent",color:tab===t.id?C.greenDark:t.id==="cranefinder"?"white":C.g300,fontWeight:tab===t.id||t.id==="cranefinder"?700:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>{t.icon} {t.label}</button>))}
         </nav>}
       </header>
 
@@ -1650,7 +1621,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               <div onClick={()=>setShowMobMenu(false)} style={{position:"absolute",inset:0,zIndex:25}}/>
               <div style={{position:"absolute",top:46,right:6,width:220,maxHeight:"calc(100% - 56px)",overflow:"auto",background:"rgba(10,31,18,0.96)",border:`1px solid ${C.green}40`,borderRadius:12,padding:6,zIndex:30,backdropFilter:"blur(12px)",touchAction:"auto",overscrollBehavior:"contain"}}>
                 {[
-                  {label:"Vinç Bul",icon:"🔍",action:()=>{navigateToCraneFinder();}},
+                  {label:"Vinç Bul",icon:"🔍",action:()=>{setTab("cranefinder");setShowMobMenu(false);}},
                   {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
                   {label:"Kaldırma Planı",icon:"📋",action:()=>{setTab("liftplan");setShowMobMenu(false);}},
                   {label:"Hesaplamalar",icon:"🔢",action:()=>{setTab("calc");setShowMobMenu(false);}},
@@ -1661,50 +1632,16 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                     <span style={{fontSize:15}}>{item.icon}</span>{item.label}
                   </button>
                 ))}
-                {/* Crane selector */}
+                {/* Vinç Tipi */}
                 <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
-                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Filo Vinci</div>
-                  {fleetCranes.length>0?(<>
-                    <select value={selFleetId} onChange={e=>{setSelFleetId(e.target.value);setSelCfgId("");}} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.yellow,fontSize:11,fontFamily:F}}>
-                      <option value="">— Vinç seçin —</option>
-                      {fleetCranes.map(fc=><option key={fc.id} value={fc.id}>{fc.name}</option>)}
-                    </select>
-                    {selFleetId&&(()=>{
-                      const fc=fleetCranes.find(c=>c.id===selFleetId);
-                      const cfgs=fc?.configs||[];
-                      return cfgs.length>0?<select value={selCfgId} onChange={e=>{setSelCfgId(e.target.value);setShowMobMenu(false);}} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.greenLight,fontSize:11,fontFamily:F,marginTop:4}}>
-                        <option value="">— Konfig —</option>
-                        {cfgs.map(cf=><option key={cf.id} value={cf.id}>{cf.name}</option>)}
-                      </select>:null;
-                    })()}
-                  </>):<button onClick={()=>{setTab("cranes");setShowMobMenu(false);}} style={{width:"100%",padding:"8px",background:C.yellow+"20",border:`1px solid ${C.yellow}40`,borderRadius:6,color:C.yellow,fontSize:11,fontFamily:F,cursor:"pointer"}}>Vinç Yönetimi'ne Git</button>}
-                </div>
-                {/* Load chart selector */}
-                <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
-                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Yük Tablosu</div>
-                  <select value={cfg.chartId||""} onChange={e=>{up({chartId:e.target.value});setShowMobMenu(false);}} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:capSource==="chart"?C.greenLight:C.g300,fontSize:13,fontFamily:F}}>
-                    <option value="">Tablo seçilmedi</option>
-                    {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name}</option>)}
-                  </select>
-                  {cfg.chartId&&<div style={{fontSize:10,color:C.greenLight,marginTop:3}}>✓ Aktif</div>}
-                  <div style={{display:"flex",gap:4,marginTop:4}}>
-                    <label style={{flex:1,display:"block",padding:"6px 8px",background:C.g500+"40",borderRadius:4,color:C.g200,fontWeight:600,fontSize:10,textAlign:"center",cursor:"pointer",fontFamily:F}}>
-                      📄 CSV Yükle
-                      <input type="file" accept=".csv,.txt" onChange={e=>{importChartCSV(e);setShowMobMenu(false);}} style={{display:"none"}}/>
-                    </label>
-                    {cfg.chartId&&customCharts[cfg.chartId]&&!customCharts[cfg.chartId].isPreset&&!LOAD_CHARTS[cfg.chartId]&&<button onClick={()=>deleteChart(cfg.chartId)} style={{flex:1,padding:"6px 8px",background:"#c4444440",border:"none",borderRadius:4,color:"#f88",fontWeight:600,fontSize:10,cursor:"pointer",fontFamily:F}}>🗑 Tabloyu Sil</button>}
-                  </div>
-                </div>
-                {/* Load shape & sling config */}
-                <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
-                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Tema</div>
-                  <select value={cfg.skinId} onChange={e=>{up({skinId:e.target.value});}} style={{width:"100%",padding:6,background:C.dark,border:`1px solid ${C.green}30`,borderRadius:4,color:C.g200,fontSize:10,fontFamily:F}}>
-                    {SKINS.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Vinç Tipi</div>
+                  <select value={cfg.craneType} onChange={e=>{up({craneType:e.target.value});setShowMobMenu(false);}} style={{width:"100%",padding:"8px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.yellow,fontSize:11,fontFamily:F}}>
+                    {CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name}</option>)}
                   </select>
                 </div>
                 {/* Yük & Koşullar */}
                 <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
-                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Yük & Koşullar</div>
+                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Yük Ağırlığı</div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
                     <div>
                       <div style={{fontSize:10,color:"#999"}}>Yük (t)</div>
@@ -1713,50 +1650,6 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                     <div>
                       <div style={{fontSize:10,color:"#999"}}>Rüzgar (km/h)</div>
                       <MobNum value={cfg.windSpeed} onChange={v=>up({windSpeed:clamp(v,0,100)})} step={1} style={{fontSize:14,padding:"4px 2px"}}/>
-                    </div>
-                  </div>
-                  {!activeChart&&<div style={{marginTop:4}}>
-                    <div style={{fontSize:10,color:C.cyan}}>Elle Kapasite (t)</div>
-                    <MobNum value={cfg.manualCap} onChange={v=>up({manualCap:clamp(v,0,9999)})} step={0.5} style={{fontSize:14,padding:"4px 2px",borderColor:C.cyan}}/>
-                  </div>}
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,marginTop:4}}>
-                    <div>
-                      <div style={{fontSize:10,color:"#999"}}>Outrigger</div>
-                      <select value={cfg.outriggerSpread||"full"} onChange={e=>up({outriggerSpread:e.target.value})} style={{width:"100%",padding:"8px 6px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:11,fontFamily:F}}>
-                        <option value="full">Tam</option><option value="75">%75</option><option value="50">%50</option><option value="0">Kapalı</option>
-                      </select>
-                    </div>
-                    <div>
-                      <div style={{fontSize:10,color:"#999"}}>Karşı Ağ.</div>
-                      <select value={cfg.cwConfig||"full"} onChange={e=>up({cwConfig:e.target.value})} style={{width:"100%",padding:"8px 6px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:11,fontFamily:F}}>
-                        <option value="full">Tam</option><option value="half">Yarım</option><option value="none">Yok</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                {/* Yük & Sapan */}
-                <div style={{padding:"6px 8px",borderTop:`1px solid ${C.green}20`}}>
-                  <div style={{fontSize:10,color:C.g500,marginBottom:4}}>Yük Şekli & Sapan</div>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
-                    <div>
-                      <div style={{fontSize:10,color:"#999"}}>Yük Şekli</div>
-                      <select value={cfg.loadShape} onChange={e=>up({loadShape:e.target.value})} style={{width:"100%",padding:"8px 6px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:11,fontFamily:F}}>
-                        {LOAD_SHAPES.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <div style={{fontSize:10,color:"#999"}}>Sapan Tipi</div>
-                      <select value={cfg.slingType} onChange={e=>{const st=SLING_TYPES.find(s=>s.id===e.target.value);up({slingType:e.target.value,slingLegs:st?.legs||2});}} style={{width:"100%",padding:"8px 6px",background:C.dark,border:`1px solid ${C.green}30`,borderRadius:6,color:C.g200,fontSize:11,fontFamily:F}}>
-                        {SLING_TYPES.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <div style={{fontSize:10,color:"#999"}}>Yük G.(m)</div>
-                      <MobNum value={cfg.loadW} onChange={v=>up({loadW:clamp(v,0.5,20)})} step={0.5} style={{fontSize:13,padding:"4px 2px"}}/>
-                    </div>
-                    <div>
-                      <div style={{fontSize:10,color:"#999"}}>Yük Y.(m)</div>
-                      <MobNum value={cfg.loadH} onChange={v=>up({loadH:clamp(v,0.5,20)})} step={0.5} style={{fontSize:13,padding:"4px 2px"}}/>
                     </div>
                   </div>
                 </div>
@@ -1813,7 +1706,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                 {[
                   {label:"Bom Açı",value:cfg.boomAngle,unit:"°",key:"boomAngle",min:0,max:85,step:1},
                   {label:"Uç Yük.",value:realBoomTipH,unit:"m",readonly:true},
-                  {label:firstObj?"Nesne M.":"Kapasite",value:firstObj?firstObj.x:(cap!==null?cap:null),unit:firstObj?"m":"t",readonly:true,color:!firstObj&&cap===null?"#999":undefined},
+                  {label:firstObj?"Nesne M.":"Kanca Y.",value:firstObj?firstObj.x:realHookH,unit:"m",readonly:true},
                 ].map((v,i)=>(
                   <div key={i+3} style={{textAlign:"center"}}>
                     <div style={{fontSize:9,color:"#999",lineHeight:1,marginBottom:1}}>{v.label}</div>
@@ -1834,57 +1727,36 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           <div style={{width:290,overflow:"auto",padding:12,background:C.dark+"80",borderRight:`1px solid ${C.green}15`}}>
             {/* ── TEMEL: Her zaman görünür ── */}
             
-            {/* Vinç + Konfigürasyon */}
+            {/* Vinç Tipi */}
             <Card>
-              <Title>Vinç Seçimi</Title>
-              {fleetCranes.length>0?(<>
-                <Lbl>Filo Vinci</Lbl>
-                <Sel value={selFleetId} onChange={v=>{setSelFleetId(v);setSelCfgId("");}}>
-                  <option value="">— Vinç seçin —</option>
-                  {fleetCranes.map(fc=><option key={fc.id} value={fc.id}>{fc.name}{fc.max_capacity?` (${fc.max_capacity}t)`:""}</option>)}
-                </Sel>
-                {selFleetId&&(()=>{
-                  const fc=fleetCranes.find(c=>c.id===selFleetId);
-                  const cfgs=fc?.configs||[];
-                  return cfgs.length>0?(<>
-                    <div style={{marginTop:6}}><Lbl>Konfigürasyon</Lbl></div>
-                    <Sel value={selCfgId} onChange={v=>setSelCfgId(v)}>
-                      <option value="">— Konfig seçin —</option>
-                      {cfgs.map(cf=><option key={cf.id} value={cf.id}>{cf.name}{cf.counterweight?` (CW: ${cf.counterweight})`:""}</option>)}
-                    </Sel>
-                    {selCfgId&&(()=>{
-                      const cf=cfgs.find(c=>c.id===selCfgId);
-                      return cf?<div style={{fontSize:10,color:C.greenLight,marginTop:4,fontWeight:600}}>
-                        ✓ {cf.name}{cf.load_chart_id&&allCharts[cf.load_chart_id]?" · Yük tablosu aktif":" · Yük tablosu yok"}
-                      </div>:null;
-                    })()}
-                  </>):<div style={{fontSize:10,color:C.orange,marginTop:6}}>⚠ Bu vinçte konfigürasyon yok. Vinç Yönetimi'nden ekleyin.</div>;
-                })()}
-              </>):(<>
-                <div style={{fontSize:10,color:C.g400,marginBottom:6}}>Henüz filo vinci eklenmemiş.</div>
-                <Btn small color={C.yellow} onClick={()=>setTab("cranes")} style={{color:"#000"}}>Vinç Yönetimi'ne Git</Btn>
-              </>)}
-              <div style={{marginTop:8,paddingTop:8,borderTop:`1px solid ${C.g500}20`}}>
-                <Lbl>Yük Tablosu</Lbl>
-                <Sel value={cfg.chartId} onChange={v=>up({chartId:v})}>
-                  <option value="">Tablo seçilmedi</option>
-                  {Object.entries(allCharts).map(([k,ch])=><option key={k} value={k}>{ch.name} ({ch.maxCap}t)</option>)}
-                </Sel>
-                {cfg.chartId&&<div style={{fontSize:10,color:C.greenLight,marginTop:4,fontWeight:600}}>✓ Gerçek yük tablosu aktif</div>}
-                {!cfg.chartId&&<div style={{fontSize:10,color:C.g400,marginTop:4}}>Kapasite elle girilecek ↓</div>}
-              </div>
-              <div style={{marginTop:6,paddingTop:6,borderTop:`1px solid ${C.g500}20`}}>
-                <Lbl>Vinç Tipi (SVG)</Lbl>
-                <Sel value={cfg.craneType} onChange={v=>up({craneType:v})}>{CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name}</option>)}</Sel>
-              </div>
+              <Title>Vinç Tipi</Title>
+              <Sel value={cfg.craneType} onChange={v=>up({craneType:v})}>{CRANES.map(c2=><option key={c2.id} value={c2.id}>{c2.name}</option>)}</Sel>
             </Card>
 
-            {/* Boom — en çok kullanılan ayar */}
+            {/* Boom — Uzunluk / Uzaklık / Açı (entegre & dinamik) */}
             <Card>
               <Title>Boom Ayarları</Title>
-              <Row><Lbl>Uzunluk (m)</Lbl><Num value={cfg.boomLength} onChange={v=>up({boomLength:v})} min={5} max={200}/></Row>
+              <Row><Lbl>Uzunluk (m)</Lbl><Num value={cfg.boomLength} onChange={v=>{
+                // Uzunluk değiştiğinde açı sabit kalır, uzaklık güncellenir
+                up({boomLength:clamp(v,5,200)});
+              }} min={5} max={200}/></Row>
               <Sli value={cfg.boomLength} min={5} max={200} onChange={v=>up({boomLength:v})}/>
-              <Row><Lbl>Açı (°)</Lbl><Num value={cfg.boomAngle} onChange={v=>up({boomAngle:v})} min={0} max={85}/></Row>
+              <Row><Lbl>Uzaklık (m)</Lbl><Num value={parseFloat(realRadius.toFixed(1))} onChange={v=>{
+                // Uzaklık değiştiğinde uzunluk sabit kalır, açı güncellenir
+                const targetR=clamp(v,0,cfg.boomLength+cfg.pivotDist);
+                const cosA=(targetR-cfg.pivotDist)/cfg.boomLength;
+                const newAngle=cosA>=-1&&cosA<=1?clamp(Math.round(toDeg(Math.acos(cosA))),0,85):cfg.boomAngle;
+                up({boomAngle:newAngle});
+              }} min={0} max={200} step={0.5}/></Row>
+              <Sli value={realRadius} min={0} max={Math.max(cfg.boomLength+cfg.pivotDist,50)} onChange={v=>{
+                const cosA=(v-cfg.pivotDist)/cfg.boomLength;
+                const newAngle=cosA>=-1&&cosA<=1?clamp(Math.round(toDeg(Math.acos(cosA))),0,85):cfg.boomAngle;
+                up({boomAngle:newAngle});
+              }} color={C.cyan}/>
+              <Row><Lbl>Açı (°)</Lbl><Num value={cfg.boomAngle} onChange={v=>{
+                // Açı değiştiğinde uzunluk sabit kalır, uzaklık güncellenir
+                up({boomAngle:clamp(v,0,85)});
+              }} min={0} max={85}/></Row>
               <Sli value={cfg.boomAngle} min={0} max={85} onChange={v=>up({boomAngle:v})} color={C.greenLight}/>
               <Row><Lbl>Jib Aktif</Lbl><input type="checkbox" checked={cfg.jibEnabled} onChange={e=>up({jibEnabled:e.target.checked})} style={{width:18,height:18,cursor:"pointer"}}/></Row>
               {cfg.jibEnabled&&(<>
@@ -1900,56 +1772,14 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               <Title>Yük Bilgileri</Title>
               <Row><Lbl>Yük Ağırlığı (t)</Lbl><Num value={cfg.loadWeight} onChange={v=>up({loadWeight:v})} min={0} max={999} step={0.5}/></Row>
               <Row><Lbl>Rüzgar (km/h)</Lbl><Num value={cfg.windSpeed} onChange={v=>up({windSpeed:v})} min={0} max={100}/></Row>
-              {!activeChart&&<>
-                <div style={{marginTop:8,padding:8,background:C.cyan+"10",borderRadius:6,border:`1px solid ${C.cyan}25`}}>
-                  <div style={{fontSize:11,fontWeight:700,color:C.cyan,marginBottom:4}}>Elle Kapasite (t)</div>
-                  <Num value={cfg.manualCap} onChange={v=>up({manualCap:v})} min={0} max={9999} step={0.5} style={{width:"100%"}}/>
-                </div>
-              </>}
             </Card>
 
-            {/* Outrigger/CW — bilgi */}
-            <Card>
-              <Row><Lbl>Outrigger</Lbl>
-                <Sel value={cfg.outriggerSpread||"full"} onChange={v=>up({outriggerSpread:v})} style={{width:140,padding:"6px 8px",fontSize:11}}>
-                  <option value="full">Tam Açık</option><option value="75">%75</option><option value="50">%50</option><option value="0">Kapalı</option>
-                </Sel>
-              </Row>
-              <Row><Lbl>Karşı Ağırlık</Lbl>
-                <Sel value={cfg.cwConfig||"full"} onChange={v=>up({cwConfig:v})} style={{width:140,padding:"6px 8px",fontSize:11}}>
-                  <option value="full">Tam</option><option value="half">Yarım</option><option value="none">Yok</option>
-                </Sel>
-              </Row>
-              <div style={{fontSize:9,color:C.g500,marginTop:2}}>Bilgi amaçlı — doğru tablo sayfasını seçin</div>
-            </Card>
 
-            {/* ── DETAY: Varsayılan kapalı ── */}
-            <Card title="Detaylı Ayarlar" collapsed={!detailOpen} onToggle={()=>setDetailOpen(!detailOpen)}>
-              {/* Max boom */}
-              <Row><Lbl>Max Boom (m)</Lbl><Num value={cfg.maxBoom} onChange={v=>up({maxBoom:v})} min={10} max={200}/></Row>
+            {/* Vinç Bul butonu */}
+            <div style={{marginTop:8}}>
+              <Btn onClick={()=>setTab("cranefinder")} color={C.yellow} style={{width:"100%",padding:12,fontSize:12,color:"#000",fontWeight:800}}>🔍 Vinç Bul</Btn>
+            </div>
               {/* Crane geometry — auto from crane type, read-only display */}
-              <div style={{marginTop:8,marginBottom:4,fontSize:10,fontWeight:700,color:C.g400}}>Vinç Geometrisi (otomatik)</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:4,fontSize:10,color:C.g500}}>
-                <div>Pivot Y: {cfg.pivotHeight}m</div>
-                <div>Pivot M: {cfg.pivotDist}m</div>
-                <div>Vinç Sonu: {cfg.craneEnd}m</div>
-              </div>
-              <Row style={{marginTop:4}}><Lbl>Karşı Ağırlık (t)</Lbl><Num value={cfg.counterweight} onChange={v=>up({counterweight:v})} min={0} max={200}/></Row>
-              {/* Colors */}
-              <div style={{marginTop:8,marginBottom:4,fontSize:10,fontWeight:700,color:C.g400}}>Boom & Jib Renkleri</div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                {Object.entries(craneColors).map(([part,color])=>(
-                  <div key={part} onClick={()=>setColorEditPart(colorEditPart===part?null:part)} 
-                    style={{padding:"4px 8px",borderRadius:6,background:colorEditPart===part?C.yellow+"30":C.dark,border:`2px solid ${color}`,cursor:"pointer",fontSize:9,color:C.g300}}>
-                    {part}
-                  </div>
-                ))}
-              </div>
-              {colorEditPart&&<input type="color" value={craneColors[colorEditPart]} onChange={e=>setCraneColors(p=>({...p,[colorEditPart]:e.target.value}))} style={{width:"100%",height:32,border:"none",borderRadius:6,cursor:"pointer",marginTop:6}}/>}
-              {/* Skin */}
-              <div style={{marginTop:8,marginBottom:4,fontSize:10,fontWeight:700,color:C.g400}}>Tema</div>
-              <Sel value={cfg.skinId} onChange={v=>up({skinId:v})}>{SKINS.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</Sel>
-            </Card>
           </div>
 
           {/* CENTER: CANVAS */}
@@ -2011,34 +1841,6 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               )}
             </Card>
 
-            {/* Capacity Table */}
-            <Card>
-              <Title color={capSource==="chart"?C.greenLight:C.g500}>Kapasite Tablosu</Title>
-              {capSource!=="chart"?<div style={{fontSize:9,color:C.g400,textAlign:"center",padding:12}}>Yük tablosu seçildiğinde burada kapasite verileri görünür</div>:(
-              <div style={{maxHeight:200,overflow:"auto"}}>
-                <table style={{width:"100%",fontSize:9,borderCollapse:"collapse"}}>
-                  <thead><tr><th style={{textAlign:"left",color:C.g400,padding:2}}>Menzil</th><th style={{textAlign:"right",color:C.g400,padding:2}}>Kapasite</th></tr></thead>
-                  <tbody>{(()=>{const maxR=Math.ceil(cfg.boomLength*1.2);const step=maxR>60?10:maxR>30?5:2.5;const radii=[];for(let r=step;r<=maxR;r+=step)radii.push(Math.round(r*10)/10);return radii;})().map(r=>{
-                    const c2=lookupChart(activeChart,cfg.boomLength,r);
-                    const isNear=Math.abs(r-realRadius)<2.5;
-                    return c2!==null?<tr key={r} style={{background:isNear?C.yellow+"15":"transparent"}}><td style={{padding:"2px 4px",color:isNear?C.yellow:C.g300}}>{r}m</td><td style={{padding:"2px 4px",textAlign:"right",color:c2<cfg.loadWeight?C.red:C.greenLight,fontWeight:isNear?700:400}}>{c2.toFixed(1)}t</td></tr>:null;
-                  })}</tbody>
-                </table>
-              </div>)}
-            </Card>
-
-            {/* Safety */}
-            <Card>
-              <Title>Güvenlik</Title>
-              {cap!==null?
-                <Row><Lbl>Kapasite</Lbl><span style={{fontSize:10,color:cap>=cfg.loadWeight?C.greenLight:C.red,fontWeight:600}}>{cap>=cfg.loadWeight?"✅":"❌"} {cap.toFixed(1)}t {cap>=cfg.loadWeight?"≥":"<"} {cfg.loadWeight}t</span></Row>
-                :<Row><Lbl>Kapasite</Lbl><span style={{fontSize:10,color:C.orange,fontWeight:600}}>— Tablo veya elle giriş gerekli</span></Row>
-              }
-              <Row><Lbl>Rüzgar</Lbl><span style={{fontSize:10,color:cfg.windSpeed<50?C.greenLight:C.red,fontWeight:600}}>{cfg.windSpeed<50?"✅":"❌"} {cfg.windSpeed} km/h</span></Row>
-              <Row><Lbl>Sapan Açısı</Lbl><span style={{fontSize:10,color:calcSlingAngle(cfg.slingLength,cfg.loadW,cfg.slingLegs)<=45?C.greenLight:C.red,fontWeight:600}}>{calcSlingAngle(cfg.slingLength,cfg.loadW,cfg.slingLegs)<=45?"✅":"❌"} {calcSlingAngle(cfg.slingLength,cfg.loadW,cfg.slingLegs).toFixed(0)}°</span></Row>
-              <Row><Lbl>Outrigger</Lbl><span style={{fontSize:10,color:C.g300}}>{cfg.outriggerSpread==="full"?"Tam":cfg.outriggerSpread==="75"?"75%":cfg.outriggerSpread==="50"?"50%":"Kapalı"}</span></Row>
-              <Row><Lbl>Karşı Ağ.</Lbl><span style={{fontSize:10,color:C.g300}}>{cfg.cwConfig==="full"?"Tam":cfg.cwConfig==="half"?"Yarım":"Yok"}</span></Row>
-            </Card>
 
             {/* Yük & Sapan Görseli */}
             <Card>
@@ -2061,6 +1863,75 @@ export default function App({onSave,initialData,projectName:extProjectName}){
           </div>
         </div>
         )
+      )}
+
+      {/* ═══ CRANE FINDER TAB ═══ */}
+      {tab==="cranefinder"&&(
+        <div style={{maxWidth:900,margin:"0 auto",padding:20}}>
+          <Card>
+            <Title>Vinç Bul — Mevcut Konfigürasyona Göre</Title>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:12,marginBottom:16,padding:12,background:C.dark,borderRadius:8,border:`1px solid ${C.green}20`}}>
+              <div><div style={{fontSize:9,color:C.g500}}>Vinç Tipi</div><div style={{fontSize:13,fontWeight:700,color:C.yellow,fontFamily:F}}>{crane?.name||"—"}</div></div>
+              <div><div style={{fontSize:9,color:C.g500}}>Boom</div><div style={{fontSize:13,fontWeight:700,color:C.g200,fontFamily:F}}>{cfg.boomLength}m @ {cfg.boomAngle}°</div></div>
+              <div><div style={{fontSize:9,color:C.g500}}>Menzil / Uç Yükseklik</div><div style={{fontSize:13,fontWeight:700,color:C.cyan,fontFamily:F}}>{realRadius.toFixed(1)}m / {realBoomTipH.toFixed(1)}m</div></div>
+              <div><div style={{fontSize:9,color:C.g500}}>Yük Ağırlığı</div><div style={{fontSize:13,fontWeight:700,color:C.orange,fontFamily:F}}>{cfg.loadWeight}t</div></div>
+              {cfg.jibEnabled&&<div><div style={{fontSize:9,color:C.g500}}>Jib</div><div style={{fontSize:13,fontWeight:700,color:C.orange,fontFamily:F}}>{cfg.jibLength}m @ {cfg.jibAngle}°</div></div>}
+              <div><div style={{fontSize:9,color:C.g500}}>Kanca Yüksekliği</div><div style={{fontSize:13,fontWeight:700,color:C.greenLight,fontFamily:F}}>{realHookH.toFixed(1)}m</div></div>
+            </div>
+          </Card>
+
+          {/* Fleet crane results */}
+          <Card>
+            <Title>Filo Vinçleriniz</Title>
+            {fleetLoading?<div style={{textAlign:"center",padding:20,color:C.g400}}>Yükleniyor...</div>:
+            fleetCranes.length===0?<div style={{textAlign:"center",padding:20}}>
+              <div style={{color:C.g400,marginBottom:8}}>Henüz filo vinci eklenmemiş.</div>
+              <Btn onClick={()=>setTab("cranes")} color={C.yellow} style={{color:"#000"}}>Vinç Yönetimi'ne Git</Btn>
+            </div>:
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {fleetCranes.map(fc=>{
+                const cfgs=fc.configs||[];
+                return <div key={fc.id} style={{background:C.dark,borderRadius:8,border:`1px solid ${C.green}20`,overflow:"hidden"}}>
+                  <div style={{padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div>
+                      <div style={{fontSize:13,fontWeight:700,color:C.yellow,fontFamily:F}}>{fc.name}</div>
+                      <div style={{fontSize:10,color:C.g400}}>{fc.manufacturer||""} {fc.crane_type||""} {fc.max_capacity?`· ${fc.max_capacity}t`:""}</div>
+                    </div>
+                    <div style={{fontSize:10,color:C.g500}}>{cfgs.length} konfig</div>
+                  </div>
+                  {cfgs.length>0&&<div style={{borderTop:`1px solid ${C.green}15`,padding:"6px 14px"}}>
+                    {cfgs.map(cf=>{
+                      const chartData=cf.load_chart_id&&allCharts[cf.load_chart_id]?allCharts[cf.load_chart_id]:null;
+                      const cfCap=chartData?lookupChart(chartData,cfg.boomLength,realRadius):null;
+                      const canLift=cfCap!==null&&cfCap>=cfg.loadWeight;
+                      const cantLift=cfCap!==null&&cfCap<cfg.loadWeight;
+                      return <div key={cf.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:`1px solid ${C.green}10`}}>
+                        <div>
+                          <div style={{fontSize:11,fontWeight:600,color:C.g200}}>{cf.name}</div>
+                          <div style={{fontSize:9,color:C.g500}}>{cf.counterweight?`CW: ${cf.counterweight}`:""} {cf.outrigger_config?`· Outrigger: ${cf.outrigger_config}`:""}</div>
+                        </div>
+                        <div style={{textAlign:"right"}}>
+                          {cfCap!==null?
+                            <div style={{fontSize:12,fontWeight:700,color:canLift?C.greenLight:C.red,fontFamily:F}}>
+                              {canLift?"✅":"❌"} {cfCap.toFixed(1)}t
+                            </div>:
+                            <div style={{fontSize:10,color:C.g500}}>Yük tablosu yok</div>
+                          }
+                          {cfCap!==null&&<div style={{fontSize:9,color:canLift?C.greenLight:C.red}}>
+                            {canLift?`${cfg.loadWeight}t yük kaldırılabilir`:`${cfg.loadWeight}t yük kaldırılamaz (kapasite: ${cfCap.toFixed(1)}t)`}
+                          </div>}
+                        </div>
+                      </div>;
+                    })}
+                  </div>}
+                </div>;
+              })}
+            </div>}
+          </Card>
+          <div style={{marginTop:12}}>
+            <Btn onClick={()=>setTab("chart")} color={C.green} style={{width:"100%",padding:12,fontSize:12}}>← Menzil Şemasına Dön</Btn>
+          </div>
+        </div>
       )}
 
       {/* ═══ LIFT PLAN TAB ═══ */}
