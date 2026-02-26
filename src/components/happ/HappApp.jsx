@@ -1300,6 +1300,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const [fleetLoading,setFleetLoading]=useState(false);
   const [selFleetId,setSelFleetId]=useState("");   // seçili filo vinci
   const [selCfgId,setSelCfgId]=useState("");       // seçili konfigürasyon
+  const [finderExpandedCfg,setFinderExpandedCfg]=useState(null); // Vinç Bul accordion
 
   useEffect(()=>{
     const onResize=()=>setIsMobile(window.innerWidth<768);
@@ -1904,23 +1905,70 @@ export default function App({onSave,initialData,projectName:extProjectName}){
                       const chartData=cf.load_chart_id&&allCharts[cf.load_chart_id]?allCharts[cf.load_chart_id]:null;
                       const cfCap=chartData?lookupChart(chartData,cfg.boomLength,realRadius):null;
                       const canLift=cfCap!==null&&cfCap>=cfg.loadWeight;
-                      const cantLift=cfCap!==null&&cfCap<cfg.loadWeight;
-                      return <div key={cf.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:`1px solid ${C.green}10`}}>
-                        <div>
-                          <div style={{fontSize:11,fontWeight:600,color:C.g200}}>{cf.name}</div>
-                          <div style={{fontSize:9,color:C.g500}}>{cf.counterweight?`CW: ${cf.counterweight}`:""} {cf.outrigger_config?`· Outrigger: ${cf.outrigger_config}`:""}</div>
+                      const isExpanded=finderExpandedCfg===cf.id;
+                      const veh=cf.transport_vehicles||[];
+                      const totV=veh.reduce((s,v)=>s+(v.count||0),0);
+                      return <div key={cf.id} style={{marginBottom:4}}>
+                        {/* Konfigürasyon başlık satırı — tıklanabilir */}
+                        <div onClick={()=>setFinderExpandedCfg(isExpanded?null:cf.id)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:`1px solid ${C.green}10`,cursor:"pointer",userSelect:"none"}}>
+                          <div style={{flex:1}}>
+                            <div style={{fontSize:11,fontWeight:600,color:C.g200}}>{isExpanded?"▾":"▸"} {cf.name}</div>
+                            <div style={{fontSize:9,color:C.g500,marginLeft:14}}>{cf.counterweight?`CW: ${cf.counterweight}`:""} {cf.outrigger_config?`· Outrigger: ${cf.outrigger_config}`:""}</div>
+                          </div>
+                          <div style={{textAlign:"right",flexShrink:0}}>
+                            {cfCap!==null?
+                              <div style={{fontSize:12,fontWeight:700,color:canLift?C.greenLight:C.red,fontFamily:F}}>
+                                {canLift?"✅":"❌"} {cfCap.toFixed(1)}t
+                              </div>:
+                              <div style={{fontSize:10,color:C.g500}}>Yük tablosu yok</div>
+                            }
+                            {cfCap!==null&&<div style={{fontSize:9,color:canLift?C.greenLight:C.red}}>
+                              {canLift?`${cfg.loadWeight}t kaldırılabilir`:`${cfg.loadWeight}t kaldırılamaz`}
+                            </div>}
+                          </div>
                         </div>
-                        <div style={{textAlign:"right"}}>
-                          {cfCap!==null?
-                            <div style={{fontSize:12,fontWeight:700,color:canLift?C.greenLight:C.red,fontFamily:F}}>
-                              {canLift?"✅":"❌"} {cfCap.toFixed(1)}t
-                            </div>:
-                            <div style={{fontSize:10,color:C.g500}}>Yük tablosu yok</div>
-                          }
-                          {cfCap!==null&&<div style={{fontSize:9,color:canLift?C.greenLight:C.red}}>
-                            {canLift?`${cfg.loadWeight}t yük kaldırılabilir`:`${cfg.loadWeight}t yük kaldırılamaz (kapasite: ${cfCap.toFixed(1)}t)`}
+                        {/* Accordion detay */}
+                        {isExpanded&&<div style={{padding:"10px 12px",marginTop:2,marginBottom:6,background:C.greenBg,borderRadius:8,border:`1px solid ${C.green}15`}}>
+                          {/* Boom tipi & max boom */}
+                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
+                            <div>
+                              <div style={{fontSize:8,fontWeight:700,color:C.g500,textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>Boom Tipi</div>
+                              <div style={{fontSize:11,color:C.g200,fontFamily:F}}>{cf.boom_type==="lattice"?"Kafes":"Teleskopik"}</div>
+                            </div>
+                            <div>
+                              <div style={{fontSize:8,fontWeight:700,color:C.g500,textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>Max Boom</div>
+                              <div style={{fontSize:11,color:C.g200,fontFamily:F}}>{cf.max_boom?cf.max_boom+"m":"—"}</div>
+                            </div>
+                          </div>
+                          {/* Yük tablosu */}
+                          <div style={{marginBottom:8}}>
+                            <div style={{fontSize:8,fontWeight:700,color:C.g500,textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>Yük Tablosu</div>
+                            {chartData?
+                              <div style={{fontSize:11,color:C.greenLight,fontWeight:600}}>📊 {chartData.name} ({chartData.maxCap}t / max {chartData.maxBoom}m)</div>:
+                              <div style={{fontSize:10,color:C.g500,fontStyle:"italic"}}>Bağlı yük tablosu yok</div>
+                            }
+                          </div>
+                          {/* Nakliye araçları */}
+                          <div style={{marginBottom:cf.description?8:0}}>
+                            <div style={{fontSize:8,fontWeight:700,color:C.g500,textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>Nakliye Araçları</div>
+                            {veh.length>0?<div style={{padding:"6px 8px",background:C.dark,borderRadius:6,border:`1px solid ${C.g500}15`}}>
+                              <div style={{fontSize:9,fontWeight:700,color:C.g400,marginBottom:3}}>Toplam: {totV} araç</div>
+                              {veh.map((v,vi)=>{
+                                const ic=({lowbed:"🚛",salkasa:"🚚",other:"📦"})[v.type]||"📦";
+                                const nl=({lowbed:"Lowbed",salkasa:"Salkasa",other:"Diğer"})[v.type]||v.type;
+                                return <div key={vi} style={{display:"flex",alignItems:"center",gap:5,fontSize:10,color:C.white,marginBottom:1}}>
+                                  <span>{ic}</span><span style={{fontWeight:600,color:C.yellow,minWidth:20,textAlign:"center"}}>{v.count}×</span><span>{nl}</span>
+                                  {v.notes&&<span style={{color:C.g500,fontSize:8}}>— {v.notes}</span>}
+                                </div>;
+                              })}
+                            </div>:<div style={{fontSize:10,color:C.g500,fontStyle:"italic"}}>Nakliye aracı tanımlanmamış</div>}
+                          </div>
+                          {/* Açıklama */}
+                          {cf.description&&<div>
+                            <div style={{fontSize:8,fontWeight:700,color:C.g500,textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>Açıklama</div>
+                            <div style={{fontSize:10,color:C.g300,lineHeight:1.4}}>{cf.description}</div>
                           </div>}
-                        </div>
+                        </div>}
                       </div>;
                     })}
                   </div>}
