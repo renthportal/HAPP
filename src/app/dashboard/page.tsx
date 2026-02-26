@@ -15,10 +15,23 @@ function DashboardContent() {
   const [projectData, setProjectData] = useState<any>(null)
   const [projectName, setProjectName] = useState('')
   const [loading, setLoading] = useState(!!projectId)
+  const [appliedCraneConfig, setAppliedCraneConfig] = useState<any>(null)
 
   useEffect(() => {
     if (projectId) loadProject(projectId)
   }, [projectId])
+
+  // Check if returning from crane-finder with applied config
+  useEffect(() => {
+    const applied = localStorage.getItem('happ_crane_finder_apply')
+    if (applied) {
+      localStorage.removeItem('happ_crane_finder_apply')
+      try {
+        const applyConfig = JSON.parse(applied)
+        setAppliedCraneConfig(applyConfig)
+      } catch { /* ignore */ }
+    }
+  }, [])
 
   const loadProject = async (id: string) => {
     const { data } = await supabase.from('projects').select('*').eq('id', id).single()
@@ -47,7 +60,26 @@ function DashboardContent() {
 
   if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh'}}><div style={{color:'#94A89A'}}>Yükleniyor...</div></div>
 
-  return <HappApp onSave={handleSave} initialData={projectData ? {config:projectData.config,objects:projectData.objects,rulers:projectData.rulers,lift_plan:projectData.lift_plan} : undefined} projectName={projectName} />
+  // Merge applied crane config into initial data
+  const effectiveInitialData = (() => {
+    if (appliedCraneConfig && projectData) {
+      return {
+        config: { ...projectData.config, ...appliedCraneConfig },
+        objects: projectData.objects,
+        rulers: projectData.rulers,
+        lift_plan: projectData.lift_plan,
+      }
+    }
+    if (appliedCraneConfig && !projectData) {
+      return { config: appliedCraneConfig }
+    }
+    if (projectData) {
+      return { config: projectData.config, objects: projectData.objects, rulers: projectData.rulers, lift_plan: projectData.lift_plan }
+    }
+    return undefined
+  })()
+
+  return <HappApp onSave={handleSave} initialData={effectiveInitialData} projectName={projectName} />
 }
 
 export default function DashboardPage() {

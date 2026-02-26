@@ -198,7 +198,6 @@ const SKINS=[
 ];
 
 const TABS=[
-  {id:"find",label:"Vinç Bul",icon:"🔍"},
   {id:"chart",label:"Menzil Şeması",icon:"📐"},
   {id:"cranes",label:"Vinç Yönetimi",icon:"🏗️"},
   {id:"liftplan",label:"Kaldırma Planı",icon:"📋"},
@@ -1147,7 +1146,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
       const dx=pos.x-drag.pivotX;const dy=drag.pivotY-pos.y;
       const dist=Math.sqrt(dx*dx+dy*dy)/drag.SC;
       const crane=CRANES.find(c=>c.id===cfg.craneType);
-      const newLen=clamp(Math.round(dist),5,cfg.maxBoom||crane?.defBoom||100);
+      const newLen=clamp(Math.round(dist),5,200);
       const newAngle=clamp(Math.round(toDeg(Math.atan2(dy,dx))),0,85);
       if(setDragTarget)setDragTarget("boomTip");
       // Update both length and angle when dragging tip
@@ -1155,7 +1154,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
     } else if(drag.type==="jibTip"){
       const dx=pos.x-drag.btX;const dy=drag.btY-pos.y;
       const dist=Math.sqrt(dx*dx+dy*dy)/drag.SC;
-      const newLen=clamp(Math.round(dist),2,30);
+      const newLen=clamp(Math.round(dist),2,100);
       const newAngle=clamp(Math.round(toDeg(Math.atan2(dy,dx))),0,cfg.boomAngle);
       updFromCanvas({jibLength:newLen,jibAngle:newAngle});
     } else if(drag.type==="boomAngle"){
@@ -1259,7 +1258,7 @@ function RangeChart({cfg,crane,skin,objects,selObj,setSelObj,rulers,setRulers,to
 
 // ═══ MAIN APP COMPONENT ═══
 export default function App({onSave,initialData,projectName:extProjectName}){
-  const [tab,setTab]=useState(initialData?.config?"chart":"find");
+  const [tab,setTab]=useState("chart");
   const [cfg,setCfg]=useState(initialData?.config||{craneType:"mobile",boomLength:30,boomAngle:45,jibEnabled:false,jibLength:10,jibAngle:15,pivotHeight:2.5,pivotDist:0,craneEnd:4,loadWeight:5,counterweight:20,windSpeed:0,skinId:"default",
     loadW:3,loadH:2,loadShape:"box",slingType:"2leg",slingLength:4,slingLegs:2,hookBlockH:1.2,
     chartId:"",outriggerSpread:"full",cwConfig:"full",manualCap:0,maxBoom:60
@@ -1268,11 +1267,8 @@ export default function App({onSave,initialData,projectName:extProjectName}){
   const [selObj,setSelObj]=useState(null);
   const [rulers,setRulers]=useState(initialData?.rulers||[]);
   const [tool,setTool]=useState("select");
-  // Vinç Bul state
-  const [searchLoad,setSearchLoad]=useState(10);
-  const [searchHeight,setSearchHeight]=useState(20);
-  const [searchRadius,setSearchRadius]=useState(15);
-  const [searchResults,setSearchResults]=useState([]);
+  // Vinç Bul state (used by crane finder page via localStorage)
+
   const [lp,setLp]=useState(initialData?.lift_plan||{supplier:"",supplierContact:"",supplierPhone:"",supplierEmail:"",supplierAddr:"",client:"",clientContact:"",clientPhone:"",clientEmail:"",clientAddr:"",jobNumber:"",jobName:"",jobAddress:"",jobDate:new Date().toISOString().split("T")[0],craneMake:"",craneModel:"",craneRego:"",linePull:0,partsOfLine:4,cwConfig:"",loadDesc:"",loadWeight:0,riggingWeight:0,hookBlockWeight:0,addWeight:0,wll:0,notes:"",outForce:0,padShape:"square",padW:1,padL:1});
 
   const [ci,setCi]=useState({load:0,wll:0,pct:75,outF:0,padW:1,padL:1,padShape:"square"});
@@ -1471,6 +1467,21 @@ export default function App({onSave,initialData,projectName:extProjectName}){
     catch(e){setSaveStatus("idle");}
   };
 
+  // Navigate to crane finder page
+  const navigateToCraneFinder=()=>{
+    const params={
+      craneType:cfg.craneType,boomLength:cfg.boomLength,boomAngle:cfg.boomAngle,
+      jibEnabled:cfg.jibEnabled,jibLength:cfg.jibLength,jibAngle:cfg.jibAngle,
+      loadWeight:cfg.loadWeight,radius:realRadius,hookHeight:realHookH,
+      boomTipHeight:realBoomTipH,pivotHeight:cfg.pivotHeight,
+      chartId:cfg.chartId||"",outriggerSpread:cfg.outriggerSpread,cwConfig:cfg.cwConfig,
+    };
+    if(typeof window!=="undefined"){
+      localStorage.setItem("happ_crane_finder_config",JSON.stringify(params));
+      window.location.href="/dashboard/crane-finder";
+    }
+  };
+
   // Calculations
   const pctCalc=ci.wll>0?ci.load/ci.wll*100:0;
   const maxLoadCalc=ci.wll*ci.pct/100;
@@ -1595,8 +1606,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
         </div>
         {/* Quick actions — always visible */}
         <div style={{display:"flex",alignItems:"center",gap:isMobile?4:6}}>
-          {isMobile&&tab!=="chart"&&tab!=="find"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>← Şema</button>}
-          {isMobile&&tab==="find"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>📐 Şema</button>}
+          {isMobile&&tab!=="chart"&&<button onClick={()=>setTab("chart")} style={{padding:"6px 10px",border:`1px solid ${C.yellow}60`,borderRadius:8,background:"transparent",color:C.yellow,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:F}}>← Şema</button>}
           <button onClick={()=>setShowPDF(true)} style={{padding:isMobile?"6px 10px":"6px 14px",background:C.yellow,border:"none",borderRadius:8,color:C.greenDark,fontWeight:700,fontSize:isMobile?10:12,cursor:"pointer",fontFamily:F}}>📋 {isMobile?"PDF":"Kaldırma Planı"}</button>
           {!isMobile&&<button onClick={exportScreenshot} style={{padding:"6px 14px",background:C.g500+"80",border:`1px solid ${C.g400}40`,borderRadius:8,color:C.g200,fontWeight:600,fontSize:11,cursor:"pointer",fontFamily:F}}>📷 Ekran Görüntüsü</button>}
           {onSave&&<button onClick={handleSave} style={{padding:isMobile?"6px 10px":"6px 14px",background:saveStatus==="saved"?C.greenLight+"30":C.g500+"80",border:`1px solid ${saveStatus==="saved"?C.greenLight:C.g400}40`,borderRadius:8,color:saveStatus==="saved"?C.greenLight:C.g200,fontWeight:600,fontSize:isMobile?10:11,cursor:"pointer",fontFamily:F}}>
@@ -1605,101 +1615,9 @@ export default function App({onSave,initialData,projectName:extProjectName}){
         </div>
         {!isMobile&&<nav style={{display:"flex",gap:3,background:C.greenDark,borderRadius:8,padding:3,width:"100%"}}>
           {TABS.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"8px 16px",border:"none",borderRadius:6,background:tab===t.id?C.yellow:"transparent",color:tab===t.id?C.greenDark:C.g300,fontWeight:tab===t.id?700:500,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap"}}>{t.icon} {t.label}</button>))}
+          <button onClick={navigateToCraneFinder} style={{padding:"8px 16px",border:"none",borderRadius:6,background:`linear-gradient(135deg,${C.green},${C.greenLight})`,color:"white",fontWeight:800,fontSize:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap",marginLeft:"auto"}}>🔍 Vinç Bul</button>
         </nav>}
       </header>
-
-      {/* ═══ FIND TAB ═══ */}
-      {tab==="find"&&(
-        <div style={{maxWidth:800,margin:"0 auto",padding:isMobile?"12px 8px":"24px 16px"}}>
-          {/* Search inputs */}
-          <div style={{background:C.darkSurf,borderRadius:12,padding:isMobile?12:20,border:`1px solid ${C.green}20`,marginBottom:12}}>
-            <div style={{fontSize:isMobile?16:20,fontWeight:900,color:C.yellow,fontFamily:F,marginBottom:12,display:"flex",alignItems:"center",gap:8}}>🔍 Vinç Bul</div>
-            <div style={{fontSize:11,color:C.g400,marginBottom:16}}>Yük, yükseklik ve menzil girin — uygun vinç konfigürasyonları otomatik hesaplansın.</div>
-            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:isMobile?8:12}}>
-              <div>
-                <div style={{fontSize:11,color:C.g300,marginBottom:4,fontWeight:600}}>Yük Ağırlığı</div>
-                <div style={{display:"flex",alignItems:"center",gap:4}}>
-                  <input type="number" value={searchLoad} onChange={e=>setSearchLoad(Math.max(0,parseFloat(e.target.value)||0))}
-                    style={{width:"100%",padding:isMobile?"12px 8px":"10px 8px",background:C.dark,border:`2px solid ${C.yellow}60`,borderRadius:8,color:C.yellow,fontSize:isMobile?18:16,fontWeight:700,fontFamily:F,textAlign:"center"}}/>
-                  <span style={{fontSize:13,color:C.g400,fontWeight:700}}>t</span>
-                </div>
-              </div>
-              <div>
-                <div style={{fontSize:11,color:C.g300,marginBottom:4,fontWeight:600}}>Kaldırma Yüksekliği</div>
-                <div style={{display:"flex",alignItems:"center",gap:4}}>
-                  <input type="number" value={searchHeight} onChange={e=>setSearchHeight(Math.max(0,parseFloat(e.target.value)||0))}
-                    style={{width:"100%",padding:isMobile?"12px 8px":"10px 8px",background:C.dark,border:`2px solid ${C.cyan}60`,borderRadius:8,color:C.cyan,fontSize:isMobile?18:16,fontWeight:700,fontFamily:F,textAlign:"center"}}/>
-                  <span style={{fontSize:13,color:C.g400,fontWeight:700}}>m</span>
-                </div>
-              </div>
-              <div>
-                <div style={{fontSize:11,color:C.g300,marginBottom:4,fontWeight:600}}>Menzil (mesafe)</div>
-                <div style={{display:"flex",alignItems:"center",gap:4}}>
-                  <input type="number" value={searchRadius} onChange={e=>setSearchRadius(Math.max(0,parseFloat(e.target.value)||0))}
-                    style={{width:"100%",padding:isMobile?"12px 8px":"10px 8px",background:C.dark,border:`2px solid ${C.greenLight}60`,borderRadius:8,color:C.greenLight,fontSize:isMobile?18:16,fontWeight:700,fontFamily:F,textAlign:"center"}}/>
-                  <span style={{fontSize:13,color:C.g400,fontWeight:700}}>m</span>
-                </div>
-              </div>
-            </div>
-            <button onClick={()=>{const r=searchCranes(allCharts,searchLoad,searchHeight,searchRadius,crane?.pivotH||2.5);setSearchResults(r);}}
-              style={{width:"100%",marginTop:16,padding:isMobile?"14px":"12px",background:`linear-gradient(135deg,${C.green},${C.greenLight})`,border:"none",borderRadius:10,color:"white",fontSize:isMobile?16:14,fontWeight:800,cursor:"pointer",fontFamily:F,letterSpacing:1}}>
-              🔍 ARA — {Object.keys(allCharts).length} tablo taranacak
-            </button>
-          </div>
-
-          {/* Results */}
-          {searchResults.length>0&&(
-            <div style={{background:C.darkSurf,borderRadius:12,padding:isMobile?8:16,border:`1px solid ${C.green}20`}}>
-              <div style={{fontSize:12,color:C.g400,marginBottom:8,fontWeight:600}}>
-                {searchResults.filter(r=>!r.insufficient).length} uygun konfigürasyon bulundu
-                {searchResults.filter(r=>r.insufficient).length>0&&` — ${searchResults.filter(r=>r.insufficient).length} yetersiz`}
-              </div>
-              <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                {searchResults.map((r,i)=>(
-                  <div key={i} style={{padding:isMobile?"10px":"12px 16px",background:r.insufficient?C.dark+"80":C.greenDark+"60",borderRadius:10,border:`1px solid ${r.insufficient?"#c4444440":C.green+"30"}`,opacity:r.insufficient?0.7:1}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:isMobile?13:14,fontWeight:700,color:r.insufficient?C.g400:C.white,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
-                          {r.insufficient?"❌":"✅"} {r.chartName}
-                        </div>
-                        <div style={{fontSize:11,color:C.g400,marginTop:2}}>
-                          Boom: <span style={{color:C.yellow,fontWeight:600}}>{r.boomLength}m</span> @ <span style={{color:C.yellow,fontWeight:600}}>{r.angle}°</span>
-                          {" · "}Kapasite: <span style={{color:r.insufficient?C.red:C.greenLight,fontWeight:700}}>{r.capacity}t</span>
-                          {r.tipHeight?<>{" · "}Uç: <span style={{color:C.cyan}}>{r.tipHeight}m</span></>:null}
-                        </div>
-                        <div style={{marginTop:4,height:4,borderRadius:2,background:C.dark,overflow:"hidden"}}>
-                          <div style={{height:"100%",width:`${Math.min(100,r.utilization)}%`,borderRadius:2,background:r.utilization>100?C.red:r.utilization>85?C.orange:C.greenLight}}/>
-                        </div>
-                        <div style={{fontSize:10,color:r.utilization>100?C.red:r.utilization>85?C.orange:C.g400,marginTop:2}}>
-                          Kullanım: %{r.utilization}{r.utilization>100?" — KAPASİTE YETERSİZ":""}
-                        </div>
-                      </div>
-                      {!r.insufficient&&(
-                        <button onClick={()=>{
-                          up({chartId:r.chartId,boomLength:r.boomLength,boomAngle:r.angle,loadWeight:searchLoad});
-                          setTab("chart");
-                        }} style={{padding:isMobile?"10px 14px":"8px 16px",background:C.yellow,border:"none",borderRadius:8,color:C.greenDark,fontWeight:800,fontSize:isMobile?13:12,cursor:"pointer",fontFamily:F,whiteSpace:"nowrap",flexShrink:0}}>
-                          Seç →
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Empty state */}
-          {searchResults.length===0&&(
-            <div style={{textAlign:"center",padding:isMobile?"30px 16px":"40px 20px",color:C.g500}}>
-              <div style={{fontSize:40,marginBottom:8}}>🏗️</div>
-              <div style={{fontSize:13}}>Yük, yükseklik ve menzil girip ARA butonuna basın</div>
-              <div style={{fontSize:11,marginTop:4,color:C.g600}}>Tüm yük tablolarında (preset + yüklenen) arama yapılır</div>
-              {chartsLoading&&<div style={{fontSize:11,marginTop:8,color:C.cyan}}>⏳ Yük tabloları yükleniyor...</div>}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* ═══ CHART TAB ═══ */}
       {tab==="chart"&&(
@@ -1732,7 +1650,7 @@ export default function App({onSave,initialData,projectName:extProjectName}){
               <div onClick={()=>setShowMobMenu(false)} style={{position:"absolute",inset:0,zIndex:25}}/>
               <div style={{position:"absolute",top:46,right:6,width:220,maxHeight:"calc(100% - 56px)",overflow:"auto",background:"rgba(10,31,18,0.96)",border:`1px solid ${C.green}40`,borderRadius:12,padding:6,zIndex:30,backdropFilter:"blur(12px)",touchAction:"auto",overscrollBehavior:"contain"}}>
                 {[
-                  {label:"Vinç Bul",icon:"🔍",action:()=>{setTab("find");setShowMobMenu(false);}},
+                  {label:"Vinç Bul",icon:"🔍",action:()=>{navigateToCraneFinder();}},
                   {label:"Jib "+(cfg.jibEnabled?"Kapat":"Aç"),icon:cfg.jibEnabled?"🔴":"🟢",action:()=>up({jibEnabled:!cfg.jibEnabled})},
                   {label:"Kaldırma Planı",icon:"📋",action:()=>{setTab("liftplan");setShowMobMenu(false);}},
                   {label:"Hesaplamalar",icon:"🔢",action:()=>{setTab("calc");setShowMobMenu(false);}},
@@ -1964,14 +1882,14 @@ export default function App({onSave,initialData,projectName:extProjectName}){
             {/* Boom — en çok kullanılan ayar */}
             <Card>
               <Title>Boom Ayarları</Title>
-              <Row><Lbl>Uzunluk (m)</Lbl><Num value={cfg.boomLength} onChange={v=>up({boomLength:v})} min={5} max={cfg.maxBoom||crane?.defBoom||100}/></Row>
-              <Sli value={cfg.boomLength} min={5} max={cfg.maxBoom||crane?.defBoom||100} onChange={v=>up({boomLength:v})}/>
+              <Row><Lbl>Uzunluk (m)</Lbl><Num value={cfg.boomLength} onChange={v=>up({boomLength:v})} min={5} max={200}/></Row>
+              <Sli value={cfg.boomLength} min={5} max={200} onChange={v=>up({boomLength:v})}/>
               <Row><Lbl>Açı (°)</Lbl><Num value={cfg.boomAngle} onChange={v=>up({boomAngle:v})} min={0} max={85}/></Row>
               <Sli value={cfg.boomAngle} min={0} max={85} onChange={v=>up({boomAngle:v})} color={C.greenLight}/>
               <Row><Lbl>Jib Aktif</Lbl><input type="checkbox" checked={cfg.jibEnabled} onChange={e=>up({jibEnabled:e.target.checked})} style={{width:18,height:18,cursor:"pointer"}}/></Row>
               {cfg.jibEnabled&&(<>
-                <Row><Lbl>Jib Uzunluk (m)</Lbl><Num value={cfg.jibLength} onChange={v=>up({jibLength:v})} min={2} max={30}/></Row>
-                <Sli value={cfg.jibLength} min={2} max={30} onChange={v=>up({jibLength:v})} color={C.orange}/>
+                <Row><Lbl>Jib Uzunluk (m)</Lbl><Num value={cfg.jibLength} onChange={v=>up({jibLength:v})} min={2} max={100}/></Row>
+                <Sli value={cfg.jibLength} min={2} max={100} onChange={v=>up({jibLength:v})} color={C.orange}/>
                 <Row><Lbl>Jib Açı (°)</Lbl><Num value={cfg.jibAngle} onChange={v=>up({jibAngle:v})} min={0} max={cfg.boomAngle}/></Row>
                 <Sli value={cfg.jibAngle} min={0} max={cfg.boomAngle} onChange={v=>up({jibAngle:v})} color={C.orange}/>
               </>)}
