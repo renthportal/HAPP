@@ -14,6 +14,7 @@ interface Props {
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Menzil Şeması', icon: '📐', desc: 'Range Chart' },
+  { href: '/dashboard/time-tracker', label: 'Zaman İzleyici', icon: '⏱️', desc: 'Anılar & hedefler' },
   { href: '/dashboard/projects', label: 'Projeler', icon: '📁', desc: 'Kayıtlı planlar' },
   { href: '/dashboard/cranes', label: 'Vinçler', icon: '🏗️', desc: 'Vinç & yük tablosu' },
   { href: '/dashboard/team', label: 'Takım', icon: '👥', desc: 'Takım yönetimi' },
